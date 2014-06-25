@@ -26,21 +26,27 @@ def ds_stats(dataset):
     'size' : the number of transactions in the dataset
     'numitems': the number of items in the dataset
     'maxlen': the maximum length of a transaction in the dataset
+    'maxsupp': the maximum support of an item in the dataset
     'lengths': a dict whose keys are integers and values are the number of
     transactions of that length in the dataset
     'items': a set of the items in the dataset
 
     Example:
-     {'dindex': 1, 'lengths': {1: 5}, 'items': {1, 2, 3, 4, 5}, 'size': 6, 'numitems': 5, 'maxlen': 1}
+     {'dindex': 1, 'lengths': {1: 5}, 'items': {1, 2, 3, 4, 5}, 'maxsupp': 4, 'size': 6, 'numitems': 5, 'maxlen': 1}
 
     """
     with open(dataset, 'rt') as DS:
         max_len = 0
+        item_supp = dict()
         items = set() 
         T = [frozenset(map(int,DS.readline().split()))]
         size = 1
         d_index = 1
         transaction_lengths = dict()
+        transaction_lengths[len(T[0])] = 1
+        for item in T[0]:
+            item_supp[item] = 1
+
         for line in DS:
             t = frozenset(map(int,line.split()))
             size += 1
@@ -49,6 +55,11 @@ def ds_stats(dataset):
                 transaction_lengths[line_length] += 1
             else:
                 transaction_lengths[line_length] = 1
+            for item in t:
+                if item in item_supp:
+                    item_supp[item] += 1
+                else:
+                    item_supp[item] = 1
 
             if len(t) > d_index:
                 process = True
@@ -71,8 +82,9 @@ def ds_stats(dataset):
                 max_len = len(t)
             items = items.union(t)
 
-
-    return {'size': size, 'dindex': d_index, 'maxlen': max_len, 'numitems': len(items), 'lengths': transaction_lengths, 'items': items}
+    return {'size': size, 'dindex': d_index, 'maxlen': max_len, 'maxsupp':
+            max(item_supp.values()), 'numitems': len(items), 'lengths':
+            transaction_lengths, 'items': items}
 
 
 if __name__ == '__main__':
