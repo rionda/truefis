@@ -2,9 +2,10 @@ Finding the True Frequent Itemsets
 =======
 
 Code and paper for the article ["Finding the True Frequent Itemsets"][1] by [Matteo
-Riondato][http://cs.brown.edu/~matteo] <matteo@cs.brown.edu> and [Fabio
+Riondato](http://cs.brown.edu/~matteo) <matteo@cs.brown.edu> and [Fabio
 Vandin](http://www.imada.sdu.dk/~vandinfa) <vandinfa@imada.sdu.dk>, published in
-the proceedings of the 2014 SIAM International Conference on Data Mining.
+the proceedings of the [2014 SIAM International Conference on Data
+Mining](http://www.siam.org/meetings/sdm14/).
 
 Extended journal version in preparation. See [TODO](TODO.md).
 
