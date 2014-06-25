@@ -2,6 +2,8 @@ TODO
 ====
 
 - [ ] Test new bound EVC
+  - [ ] Implement code in [getDatasetInfo.py](code/getDatasetInfo.py) to
+    compute highest item frequency
 - [ ] Test new bound Rademacher
 - [ ] Present new bound EVC
 - [ ] Check [SDM reviews](paper/SDM14/ReviewsSDM.pdf) for other changes
