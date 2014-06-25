@@ -1,0 +1,133 @@
+\documentclass[twoside]{article}  
+\usepackage{lmodern}
+\usepackage{textcomp}
+\usepackage[T1]{fontenc}
+\usepackage[utf8x]{inputenc}
+%\usepackage{ltexpprt} 
+%\usepackage{balance}
+\usepackage[numbers,sort&compress,comma]{natbib}
+\usepackage[bookmarks=true,pdfstartview={FitH},pdfauthor={Matteo Riondato
+and Fabio Vandin},pdftitle={Finding the True Frequent Itemsets},pdfsubject={Frequent Itemsets Mining}]{hyperref}
+\usepackage[ruled,linesnumbered]{algorithm2e} % must load after natbib
+\usepackage{fullpage}
+%\usepackage{amsfonts}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{dsfont}
+\usepackage{amsthm}
+\usepackage{mathtools}
+\usepackage{graphicx}
+%\usepackage{subfig}
+\usepackage{multirow}
+%\usepackage{bigstrut}
+%\usepackage{url}
+\usepackage{mdwlist}
+\usepackage{booktabs}
+%\usepackage{savesym}
+%\savesymbol{algorithm}
+%\savesymbol{endalgorithm}
+\usepackage{datetime}
+%\usepackage{times}
+%\usepackage{mathptm}
+%\DeclareSymbolFont{largesymbols}{OMX}{psycm}{m}{n}
+%\usepackage[usenames,dvipsnames,svgnames,table]{xcolor}
+
+
+%\renewcommand\bibnumfmt[1]{[#1]} 
+%\renewcommand{\bibsection}{\section{\refname}}
+
+\newif\ifarxiv
+%\arxivfalse
+\arxivtrue
+
+%\def\newblock{\hskip .11em plus .33em minus .07em}
+%\DeclareCaptionType{copyrightbox}
+
+%\def\qed{}
+\def\Sam{{\cal S}}
+\def\Ds{{\cal D}}
+\def\Itm{{\cal I}}
+\def\FI{\mathsf{FI}}
+\def\TFI{\mathsf{TFI}}
+\def\VC{\mathsf{VC}}
+\def\EVC{\mathsf{EVC}}
+\def\AR{\mathsf{AR}}
+\def\TOPK{\mathsf{TOPK}}
+\def\RFI{\mathsf{RFI}}
+\def\prob{\pi}
+\def\tfreq{t_\prob}
+\def\range{\mathcal{R}}
+\def\XXX{{\bf XXX}}
+\def\MR{{\bf MR}}
+\def\FV{{\bf FV}}
+\def\eb{\mathsf{eb}}
+%\def\b{\mathsf{b}}
+
+\newtheorem{corollary}{Corollary}
+%\newtheorem{conj}{Conjecture}
+\newtheorem{lemma}{Lemma}
+%\newtheorem{claim}{Claim}
+\newtheorem{fact}{Fact}
+\newtheorem{theorem}{Theorem}
+
+\theoremstyle{definition}
+\newtheorem{definition}{Definition}
+
+%\newcommand{\fabio}[1]{\textcolor{blue}{#1}}
+%\usepackage[normalem]{ulem}
+
+\begin{document}
+\title{Finding the True Frequent Itemsets\thanks{Work supported in part by NSF
+grant IIS-1247581. 
+\ifarxiv
+ This is an extended version of the work that appeared
+as~\citep{RiondatoV14}.
+\fi 
+}
+}
+\author{Matteo Riondato
+\ifarxiv
+\thanks{Department of Computer Science, Brown University, Providence, RI, USA.
+\url{matteo@cs.brown.edu} . Contact author.}
+\else
+\thanks{Brown University, Providence, RI, USA}
+\fi 
+\and Fabio Vandin
+\ifarxiv
+\thanks{Department of Computer Science, Brown University, Providence, RI, USA
+and Department of Mathematics and Computer Science, University of Southern
+Denmark, Odense, Denmark. \url{vandinfa@imada.sdu.dk} .}
+\else
+\textsuperscript{$\dagger$,}\thanks{University of Southern Denmark, Odense, Denmark}
+\fi
+}
+
+\date{\today}
+
+\maketitle
+
+\input{abstract}
+\input{intro}
+\input{prevwork}
+\input{prelims}
+\input{rangeset}
+\input{algo}
+%\input{vcholdout}
+\input{vcfull}
+\input{experiments}
+\input{conclusion}
+
+%\bibliographystyle{splncs03}
+%\bibliographystyle{splncsnat}
+
+\ifarxiv
+%\bibliographystyle{abbrvnat}
+\bibliographystyle{unsrtnat}
+\bibliography{statsigfis,vcmine,fimine,riondapubs,statisticaltesting,sperner,various,vcgraph}
+\else
+\balance
+\input{biblio}
+\fi
+ 
+\end{document}
+

@@ -1,0 +1,304 @@
+\section{Previous work}\label{sec:prevwork}
+Given a sufficiently low minimum frequency threshold, traditional itemsets
+mining algorithms can return a collection of frequent patterns so large to
+become almost uninformative to the human user. The quest for reducing the number
+of patterns given in output has been developing along two different different
+directions suggesting non-mutually-exclusive approaches. One of these lines of
+research starts from the observation that the information contained in a
+set of patterns can be compressed with or without loss to a much smaller
+collection. This lead to the definition of concepts like \emph{closed},
+\emph{maximal}, \emph{non-derivable} itemsets. This approach is orthogonal to
+the one we take and we refer the interested reader to the survey by~\citet{CaldersRB06}.
+
+The intuition at the basis of the second approach to reduce the number of output
+patterns consists in
+observing that a large portion of the patterns may be \emph{spurious}, i.e., not
+actually \emph{interesting} but only a consequence of the fact that the dataset
+is just a sample from the underlying process that generates the data, the
+understanding of which is the ultimate goal of data mining. This observation led
+to a prolification of interestingness measures. In this work we are interested
+in a very specific definition of interestingness that is based on statistical
+properties of the patterns. We refer the reader to the surveys on different
+readers by~\citet[Sect.~3]{HanCXY07} and~\citet{GengH06}. %
+%While the problem of identifying the TFIs has received scant attention in the literature, a number 
+%of approaches have been proposed to filter the FIs of \emph{spurious patterns}, i.e., patterns that are not
+%actually \emph{interesting} according to some measure of interestigness. We refer the reader to~\citep[Sect.~3]{HanCXY07}
+%and~\citep{GengH06} for surveys on different measures.
+We remark that, as noted by~\citet{LiuZW11}, that the use of the minimum
+support threshold $\theta$, reflecting the level of domain significance, is complementary to the
+use of interestingness measures, and that ``statistical significance measures and domain significance
+measures should be used together to filter uninteresting rules from different
+perspectives''. The algorithm we present can be seen as a method to filter out
+patterns that are not interesting according to the measure represented by the
+true frequency.
+
+A number of works explored the idea to use statistical properties of the
+patterns in order to assess their interestingness. While this is not the focus of our work,
+some of the techniques and models proposed are relevant to our framework.
+Most of these works are
+focused on association rules, but some results can be applied to itemsets. In
+these works, the notion of interestingness is related to the deviation between
+the observed frequency of a pattern in the dataset and its expected support in a
+random dataset generated according to a well-defined probability distribution that can incorporate
+prior belief and that can be updated during the mining process to ensure that
+the most ``surprising'' patterns are extracted. In many previous works, the
+probability distribution was defined by a simple independence model: an item belongs to a
+transaction independently from other
+items~\citep{SilversteinBM98,MegiddoS98,DuMouchelP01,GionisMMT07,Hamalainen10,KirschMAPUV12}.
+%Other works used Bayesian networks to express the prior
+%belief~\citep{JaroszewiczSS09}.
+In contrast, our work does not impose any
+restriction on the probability distribution generating the dataset, with the result that our method is as general as
+possible.
+%Moreover, the interestingness of a pattern is determined by its
+%probability according to the distribution that regulates the generation of
+%transactions (on which, again, we do not impose any limitation) and whether this
+%support is greater than a user-specified minimum threshold.  
+
+\citet{KirschMAPUV12} developed a multi-hypothesis
+testing procedure to identify the best support threshold such that the number of
+itemsets with at least such support deviates significantly from its expectation
+in a random dataset of the same size and with the same frequency distribution
+for the individual items. In our work, the minimum threshold $\theta$ is an input
+parameter fixed by the user, and we identify a threshold $\hat{\theta}\ge\theta$
+to guarantee that the collection of FIs w.r.t.~$\hat{\theta}$ does not contain
+any false discovery.
+%return a collection of itemsets such that
+%they all have a support at least as high as the threshold with respect to the
+%distribution that generates the sample data.
+
+\iffalse
+\citet{BoltonHA02} suggest that, in pattern extraction settings,
+it may be more relevant to bound the False Discovery Rate rather
+than the Family-Wise Error Rate, due to the high number of statistical tests
+involved. In our experimental evaluation we noticed that the high number of
+tests is an issue when using traditional multiple-hypothesis correction
+techniques. The methods we present do not incur in this issue because they
+consider all the itemsets together, without the need to test each of them
+singularly. 
+
+\citet{LallichTP06} introduce User Adjusted
+Family-Wise Error Rate (UAFWER), a flexible variant of FWER which allows a user
+specified number of false discoveries, rather than no false discovery as in the
+standard FWER definition. They present a bootstrap-based method to evaluate the
+quality of a collection of association rules by comparing their empirical
+interestingness with the interestingness in a sequence of random datasets
+obtained by resampling the original data. We found that we can easily bound the
+FWER, so we have no need to use the UAFWER.
+\fi
+
+\citet{GionisMMT07} present a method to create random datasets that can act as
+samples from a distribution satisfying an assumed generative model. The main
+idea is to swap items in a given dataset while keeping the length of the
+transactions and the sum over the columns constant. This method is only
+applicable if one can actually derive a procedure to perform the swapping in
+such a way that the generated datasets are indeed random samples from the assumed
+distribution. For the problem we are interested in, such procedure is not
+available and indeed it would be difficult to obtain a procedure that is
+valid for any distribution, given that we aim at developing a method that makes
+no assumption on the distribution. Considering the same generative model,
+\citet{Hanhijarvi11} presents a direct adjustment method to bound the
+probability of false discoveries by %FWER while
+taking into consideration the actual number of hypotheses to be tested.
+
+\citet{Webb07} proposes the use of established statistical techniques to
+control the probability of false discoveries. 
+\iffalse
+One method is based on the Bonferroni and
+Holm correction, where the significance level is decreased proportionally to the
+number of tested hypotheses and each of them is tested separately. 
+\fi
+In one of these methods (called holdout), the available data are split into two parts: one is
+used for pattern discovery, while the second is used to verify the significance
+of the discovered patterns, testing one statistical hypothesis at a time. A new
+method (layered critical values) to choose the critical values when using a
+direct adjustment technique to control the probability of false discoveries %FWER 
+is presented by~\citet{Webb08} and works by exploiting the itemset lattice.
+%The first method we present is
+%inspired by the holdout technique, while 
+The method we present instead identify a threshold frequency such that all the
+itemsets with frequency above the threshold are TFIs. There is no need to test
+each itemset separately and no need to split the dataset. 
+%Our method can be used when the
+%data cannot be split, as can be the case for graphs or spatial data. 
+\iffalse
+In our
+experimental evaluation we compared the statistical power of the test we propose
+with the power of the holdout method, showing that neither is uniformly better
+than the other. We tried to apply the method based on the Bonferroni/Holm
+correction, and the layered critical value approach, but the very high number of
+itemsets to take into consideration makes these methods very inefficient in
+practice, to the point of hitting the precision limit of the computing platform.
+%We refer the interested reader Section~\ref{sec:statpow} for additional details.
+\fi
+
+\iffalse
+\citet{Hanhijarvi11} presents a direct adjustment method to bound
+the FWER while taking into consideration the actual number of hypotheses to be
+tested. The dataset is resampled (using the method
+from~\citep{GionisMMT07}) in order to adjust the $p$-values in such a way that
+the FWER is within the desired bounds.  This can be done in the setting
+of~\citep{Hanhijarvi11} thanks to the limited generative model taken into
+consideration, which assumes that the items in it appear independently from
+each other in the transactions.
+\fi
+
+%the considered null hypothesis for each
+%itemsets is that the items in it appear independently from each other in the
+%transactions.
+%In our setting, for the problem of RFIs, this method can not be used
+%because it is not clear how to sample datasets from the null
+%distribution.
+%As we already
+%argued, it is not clear that, in the case of RFIs, it is possible to derive a
+%procedure to resample the dataset while guaranteeing that the generated datasets
+%come from the null distribution.
+
+\citet{LiuZW11} conduct an experimental evaluation of  direct corrections, holdout data,
+and random permutations methods to
+control the false positives. They test the methods on a very specific problem
+(association rules for binary classification). 
+
+In contrast with the methods presented in the works above,
+ours does not employ an explicit direct correction depending on the number of
+patterns considered as it is  done in traditional multiple hypothesis testing
+settings. %(i.e., multiple hypothesis testing)
+It instead uses the entire available data to obtain more accurate
+results,without the need to re-sampling it to generate random datasets or to
+split the dataset in two parts, being therefore more efficient computationally.
+
+\iffalse
+\citet{JacquemontFS09} presents lower bounds to the size of the
+dataset needed to simultaneously guarantee that both the probability of Type-1
+and of Type-2 errors are within desired limits. The analysis presented only
+consider a single item, so one should apply multiple hypothesis correction in
+order to achieve the desired FWER.
+
+\iffalse
+{\bf XXX:} To me, this paper
+looks flawed because they do derive all the bounds for a single pattern and do
+not apply a union bound at the end, which seems necessary to me. They do not
+even try to argue that it is not needed, so I guess they overlooked this\ldots
+\fi
+
+\citet{TeytaudL01} suggest the use of VC-dimension to bound the risk of
+accepting spurious rules extracted from the database. Although referring to them as
+``association rules'', the rules they focus on involve ranges over domains and
+conjuctions of Boolean formulas to express subsets of interest. This is
+different than the transactional market basket analysis setting in our work.
+\fi
+
+\iffalse
+the phase of assessment of the
+significance of the frequent itemsets cannot replace the role played by the minimum support
+threshold $\theta$, that is to reflect the level of domain significance, and is to be used
+in concert with statistical significance to filter uninteresting patterns that
+arise from different sources. Therefore being able to rigorously identify frequent patterns in $\prob$ 
+is crucial in order to obtain high quality patterns.
+\fi
+
+\iffalse
+{\bf XXX:} Honestly, this paper is terrible. Nothing is explained, definitions
+are sloppy or absent, a bound to a VC-dimension of something is thrown in there
+without explaination\ldots \emph{Your paper is bad and you should feel bad!}
+\fi
+
+%Silverstein et al.~\cite{SilversteinBM98} introduced the idea of using a
+%statistical significance test (namely the $\chi^2$ test) to measure the
+%dependence between items in an itemsets, and only output association rules
+%with independent sides. As pointed out by~\cite{MegiddoS98}
+%and~\cite{DuMouchelP01}, the method presented in~\cite{SilversteinBM98} is
+%flawed as there is no correction for the testing of multiple hypotheses. 
+%
+%A number of works suggest measures of significance for an itemset that are
+%based on the comparison of its support in the dataset and its expected support
+%in a random
+%dataset~\cite{SrikantA96,DuMouchelP01,JaroszewiczSS09,GionisMMT07}. 
+%XXX say more. 
+%
+%Megiddo and Srikant~\cite{MegiddoS98} present a method to discover significant
+%patterns that is based on the repetition of tests on random datasets sampled
+%from a synthetic distribution that ensures that patterns found in the random
+%datasets are non-significant. The system then uses this information to make sure
+%that only significant patterns are computed from the original data and ensure an
+%FDR within user specified limits. A drawback of this method, as observed
+%by~\cite{Webb07} is that it does not seem possible to produce a synthetic
+%distribution to test each pattern has a probability mass as least as high as a
+%fixed minimum threshold. Our work, instead, is focused exactly on this problem,
+%with the additional advantage of giving guarantees on the FWER rather than the
+%FDR.
+%
+%Bolton et al.~\cite{BoltonHA02} present a method based on $p$-values to mine
+%significant pairs of items. The $p$-value of a pattern is the probability that,
+%in random dataset where an item appears in a transactions independently from all
+%other items, the pattern has a support at least as high as the observed
+%one. If the $p$-value is below a certain threshold, then the pattern is
+%significant. The threshold can be aptly chosen to bound the FWER or the FDR, but
+%the authors do not provide rigorous methods to set it. One such methods is
+%provided by Kirsch et al.~\cite{KirschMAPUV12} who developed a multi-hypoteis
+%testing procedure to identify the best support threshold such that the number of
+%itemsets with at least such support deviates significantly from its expectation
+%in a random dataset of the same size and with the same frequency distribution
+%for the individual items. In our work, the minimum threshold is an input
+%parameter fixed by the user, and we return a collection of itemsets such that
+%they all have a support at least as high as the threshold with respect to the
+%distribution that generates the sample data.
+%
+%Webb~\cite{Webb07,Webb08} proposes the use of established statistical techniques to
+%control the risk of type-1 errors. One method is based on the Bonferroni and
+%Holm correction, where the significance level is decreased proportionally to the
+%number of tested hypotheses and each of them is tested separately. In the second
+%method, the available data are split into two parts: one is used for pattern
+%discovery, while the second is used to verify the significance of the discovered
+%patterns, testing one statistical hypothesis at a time. In contrast, our work
+%does not need to employ any direct correction for multiple hypothesis testing
+%and at the same time uses the entire available data to obtain more accurate
+%results. Liu et al.~\cite{LiuZW11} present an experimental evaluation of methods to
+%control the false positives that are based on direct corrections, holdout data,
+%and random permutations. Our method does not fall into any of these categories.
+%
+%An variation of the well-known Apriori algorithm, adapted to mine statistically
+%significant association rules is presented in~\cite{Hamalainen10}.
+%
+%\cite{ShaharaneeHS11} {\bf XXX:} the work presented in this paper (a 7 pages long
+%journal paper?) seems too complicated and not very well explained. Even the
+%language has issues, so I'm not even sure we really want to reference it.
+%
+%Jacquemont et al.\cite{JacquemontFS09} presents lower bounds to the size of the
+%dataset needed to simultaneously guarantee that both the probability of Type-1
+%and of Type-2 errors are within desired limits. {\bf XXX:} To me, this paper
+%looks flawed because they do derive all the bounds for a single pattern and do
+%not apply a union bound at the end, which seems necessary to me. They do not
+%even try to argue that it is not needed, so I guess they overlooked this\ldots
+
+
+\subsection{The Vapnik-Chervonenkis dimension}\label{sec:prevworkvc}
+The {\em Vapnik-Chervonenkis dimension} was first introduced in a seminal
+article~\citep{VapnikC71} on the convergence of probability distributions, but it
+was only with the work of~\citet{HausslerW86} and~\citet{BlumerEHW89} that it
+was applied to the field of learning. \citet{BoucheronBL05} present a good survey
+of the field with many recent advances. Since then, VC-dimension has encountered
+enormous success and application in the fields of computational
+geometry~\citep{Chazelle00,Matousek02} and machine
+learning~\citep{AnthonyB99,DevroyeGL96}. Other applications include
+database management and graph algorithms. 
+In the former, it was used in the
+context of constraint databases to compute good approximations of aggregate
+operators~\citep{BenediktL02}. VC-dimension-related
+results were also recently applied in the field of database privacy
+by~\citet{BlumLR08} to show a bound on the number of queries
+needed for an attacker to learn a private concept in a database. \citet{Gross11}
+showed that content with unbounded
+VC-dimension can not be watermarked for privacy purposes.
+\citet{RiondatoACZU11} computed an upper bound to the VC-dimension of
+classes of SQL queries and used it to develop a sampling-based algorithm for
+estimating the size of the output (selectivity) of queries run on a dataset.
+The work of \citet{RiondatoU12} on the VC-dimension of frequent itemsets and
+association rules inspired us, although we deal with a different problem,
+different goals, and use different tools. In the graph algorithms literature,
+VC-Dimension has been used to develop algorithms to efficiently detect network
+failures~\citep{Kleinberg03,KleinbergSS08}, balanced separators~\citep{FeigeM06},
+events in a sensor networks~\citep{GandhiSW10}, compute approximate shortest
+paths~\citep{AbrahamDFGW11}, and estimate betweenness
+centrality~\citep{RiondatoK14}.
+

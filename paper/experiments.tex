@@ -1,0 +1,699 @@
+\ifarxiv
+\begin{table}[htbp]
+\else
+\begin{table*}[htbp]
+\fi
+  \centering
+  \small
+  \begin{tabular}{llrrr}
+\toprule
+Dataset & Freq.~$\theta$ & TFIs & Times FPs & Times FNs\\
+\midrule
+\texttt{accidents} & 0.2 & 889883 & 100\% & 100\% \\
+%& 0.8 & 149 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% & 0.7 & 529 & 1 & 0 & 0.1 & 2 & 4 & 0 & 0.7 & 7 \\
+% & 0.6 & 2074 & 7 & 0 & 1.75 & 14 & 4 & 0 & 0.5 & 7 \\
+% & 0.5 & 8057 & 20 & 0 & 8.05 & 19 & 8 & 0 & 3.65 & 17 \\
+% & 0.45 & 16123 & 28 & 1 & 10.1 & 20 & 14 & 1 & 6.35 & 20 \\
+% & 0.4 & 32528 & 70 & 4 & 26.55 & 20 & 46 & 2 & 16.55 & 20 \\
+% & 0.35 & 68222 & 160 & 14 & 59.85 & 20 & 94 & 9 & 39.0 & 20 \\
+% & 0.3 & 149545 & 313 & 16 & 132.4 & 20 & 180 & 10 & 79.15 & 20 \\
+% & 0.25 & 346525 & 761 & 73 & 319.75 & 20 & 378 & 33 & 189.3 & 20 \\
+% & 0.2 & 889883 & 1988 & 184 & 837.5 & 20 & 961 & 81 & 470.55 & 20 \\
+% & 0.15 & 2676381 & 6370 & 0 & 2194.6 & 16 & 1786945 & 364 & 358398.9 & 20 \\
+\midrule
+\texttt{BMS-POS} & 0.005 & 4240 & 100\% & 100\% \\
+%\multirow{6}{*}{\texttt{BMS-POS}} & 0.05 & 59 & 0 & 0 & 0.0 & 0 & 1 & 0 & 0.3 & 6 \\
+% & 0.03 & 134 & 1 & 0 & 0.05 & 1 & 0 & 0 & 0.0 & 0 \\
+% & 0.02 & 308 & 2 & 0 & 0.85 & 14 & 2 & 0 & 0.2 & 3 \\
+% & 0.01 & 1099 & 4 & 1 & 1.45 & 20 & 6 & 3 & 3.85 & 20 \\
+% & 0.0075 & 1896 & 10 & 2 & 4.85 & 20 & 13 & 4 & 7.7 & 20 \\
+% & 0.005 & 4240 & 16 & 3 & 8.85 & 20 & 31 & 11 & 20.95 & 20 \\
+\midrule
+\texttt{chess} & 0.6 & 254944 & 100\% & 100\% \\
+%\multirow{4}{*}{\texttt{chess}} %& 0.95 & 77 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% %& 0.9 & 622 & 1 & 0 & 0.05 & 1 & 0 & 0 & 0.0 & 0 \\
+% & 0.8 & 8227 & 0 & 0 & 0.0 & 0 & 23 & 0 & 7.45 & 17 \\
+% & 0.75 & 20993 & 0 & 0 & 0.0 & 0 & 131 & 12 & 68.25 & 40 \\
+% & 0.65 & 111239 & 192 & 9 & 72.4 & 20 & 181 & 0 & 16.55 & 15 \\
+% & 0.6 & 254944 & 193 & 1 & 45.5 & 20 & 875 & 1 & 155.1 & 20 \\
+% & 0.5 & 1272932 & 80 & 0 & 13.1 & 9 & 4767 & 1481 & 2815.0 & 18 \\
+\midrule
+\texttt{connect} & 0.85 & 142127 & 100\% & 100\% \\
+%\multirow{3}{*}{\texttt{connect}} %& 0.975 & 327 & 0 & 0 & 0.0 & 0 & 2 & 0 & 0.8 & 8 \\
+% %& 0.95 & 2201 & 12 & 0 & 2.5 & 11 & 8 & 0 & 2.8 & 10 \\
+% & 0.9 & 27127 & 64 & 0 & 12.8 & 10 & 96 & 0 & 28.6 & 16 \\
+% & 0.875 & 65959 & 240 & 0 & 63.6 & 18 & 208 & 0 & 62.4 & 19 \\
+%& 0.85 & 142127 & 384 & 16 & 145.6 & 20 & 328 & 32 & 182.0 & 20 \\
+\midrule
+\texttt{kosarak} & 0.015 & 189 & 45\% & 55\% \\
+%\multirow{6}{*}{\texttt{kosarak}} & 0.04 & 42 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% & 0.035 & 50 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% & 0.03 & 65 & 1 & 0 & 0.3 & 6 & 0 & 0 & 0.0 & 0 \\
+% & 0.025 & 82 & 1 & 0 & 0.05 & 1 & 0 & 0 & 0.0 & 0 \\
+% & 0.02 & 121 & 1 & 0 & 0.4 & 8 & 0 & 0 & 0.0 & 0 \\
+% & 0.015 & 189 & 1 & 0 & 0.45 & 9 & 1 & 0 & 0.55 & 11 \\
+% & 0.0075 & 676 & 4 & 0 & 1.45 & 16 & 5 & 0 & 1.8 & 19 \\
+% & 0.005 & 1618 & 6 & 1 & 2.75 & 20 & 8 & 0 & 3.75 & 19 \\
+% & 0.002 & 1619 & 5 & 0 & 2.0 & 18 & 8 & 0 & 4.0 & 19 \\
+% & 0.0015 & 1619 & 5 & 0 & 2.0 & 18 & 8 & 0 & 4.0 & 19 \\
+% & 0.001 & 1619 & 5 & 0 & 2.0 & 18 & 8 & 0 & 4.0 & 19 \\
+\midrule
+\texttt{pumsb*} & 0.45 & 1913 & 5\% & 80\% \\
+%\multirow{5}{*}{\texttt{pumsb*}} & 0.55 & 305 & 0 & 0 & 0.0 & 0 & 4 & 0 & 0.6 & 3 \\
+% & 0.5 & 679 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% & 0.49 & 804 & 23 & 0 & 9.25 & 13 & 5 & 0 & 0.75 & 5 \\
+% & 0.475 & 1050 & 0 & 0 & 0.0 & 0 & 1 & 0 & 0.28 & 6 \\
+% & 0.45 & 1913 & 96 & 0 & 4.8 & 1 & 25 & 0 & 13.7 & 16 \\
+% & 0.4 & 27354 & 59 & 0 & 16.9 & 9 & 18 & 0 & 3.6 & 8 \\
+% & 0.35 & 116787 & 377 & 1 & 161.05 & 20 & 424 & 40 & 136.45 & 20 \\
+% & 0.32 & 239691 & 615 & 1 & 136.0 & 20 & 381 & 104 & 169.2 & 20 \\
+% & 0.3 & 432698 & 1081 & 1 & 320.85 & 20 & 2377 & 219 & 1190.05 & 20 \\
+\midrule
+\texttt{retail} & 0.0075 & 277 & 10\% & 20\% \\
+%\multirow{6}{*}{\texttt{retail}} & 0.03 & 32 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% & 0.025 & 38 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% & 0.0225 & 46 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% & 0.02 & 55 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+%% & 0.015 & 84 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% & 0.01 & 159 & 1 & 0 & 0.05 & 1 & 1 & 0 & 0.2 & 4 \\
+% & 0.0075 & 277 & 2 & 0 & 0.5 & 9 & 2 & 0 & 0.25 & 4 \\
+\bottomrule
+\end{tabular}
+\caption{Fractions of times that $\FI(\Ds,\Itm,\theta)$ contained false positives
+and missed TFIs (false negatives) over 20 datasets from the same ground truth.}
+\label{table:fp}
+\ifarxiv
+\end{table}
+\else
+\end{table*}
+\fi
+
+\iffalse
+\begin{table*}[htbp]
+  \centering
+  \begin{tabular}{llrcccccc}
+    \toprule
+    & & & \multicolumn{4}{c}{Reported TFIs (Average Fraction)} \\
+    \cmidrule(l){4-7}
+    & & & \multicolumn{2}{c}{``Vanilla'' (no info)} &
+    \multicolumn{2}{c}{Additional Info} &
+    \multicolumn{2}{c}{$\varepsilon_2\times 10^{6}$ (This Work)}\\
+    \cmidrule(l){4-5} \cmidrule(l){6-7}  \cmidrule(l){8-9}
+    Dataset & Freq.~$\theta$ & TFIs & CU Method & This Work & CU Method & This
+    Work & ``Vanilla'' & Add.~Info\\
+\midrule
+\multirow{8}{*}{\texttt{accidents}} & 0.8 & 149 & 0.838& \bf 0.981
+& 0.853& \bf 0.981 & 547 & 547\\
+ & 0.7 & 529 & 0.925& \bf 0.985& 0.935& \bf 0.985 & 547 & 547\\
+ & 0.6 & 2074 & 0.967& \bf 0.992& 0.973& \bf 0.992 & 569 & 569\\
+ & 0.5 & 8057 & 0.946& \bf 0.991& 0.955& \bf 0.991 & 569 & 569\\
+ & 0.45 & 16123 & 0.948& \bf 0.992& 0.955& \bf 0.992 & 590 & 599\\
+ & 0.4 & 32528 & 0.949& 0.991& 0.957& \bf 0.992 & 611 & 611\\
+ %& 0.35 & 68222 & 0.951297235 &  & 0.957897013 & 0.990999238 \\
+ & 0.3 & 149545 & & & 0.957& \bf 0.989 & & 631\\
+ %& 0.25 & 346525 & 0.952457687 &  & 0.958788688 & 0.989381718 \\
+ & 0.2 & 889883 & &  & 0.957& \bf 0.987 & & 670\\
+\midrule
+\multirow{6}{*}{\texttt{BMS-POS}} & 0.05 & 59 & 0.845& \bf 0.938&
+0.851& \bf 0.938 & 590 & 590\\
+ & 0.03 & 134 & 0.879& \bf 0.992& 0.895& \bf 0.992 & 611 & 611 \\
+ & 0.02 & 308 & 0.847& \bf 0.956& 0.876& \bf 0.956 & 631 & 631 \\
+ & 0.01 & 1099 & 0.813& 0.868& 0.833& \bf 0.872 & 688 & 670\\
+ & 0.0075 & 1896 & &  & 0.826& \bf 0.854 & & 670\\
+ & 0.005 & 4240 & &  & 0.762& \bf 0.775 & & 631\\
+\midrule
+\multirow{5}{*}{\texttt{chess}} & 0.8 & 8227 & 0.964& \bf 0.991&
+0.964& \bf 0.991 & 547 & 547\\
+ & 0.775 & 13264 & 0.957 & \bf 0.990 & 0.957 & \bf 0.990 & 569 & 569\\
+ & 0.75 & 20993 & 0.957& \bf 0.983& 0.957& \bf 0.983 & 569 & 569\\
+ %& 0.7 & 48731 & 0.970328949 &  & 0.970328949 & 0.993779114 \\
+ & 0.65 & 111239 & &  & 0.972& \bf 0.991 & & 611\\
+ & 0.6 & 254944 & &  & 0.970& \bf 0.989 & & 631\\
+\midrule
+\multirow{5}{*}{\texttt{connect}} & 0.95 & 2201 & 0.802& \bf 0.951&
+0.802& \bf 0.951 & 547 & 547 \\
+ & 0.925 & 9015 & 0.881& \bf 0.975& 0.881& \bf 0.975 & 569 & 569\\
+ & 0.9 & 27127 & 0.893& \bf 0.978& 0.893& \bf 0.978 & 591 & 591\\
+ & 0.875 & 65959 & &  & 0.899& \bf 0.974 & & 611 \\
+ & 0.85 & 142127 & &  & 0.918& \bf 0.974 & & 631\\
+\midrule
+\multirow{4}{*}{\texttt{kosarak}} & 0.04 & 42 & 0.738& \bf 0.939&
+0.809& \bf 0.939 & 688 & 688\\
+ & 0.035 & 50 & 0.720& \bf 0.980& 0.780& \bf 0.980 & 706 & 688\\
+% & 0.03 & 65 & 0.646153846 &  & 0.738461538 & 0.923076923 \\
+ & 0.025 & 82 & &  & 0.682& \bf 0.963 & & ''\\
+ & 0.02 & 121 & &  & 0.650& \bf 0.975 & & ''\\
+ & 0.015 & 189 & &  & 0.641& \bf 0.933 & & ''\\
+\midrule
+\multirow{5}{*}{\texttt{pumsb*}} & 0.55 & 305 & 0.791& \bf 0.926&
+0.859& \bf 0.926 & 611 & 611\\
+ & 0.5 & 679 & 0.929& \bf 0.998& 0.957& \bf 0.998 & '' & ''\\
+ & 0.49 & 804 & 0.858& \bf 0.984& 0.907& \bf 0.984 & '' & ''\\
+ & 0.475 & 1050 & &  & 0.942& \bf 0.996 & & ''\\
+ & 0.45 & 1913 & &  & 0.861& \bf 0.976 & & ''\\
+\midrule
+\multirow{5}{*}{\texttt{retail}} & 0.03 & 32 & 0.625& \bf 1.00&
+0.906& \bf 1.00 & 670 & 670\\
+ & 0.025 & 38 & 0.842& \bf 0.973& 0.972& \bf 0.973 & 688 & ''\\
+ & 0.0225 & 46 & 0.739& 0.934& 0.869& \bf 0.935 & 724 & ''\\
+ & 0.02 & 55 & &  & 0.882& \bf 0.945 & & ''\\
+ & 0.01 & 159 & &  & 0.902& \bf 0.931 & & ''\\
+ & 0.0075 & 277 & &  & 0.811& \bf 0.843 & & ''\\
+ \bottomrule
+ \end{tabular}
+  \caption{Recall. Average fraction (over 20 runs) of reported TFIs
+  in the output of an algorithm using Chernoff and Union bound and of the one
+  presented in this work. For each algorithm we present two versions, one
+  (Vanilla) which uses no information about the generative process, and one
+  (Add.~Info) in which we assume the knowlegde that the process will not
+  generate any transaction longer than twice the size of the longest transaction
+  in the original FIMI dataset. In bold, the best result (highest reported
+  fraction). The two rightmost columns report the value of
+  $\varepsilon_2$ computed by our algorithm in the two cases.}
+\label{table:power}
+\end{table*}
+\fi
+\ifarxiv
+\begin{table}[htbp]
+  \small
+\else
+\begin{table*}[htbp]
+\fi
+  \centering
+  \begin{tabular}{llrcccc}
+    \toprule
+    & & & \multicolumn{4}{c}{Reported TFIs (Average Fraction)} \\
+    \cmidrule(l){4-7}
+    & & & \multicolumn{2}{c}{``Vanilla'' (no info)} &
+    \multicolumn{2}{c}{Additional Info}\\
+    \cmidrule(l){4-5} \cmidrule(l){6-7}
+    Dataset & Freq.~$\theta$ & TFIs & CU Method & This Work & CU Method & This Work\\
+\midrule
+\multirow{8}{*}{\texttt{accidents}} & 0.8 & 149 & 0.838& \bf 0.981
+& 0.853& \bf 0.981\\
+ & 0.7 & 529 & 0.925& \bf 0.985& 0.935& \bf 0.985\\
+ & 0.6 & 2074 & 0.967& \bf 0.992& 0.973& \bf 0.992\\
+ & 0.5 & 8057 & 0.946& \bf 0.991& 0.955& \bf 0.991\\
+ & 0.45 & 16123 & 0.948& \bf 0.992& 0.955& \bf 0.992\\
+ & 0.4 & 32528 & 0.949& 0.991& 0.957& \bf 0.992\\
+ %& 0.35 & 68222 & 0.951297235 &  & 0.957897013 & 0.990999238 \\
+ & 0.3 & 149545 & & & 0.957& \bf 0.989\\
+ %& 0.25 & 346525 & 0.952457687 &  & 0.958788688 & 0.989381718 \\
+ & 0.2 & 889883 & &  & 0.957& \bf 0.987\\
+\midrule
+\multirow{6}{*}{\texttt{BMS-POS}} & 0.05 & 59 & 0.845& \bf 0.938&
+0.851& \bf 0.938\\
+ & 0.03 & 134 & 0.879& \bf 0.992& 0.895& \bf 0.992\\
+ & 0.02 & 308 & 0.847& \bf 0.956& 0.876& \bf 0.956\\
+ & 0.01 & 1099 & 0.813& 0.868& 0.833& \bf 0.872\\
+ & 0.0075 & 1896 & &  & 0.826& \bf 0.854\\
+ & 0.005 & 4240 & &  & 0.762& \bf 0.775\\
+\midrule
+\multirow{5}{*}{\texttt{chess}} & 0.8 & 8227 & 0.964& \bf 0.991&
+0.964& \bf 0.991\\
+ & 0.775 & 13264 & 0.957 & \bf 0.990 & 0.957 & \bf 0.990 \\
+ & 0.75 & 20993 & 0.957& \bf 0.983& 0.957& \bf 0.983\\
+ %& 0.7 & 48731 & 0.970328949 &  & 0.970328949 & 0.993779114 \\
+ & 0.65 & 111239 & &  & 0.972& \bf 0.991\\
+ & 0.6 & 254944 & &  & 0.970& \bf 0.989\\
+\midrule
+\multirow{5}{*}{\texttt{connect}} & 0.95 & 2201 & 0.802& \bf 0.951&
+0.802& \bf 0.951\\
+ & 0.925 & 9015 & 0.881& \bf 0.975& 0.881& \bf 0.975 \\
+ & 0.9 & 27127 & 0.893& \bf 0.978& 0.893& \bf 0.978\\
+ & 0.875 & 65959 & &  & 0.899& \bf 0.974\\
+ & 0.85 & 142127 & &  & 0.918& \bf 0.974\\
+\midrule
+\multirow{4}{*}{\texttt{kosarak}} & 0.04 & 42 & 0.738& \bf 0.939&
+0.809& \bf 0.939\\
+ & 0.035 & 50 & 0.720& \bf 0.980& 0.780& \bf 0.980\\
+% & 0.03 & 65 & 0.646153846 &  & 0.738461538 & 0.923076923 \\
+ & 0.025 & 82 & &  & 0.682& \bf0.963\\
+ & 0.02 & 121 & &  & 0.650& \bf 0.975\\
+ & 0.015 & 189 & &  & 0.641& \bf 0.933\\
+\midrule
+\multirow{5}{*}{\texttt{pumsb*}} & 0.55 & 305 & 0.791& \bf 0.926&
+0.859& \bf 0.926\\
+ & 0.5 & 679 & 0.929& \bf 0.998& 0.957& \bf 0.998\\
+ & 0.49 & 804 & 0.858& \bf 0.984& 0.907& \bf 0.984\\
+ & 0.475 & 1050 & &  & 0.942& \bf 0.996\\
+ & 0.45 & 1913 & &  & 0.861& \bf 0.976\\
+\midrule
+\multirow{5}{*}{\texttt{retail}} & 0.03 & 32 & 0.625& \bf 1.00&
+0.906& \bf 1.00\\
+ & 0.025 & 38 & 0.842& \bf 0.973& 0.972& \bf 0.973\\
+ & 0.0225 & 46 & 0.739& 0.934& 0.869& \bf 0.935\\
+ & 0.02 & 55 & &  & 0.882& \bf 0.945\\
+ & 0.01 & 159 & &  & 0.902& \bf 0.931\\
+ & 0.0075 & 277 & &  & 0.811& \bf 0.843\\
+ \bottomrule
+ \end{tabular}
+  \caption{Recall. Average fraction (over 20 runs) of reported TFIs
+  in the output of an algorithm using Chernoff and Union bound and of the one
+  presented in this work. For each algorithm we present two versions, one
+  (Vanilla) which uses no information about the generative process, and one
+  (Add.~Info) in which we assume the knowlegde that the process will not
+  generate any transaction longer than twice the size of the longest transaction
+  in the original FIMI dataset. In bold, the best result (highest reported
+  fraction).}
+\label{table:power}
+\ifarxiv
+\end{table}
+\else
+\end{table*}
+\fi
+%\begin{table*}[tb]
+%\centering
+%\begin{tabular}{llrcccccc}
+%\toprule
+%  & & & & & & & \multicolumn{2}{c}{Reported TFIs (\%)} \\
+%  \cmidrule(l){8-9}
+%%& & & \multicolumn{4}{c}{Reported TFIs(\%)} \\
+%%\cmidrule(l){4-7}
+%%& & & \multicolumn{2}{c}{Split dataset} & \multicolumn{2}{c}{Full dataset} \\
+%%\cmidrule(l){4-5} 
+%%\cmidrule(l){6-7} 
+%%Dataset & $\theta$ & TFIs & Holdout & Method 1 & Bonferroni & Method 2\\
+%Dataset & $\theta$ & TFIs & Avg FPs & Times FPs & Avg FNs & Times FNs & Bonferonni
+%& Method 1 \\
+%\midrule
+%\multirow{6}{*}{\texttt{accidents}} & 
+%0.8 & 149 & 0.0 & 0 & 0.0 & 0 & 83.893 & \bf 95.974 \\
+%& 0.7 & 529 & 0.1 & 2 & 0.7 & 7 & 92.439&\bf 98.488\\
+%& 0.6 & 2074 & 1.75 & 14 & 0.5 & 7& 96.625&\bf 99.132 \\
+%& 0.5 & 8057 & 8.05 & 19 & 3.65 & 17 & 94.551&\bf 99.081\\
+%& 0.45 & 16123 & 10.1 & 20 & 6.35 & 20 & 94.691&\bf 99.076\\
+%& 0.4 & 32528 & 26.55 & 20 & 16.55 & 20 & 94.774&\bf 98.970\\
+%%0.8& 149&  94.631& \bf 97.987& 83.893 & \bf 95.973\\
+%%& 0.7& 	529&    97.543&\bf 98.488 & 92.439&\bf 98.488 \\
+%%& 0.6& 	2074&   98.505&\bf 98.987& 96.625&\bf 99.132 \\
+%%& 0.5& 	8057&   98.349&\bf 99.007& 94.551&\bf 99.081\\
+%%& 0.45& 16123&  98.177&\bf 98.915& 94.691&\bf 99.076\\
+%%& 0.4& 	32528&  98.032&\bf 98.761& 94.774&\bf 98.970\\
+%%& 0.35&	68222&  98.140& \bf 98.666& \\
+%%& 0.3& 	149545& 98.033& \bf 98.529& \\
+%%& 0.25&	346525& 98.165& \bf 98.382& \\
+%%& 0.2& 	889883& 97.995& \bf 98.057& \\
+%\midrule
+%\multirow{4}{*}{\texttt{BMS-POS}} & 
+%0.05 & 59 & 0.0 & 0 & 0.3 & 6 & 84.746&\bf 93.220\\
+%& 0.03 & 134 & 0.05 & 1 & 0.0 & 0 & 88.060&\bf 99.254\\
+%& 0.02 & 308 & 0.85 & 14 & 0.2 & 3 & 84.740&\bf 95.455\\
+%& 0.01 & 1099 & 1.45 & 20 & 3.85 & 20 & 81.620&\bf 88.171\\
+%%0.05& 59&\bf 98.305& 93.220& 84.746&\bf 93.220\\
+%%& 0.03&	   134&\bf 99.254&\bf 99.254& 88.060&\bf 99.254\\
+%%& 0.02&	   308&\bf 98.377& 95.130& 84.740&\bf 95.455\\
+%%& 0.01&	  1099&\bf 95.814& 85.805& 81.620&\bf 88.171\\
+%%& 0.0075& 1896&\bf 96.097& 82.331& & \\
+%%%& 0.005&  4240&\bf 94.410& 72.004& & \\
+%\midrule
+%\multirow{2}{*}{\texttt{chess}} & 
+%0.8 & 8227 & 0.0 & 0 & 7.45 & 17& 96.475&\bf 99.198\\
+%& 0.75 & 20993 & 0.0 & 0 & 68.25 & 20 & 95.756&\bf 98.418\\
+%%0.8& 8227& 97.265&\bf 98.918& 96.475&\bf 99.198\\
+%%& 0.75&	20993&   96.375&\bf 98.042& 95.756&\bf 98.418\\
+%%& 0.7&	48731&   97.613&\bf 99.001& \\
+%%& 0.6&	254944&  97.243&\bf 98.464& \\
+%%& 0.5&	1272932& 97.352&\bf 98.293& \\
+%\midrule
+%%\multirow{3}{*}{\texttt{connect}} & 0.9& 27127& 93.217&\bf 97.213& 89.369&\bf 97.921\\
+%\texttt{connect} & 
+%0.9 & 27127 & 12.8 & 10 & 28.6 & 16 & 89.369 & \bf 97.921\\
+%%0.9& 27127& 93.217&\bf 97.213& 89.369&\bf 97.921\\
+%%& 0.875 & 65959& 94.481& \bf 96.040& \\
+%%& 0.85&	142127& 94.242&\bf 96.882& \\
+%%& 0.8&	533975& 95.047&\bf 97.464& \\
+%\midrule
+%\multirow{2}{*}{\texttt{kosarak}} & 
+%0.04 & 42 & 0.0 & 0 & 0.0 & 0 & 73.810&\bf 95.238\\
+%& 0.035 & 50 & 0.0 & 0 & 0.0 & 0 & 72.000&\bf 98.000\\
+%%0.04& 42&\bf 97.620&\bf 97.620& 73.810&\bf 95.238\\
+%%& 0.035&   50&\bf 100&    98.000& 72.000&\bf 98.000\\
+%%& 0.03&	   65&\bf 96.923& 93.846& \\
+%%& 0.025&   82&\bf 98.780& 97.561& \\
+%%& 0.02&	  121&\bf 100&    97.521& \\
+%%& 0.015&  189&\bf 98.942& 93.122& \\
+%%& 0.01&	  383&\bf 96.606& 86.945& \\
+%%& 0.005& 1618&\bf 96.415& 74.351& \\
+%\midrule
+%\multirow{3}{*}{\texttt{pumsb\textsuperscript{*}}} & 
+%0.55 & 305 & 0.0 & 0 & 0.6 & 3 & 80.984&\bf 95.401\\
+%& 0.5 & 679 & 0.0 & 0 & 0.0 & 0 & 92.931&\bf 99.853 \\
+%& 0.49 & 804 & 9.25 & 13 & 0.75 & 5 & 86.692&\bf 98.756\\
+%%0.55& 305& 92.131&\bf 94.426& 80.984&\bf 95.401\\
+%%& 0.5& 	679&    \bf 99.853&\bf  99.853& 92.931&\bf 99.853 \\
+%%& 0.49&	804&    97.637&\bf 98.507& 86.692&\bf 98.756\\
+%%& 0.45&	1913&   96.968&\bf  97.909& \\
+%%& 0.4& 	27354&  98.183&\bf  99.101& \\
+%%& 0.35&	116787& 96.435&\bf  96.972& \\
+%%& 0.3& 	432698& 96.567&\bf  97.326& \\
+%\midrule
+%\multirow{3}{*}{\texttt{retail}} & 
+%0.03 & 32 & 0.0 & 0 & 0.0 & 0 & 62.500&\bf  100\\
+%& 0.025 & 38 & 0.0 & 0 & 0.0 & 0 & 84.211&\bf 97.368\\
+%& 0.02 & 55 & 0.0 & 0 & 0.0 & 0 & 72.340&\bf 95.745\\
+%%0.03& 32&\bf  100&\bf  100& 62.500&\bf  100\\
+%%& 0.025& 38&\bf   100&    97.368& 84.211&\bf 97.368\\
+%%& 0.02&	 55&\bf   100&    94.545& 72.340&\bf 95.745\\
+%%& 0.015& 84&\bf   100&    95.238& \\
+%%& 0.01&	 159&\bf  99.371& 93.082& \\
+%%& 0.005& 580&\bf  96.552& 79.655& \\
+%\bottomrule
+%\end{tabular}
+%\caption{Statistical power of various methods to extract the True Frequent
+%Itemsets while controlling the FWER ($\delta=0.1$). In bold the best result for
+%each setting (split or full dataset).}
+%\label{table:power}
+%\end{table*}
+
+\begin{algorithm}[htb]
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \SetKwComment{Comment}{\quad// }{}
+  \SetKwFunction{SolveAntichainSUKP}{solveAntichainSUKP}
+   \DontPrintSemicolon
+   \Input{Dataset $\Ds$, freq.~threshold $\theta\in(0,1)$, confidence
+   $\delta\in(0,1)$}
+  \Output{Freq.~threshold $\hat{\theta}$
+  s.~t.~$\FI(\Ds,\Itm,\hat{\theta})$ contains only TFIs with prob.~at least
+  $1-\delta$.}
+  $\delta_1,\delta_2\leftarrow 1-\sqrt{1-\delta}$ \Comment{$\delta_1$ and $\delta_2$ do not need to have the same value}
+  $d_1'\leftarrow$ upper bound to $\VC(\range(2^\Itm))$ (e.g., $|\Itm|-1$)\;
+  $\varepsilon_1' \leftarrow \sqrt{\frac{c}{|\Ds|}\left(d_1' + \log\frac{1}{\delta_1}\right)}$\; 
+  $d_1''\leftarrow$ upper bound to $\EVC(\range(2^\Itm),\Ds)$ \Comment{i.e., d-index of
+  $\Ds$~\citep{RiondatoU12}}
+  $\varepsilon_1'' \leftarrow 2\sqrt{\frac{2d_1''\log(|\Ds|+1)}{|\Ds|}}+\sqrt{\frac{2\log\frac{2}{\delta}}{|\Ds|}}$\;
+  $\varepsilon_1\leftarrow\min\{\varepsilon_1',\varepsilon_1''\}$\;
+  $\mathcal{C}_1=\FI(\Ds,\Itm,\theta-\varepsilon_1)$\;
+  $\mathcal{G}=\{A\subseteq\Itm ~:~ \theta-\varepsilon_1\le
+f_\Ds(A)<\theta+\varepsilon_1\}$\;
+  $\mathcal{W}\leftarrow$ negative border of $\mathcal{C}_1$\;
+  $\mathcal{F}=\mathcal{G}\cup\mathcal{W}$\;
+  $U\leftarrow\{a\in\Itm : \exists A\in\mathcal{F} \mbox{ s.t. } a\in A\}$\;
+  $b_2'\leftarrow$ \SolveAntichainSUKP{$U,\mathcal{F},|U|$}\;
+  $d_2'\leftarrow\lfloor\log_2b_2'\rfloor+1$\;
+  $\varepsilon_2' \leftarrow \sqrt{\frac{c}{|\Ds|}\left(d_2' + \log\frac{2}{\delta_2}\right)}$\; 
+  $\ell_1,\dotsc,\ell_w\leftarrow$ transaction lengths of $\Ds$ \Comment{see
+  Sect.~\ref{sec:computvc}}
+  $L_1,\dotsc,L_w\leftarrow$ the maximum number of
+transactions in $\Ds$ that have length at least $\ell_i$, $1\le i\le w$, and
+such that for no two $\tau'$, $\tau''$ of them we have either
+$\tau'\subseteq\tau''$ or $\tau''\subseteq\tau'$\;
+  $i\leftarrow 0$\;
+  \While{True}
+  {
+  $b_2''\leftarrow$ \SolveAntichainSUKP{$U,\mathcal{F},\ell_i$}\;
+  $d_2''\leftarrow\lfloor\log_2b_2''\rfloor+1$\;
+  \uIf{$d_2''< L_i$}
+  {
+  break\;
+  }\Else{
+  $i\leftarrow i+1$\;
+  }
+  }
+  $\varepsilon_2'' \leftarrow 2\sqrt{\frac{2d_2''\log(|\Ds|+1)}{|\Ds|}}+\sqrt{\frac{2\log\frac{2}{\delta}}{|\Ds|}}$\;
+  $\varepsilon_2\leftarrow\min\{\varepsilon_2',\varepsilon_2''\}$\;
+  \Return{$\theta+\varepsilon_2$}
+  \caption{Compute freq.~threshold $\hat{\theta}$
+  s.~t.~$\FI(\Ds,\Itm,\hat{\theta})$ contains only TFIs with prob.~at least
+  $1-\delta$.}
+  \label{alg:vcfull}
+\end{algorithm}
+
+\section{Experimental evaluation}\label{sec:experiments}
+We conducted an extensive evaluation to assess the performances of the algorithm
+we propose. In particular, we used it %our algorithm 
+to compute values $\hat\theta$
+for a number of frequencies $\theta$ on different datasets, and compared the
+collection of FIs w.r.t.~$\hat\theta$ with the collection of TFIs, measuring
+the number of false positives %discoveries 
+and the fraction of TFIs that were found.
+
+%practical applicability and
+%the statistical power of the methods we propose. In the following sections we
+%describe the methodology and present the results. 
+%Due to space limitations,
+%only a portion of our experimental results are reported here. The full report,
+%including evaluations of the computational efficiency of the methods is
+%available in the full version of the paper~\citep{RiondatoV13}.
+
+
+%\paragraph*{Implementation.}\label{sec:implementation}
+\paragraph*{Implementation.}
+We implemented the algorithm in Python 3.3. %, except for the FIs
+%mining algorithm and the optimization problem solver, as the methods are
+%agnostic to these choices. 
+To mine the FIs, we used the C implementation by Grahne
+and Zhu~\citep{GrahneZ03}. %(written in C) available from the FIMI'03 implementation repository\footnote{\url{http://fimi.ua.ac.be/src/}}.
+Our solver of choice for the SUKPs was IBM\textsuperscript{\textregistered}
+ILOG\textsuperscript{\textregistered} CPLEX\textsuperscript{\textregistered}
+Optimization Studio 12.3. %, called through the Python 2.7 API. 
+We run the experiments on a number of machines with x86-64 processors running
+GNU/Linux 3.2.0.
+
+\paragraph*{Datasets generation.}\label{sec:dsgen}
+We evaluated the algorithm using pseudo-artificial datasets generated by taking the datasets from the FIMI'04
+repository\footnote{\url{http://fimi.ua.ac.be/data/}} as the \emph{ground truth} for the true frequencies
+$\tfreq$ of the itemsets. We considered the following datasets:
+\texttt{accidents}, %~\citep{GeurtsWBV03}, 
+\texttt{BMS-POS}, \texttt{chess},
+\texttt{connect}, \texttt{kosarak}, \texttt{pumsb\textsuperscript{*}}, and
+\texttt{retail}. %~\citep{BrijsSVW99}. 
+These datasets differ in size, number of
+items, and, more importantly for our case, distribution of the frequencies of the
+itemsets~\citep{GoethalsZ04}. We
+created a dataset by \emph{sampling 20 million transactions uniformly at random} from a FIMI
+repository dataset. In this way the 
+the true frequency of an itemset is its frequency in the
+original FIMI dataset. Given that our method to find the TFIs is
+distribution-free, this is a valid procedure to establish a ground truth. We used
+these enlarged datasets in our experiments, and use the original name of the
+datasets in the FIMI repository to annotate the results for the datasets we generated.
+
+\paragraph*{False positives and false negatives in
+$\FI(\Ds,\Itm,\theta)$.}
+%\paragraph*{Existence of false positives and false negatives}
+In the first set of experiments we evaluated the performances, in terms of
+inclusion of false positives and false negatives in the output, of mining the
+dataset at frequency $\theta$. Table~\ref{table:fp} reports  
+the fraction of times (over 20 datasets from the same
+ground truth) that the set $\FI(\Ds,\Itm,\theta)$ contained false positives
+(FP) and was missing TFIs (false negatives (FN)). In most cases, especially when there are
+many TFIs, the inclusion of false positives when mining at frequency $\theta$
+should be expected. This highlights a need for methods like the one presented in
+this work, as there is no guarantee that $\FI(\Ds,\Itm,\theta)$
+only contains TFIs. On the other hand,
+the fact that some TFIs have frequency in the dataset \emph{smaller} than
+$\theta$ (false negatives) points out how one can not aim to extract all and
+only the TFIs by using a fixed threshold approach (as the one we present).
+
+\paragraph*{Control of the false positives (Precision).}\label{sec:fwer}
+%We evaluated the capability of our methods to control the FWER by first creating
+%a number of enlarged datasets, %with 20 million transactions
+%%each as described in Section~\ref{sec:dsgen}
+%and then run our methods to extract a collection of TFIs from thee dataset.
+In this set of experiments we evaluated how well the threshold $\hat\theta$
+computed by our algorithm allows to avoid the inclusion of false negatives in
+$\FI(\Ds,\Itm,\hat\theta)$. %, i.e., itemsets with true frequency lower than the minimum frequency threshold.
+To this end, we used a wide range of values for the minimum true frequency
+threshold $\theta$ (see Table~\ref{table:power}) and fixed $\delta=0.1$. We
+repeated each experiment on 20 different enlarged datasets generated from the
+same original FIMI dataset. %distribution, for each original distribution. 
+In all the \emph{hundreds} of runs of our algorithms, %the returned collection of itemsets 
+$\FI(\Ds,\Itm,\hat\theta)$ \emph{never} contained \emph{any false
+positive}, i.e., \emph{always contained only TFIs}. In other words, the
+\emph{precision} of the output was 1.0 in all our experiments. Not %This means that not 
+only our
+method can give a frequency threshold to extract only TFIs, but %that 
+it is more
+\emph{conservative}, in terms of including false positives, than what the
+theoretical analysis guarantees. %is guaranteed by the theoretical analysis.%, since
+%the returned collection
+%never contained any false positive even if the upper bound $\delta$ to the
+%probability of such event was set to $0.1$. This is expected as the
+%(empirical) b-index is not always a tight bound to the (empirical) VC-dimension.
+
+%\paragraph*{Statistical power and comparison with other methods}
+%\paragraph*{Power of the algorithm}
+\paragraph*{Inclusion of TFIs (Recall).}
+%The power of a statistical test is the probability that the test will reject the
+%null hypothesis when the null hypothesis is false. In the case of TFIs, this
+%corresponds to the probability of including a TFI in the output collection. 
+%It
+%is often difficult to
+%analytically quantify the statistical power of a test, especially
+%in multiple hypothesis testing settings with correlated hypotheses.
+%This is indeed our case, and we therefore conducted an empirical evaluation of
+%the statistical power of our methods by
+In addition to avoid false positives in the results, one wants to include as many TFIs
+as possible in the output collection. To this end, we assessed what fraction of
+the total number of TFIs is reported in $\FI(\Ds,\Itm,\hat\theta)$. Since there
+were no false positives, this is corresponds to evaluating the \emph{recall} of
+the output collection. We fixed $\delta=0.1$, and considered different values
+for the minimum true frequency threshold $\theta$ (see Table~\ref{table:power}).
+For each frequency threshold, we repeated the experiment on 20 different
+datasets sampled from the same original FIMI dataset, %on different datasets,
+%generated as described in Sect.~\ref{sec:dsgen}
+and found very small variance in the results.  %In order to evaluate the performances of our algorithm, 
+We compared the fraction of TFIs that our algorithm included in output with that
+included by the ``Chernoff and Union bounds'' (CU) method we presented in
+Introduction. We compared two variants of the algorithms: one
+(``vanilla'') which makes no assumption on the generative distribution $\prob$,
+and another (``additional info'') which assumes that the process will not
+generate any transaction longer than twice the longest transaction found in the
+original FIMI dataset. Both algorithms can be easily modified to include this
+information. In Table~\ref{table:power} we report the average fraction of TFIs
+contained in $\FI(\Ds,\Itm,\hat\theta)$. 
+%\textcolor{Red}{We also report the
+%values of $\varepsilon_2$ used to compute $\hat\theta=\theta+\varepsilon_2$ in
+%our method (see Sect.~\ref{sec:main})}. 
+We can see that the amount of TFIs
+found by our algorithm is always very high: only a \emph{minimal}
+fraction (often less than $3\%$) %number 
+of TFIs do not appear in the output. This is explained by the fact that the
+value $\varepsilon_2$ computed in our method (see Sect.~\ref{sec:main}) is
+always smaller than $10^{-4}$. Moreover our solution
+\emph{uniformly outperforms} the CU method, often by a huge margin, since
+ our algorithm does not have to take into account all
+possible itemsets when computing $\hat\theta$. % 
+%The fraction of reported TFIs was always very high (Table~\ref{table:power})
+%In the two rightmost columns of Table~\ref{table:power} we can see the results
+%for two variants of our algorithm: in the ``Vanilla'' variant, we assume no
+%additional knowledge about the unknown generative distribution $\prob$, while in
+%the ``Additional info'' variant we assume to know that $\prob$ will not generate
+%transactions longer than twice the longest transaction in the original dataset.
+%We can see that the recall of our method is very high in general in both cases,
+%but the inclusion of additional knowledge improves the practical usefulness of
+%our algorithm and, in some cases, allows to achieve higher recall. 
+Only partial results are reported for the ``vanilla'' variant because of the
+very high number of items in the considered datasets: the mining of the
+dataset is performed at frequency threshold $\theta-\varepsilon_1$  and if there
+are many items, then the value of $\varepsilon_1$ becomes very high because the
+bound to the VC-dimension of $\range(2^\Itm)$ is $|\Itm|-1$, and as a
+consequence we have $\theta-\varepsilon_1\le 0$. %which drives the value of
+%$\varepsilon_1$ very high, and limits the applicability of our method. 
+We stress, though, that assuming no knowledge about the distribution $\prob$ is not realistic, and
+usually additional information, especially regarding the length of the
+transactions, is available and can and should be used. The use of 
+additional information gives flexibility to our method and improves its
+practicality. Moreover, in some cases, it allows to find an even larger fraction
+of the TFIs.
+
+%We also wanted to compare the performances of our algorithm %methods 
+%with that of a baseline method to control false positives. %established techniques to identify TFI's.
+%can control the probability of Type-1
+%errors. 
+%To
+%this end we adapted the holdout technique proposed by~\citet{Webb07} to the TFIs
+%problem and compared its power with that of Method 1.
+%The goal of the holdout method is to reduce the search space
+%with the goal of mitigating the correction necessary for the multiple hypothesis
+%testing.
+%In this technique, the dataset is randomly split into two portions, an
+%\emph{exploratory} part and an \emph{evaluation} part. First the frequent
+%itemsets w.r.t.~$\theta$ are extracted from the exploratory part. Then,
+%each of the null hypotheses of these itemsets is tested using a Binomial test on
+%the frequency of the itemsets in the evaluation dataset, with critical value
+%$\delta/k$, where $k$ is the number of patterns found in the first step. 
+%We implemented the holdout method using the Bonferroni
+%correction and compared the power of this method with that of our statistical
+%test. 
+%To evaluate the power of Method 2, which does not need to split the
+%dataset, we compared its results with the power of a method that uses the
+%In Bonferroni correction over all possible itemsets to test, with a Binomial test,
+%the FIs w.r.t.~$\theta$ obtained from the entire dataset.
+
+%The statistical power evaluation and the comparison with the
+%The average (over 20 runs) fraction of TFI's reported by the two methods are
+%presented in Table~\ref{table:power}, in the three rightmost columns.
+%holdout technique are presented in Table~\ref{table:power}, where we reported
+%the average over 20 runs for each experiment. 
+%We highlighted in bold the
+%best result for each experiment and each of the two setting (split or full
+%dataset).
+%Only partial results are reported
+%for the full dataset approaches because of issues with the amount of
+%computational resources required by this method when there is a very high
+%number of itemsets in the negative border.
+%It is possible to appreciate that
+%The power of our algorithm is very high in general, for all the tested datasets
+%and values for $\theta$. We can notice
+%The comparison of Method 1 with the
+%holdout technique shows that the relative performances of these methods are
+%dataset specific: the statistical power seems to depend heavily on the
+%true frequency distribution of the itemsets. From the table it is possible to
+%see that Method 1 performs better than the holdout technique when the number
+%of TFIs is high, while the opposite is true when the minimum threshold frequency
+%$\theta$ is very low. We conjecture that this is due to the fact that the value
+%for $\theta$ is not taken in consideration when computing the $\varepsilon$ to
+%define the acceptance region $[0,\theta+\varepsilon]$ in Method 1, as the
+%computation of $\varepsilon$ in Thms.~\ref{thm:eapprox}
+%and~\ref{thm:eapproxempir} does not depend on $\theta$. In future work, we plan to
+%investigate whether it is possible to include $\theta$ as part of the
+%computation of $\varepsilon$. On the other hand the direct correction applied
+%in the holdout technique becomes less and less powerful as the number of TFIs
+%increases because it does not take into account the many correlations between the
+%itemsets. Given that in common applications the number of frequent itemsets of
+%interest is large, we believe that in real scenarios Method 1 can be more
+%effective in extracting the True Frequent Itemsets while rigorously controlling
+%the probability of false discoveries. 
+%One can see that our algorithm performs much better than the %For the full dataset case, we can see
+%that Method 2 performs much better than the 
+%CU (Chernoff+Union bounds) method in all cases, thanks to the fact that it does
+%not need to take into consideration all possible itemsets when computing the
+%threshold $\hat\theta$. %when computing the acceptance region, all possible hypotheses. 
+%One can also compare Method 1 and Method 2 to each other, given that Method 2 can be used in cases where Method 1
+%can. Method 2 manages to achieve higher statistical power than Method 1 in
+%almost all cases, but we must stress that this is at the expense of a longer
+%running time and an higher amount of required memory.
+
+%\paragraph*{Runtime evaluation}
+%We found our methods to be quite efficient in practice in terms of time needed
+%to compute the output collection. The running time is dominated by the time
+%needed to compute the negative border (only for Method 2) and to solve the
+%SUKPs. Various optimizations and shortcuts can be implemented to substantially
+%speed up our methods (see also the discussion in Sect.~\ref{sec:range}). Due
+%to space restrictions, we defer the presentation of the runtime evaluation to
+%the full version of the paper. 
+
+%\paragraph*{Estimation of the True Frequency}\label{sec:freqest}
+%\XXX I'd put this only if we actually have the space. \MR
+%
+%Recalling the definition of an $\varepsilon$-approximation to a range set
+%$R$ (Def.~\ref{def:eapprox}) one may ask how close the frequency of
+%an RFI in the sample is to its real frequency in the distribution. It is
+%important to note, though, that the error bound expressed in the definition of
+%an $\varepsilon$-approximation is only valid for the members of $R$. In the case
+%of the RFI's, the itemsets $A$ such that $T(A)\in
+%R_{\mathcal{B}^-(\RFI(p,\Itm,\theta))}$ are \emph{not} RFI's. Therefore, provided
+%the dataset is an $\varepsilon''$-approximation, none of them will be included
+%in the output collection of itemsets computed by our method. This implies that
+%our method can not guaranteed any bound on the error $|f_\Ds(X)-r_p(X)|$ for the
+%itemsets included in the output. Nevertheless, the frequencies in the sample are
+%very close to the real frequencies, orders of magnitude closer than
+%$\varepsilon$. In Table~\ref{table:freqapprox} we report the maximum and the
+%average error $|f_\Ds(X)-r_p(X)|$ for the same datasets we used in the
+%evaluation of the statistical power of our method, with $\delta=0.1$.
+%%
+%\begin{table}[tb]
+%  \centering
+%% \subfloat[Absolute frequency error]{\label{table:freqapprox}
+%\begin{tabular}{lccc}
+%\toprule
+%  & & \multicolumn{2}{c}{Real frequency estimation error} \\
+% \cmidrule(l){3-4}
+%Dataset  & $\theta$ & maximum & average \\
+%\midrule
+%\texttt{accidents} & 0.4 & $4.3\cdot10^{-4}$ &  $9.2\cdot10^{-5}$ \\
+%\texttt{BMS-POS} & 0.01 & $2.1\cdot10^{-4}$ & $2.4\cdot10^{-5}$ \\
+%\texttt{kosarak} & 0.04 & $2.1\cdot10^{-4}$ & $4.6\cdot10^{-5}$ \\
+%\texttt{pumsb\textsuperscript{*}} & 0.45 & $3.7\cdot10^{-4}$ & $9.7\cdot10^{-5}$ \\
+%\texttt{retail} &  0.022 & $2.3\cdot10^{-4}$ & $4.0\cdot 10^{-5}$ \\
+%\bottomrule
+%\end{tabular}
+%}
+%\caption{Real frequency estimation error}
+%\label{table:freqapprox}
+%\end{table}
+
