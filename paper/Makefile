@@ -1,5 +1,5 @@
 LATEX = pdflatex
-MAINFILE = realfis-arxiv
+MAINFILE = truefis-arxiv
 UPLOADHOST = ssh.cs.brown.edu
 UPLOADURI = public_html/papers/RiondatoVandin-TrueItemsets.pdf
 
