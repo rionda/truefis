@@ -9,11 +9,11 @@ Mining](http://www.siam.org/meetings/sdm14/).
 
 Extended journal version in preparation. See [TODO](TODO.md).
 
-The material under paper/ is distributed under the [Creative Commons
+The material under [paper/](paper/) is distributed under the [Creative Commons
 Attribution-NonCommercial-NoDerivatives 4.0 International License][2].
 
-The material under code/ is distributed under the Apache License, Version 2.0.
-See [LICENSE](code/LICENSE) and [NOTICE](code/NOTICE).
+The material under [code/](code/) is distributed under the Apache License,
+Version 2.0. See [LICENSE](code/LICENSE) and [NOTICE](code/NOTICE).
 
 [1]: http://dx.doi.org/10.1137/1.9781611973440.57 "Electronic version"
 [2]: https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode "CC BY-NC-ND 4.0"
