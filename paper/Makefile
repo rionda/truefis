@@ -5,7 +5,7 @@ UPLOADURI = public_html/papers/RiondatoVandin-TrueItemsets.pdf
 
 .PHONY: all archive check clean osx pdf upload view
 
-all : archive
+all : pdf 
 
 $(MAINFILE).aux: *.tex
 	$(LATEX) $(MAINFILE).tex
@@ -24,7 +24,7 @@ $(MAINFILE).pdf: *.tex *.bib
 	$(LATEX) $(MAINFILE).tex
 
 $(MAINFILE).tar.bz2: *tex $(MAINFILE).pdf
-	env COPYFILE_DISABLE=1 tar cjvfh $(MAINFILE).tar.bz2 *.tex *.bib *.pdf *sty Makefile
+	env COPYFILE_DISABLE=1 tar cjvfh $(MAINFILE).tar.bz2 *.tex *.bib *.pdf Makefile
 
 archive: $(MAINFILE).tar.bz2
 
