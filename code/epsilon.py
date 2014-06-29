@@ -37,8 +37,8 @@ def get_eps_emp_vc_dim(delta, ds_size, emp_vc_dim, max_freq=1.0):
     """Return the epsilon computed using emp_vc_dim as bound to the *empirical*
     VC-dimension, given a 'sample' of size ds_size, where the maximum frequency
     of an item is max_freq, and a confidence parameter delta."""
-    return 2 * math.sqrt( (2 * emp_vc_dim * math.log(ds_size + 1)) / ds_size) + \
-            math.sqrt((2 * math.log(2 / delta)) / ds_size)
+    return 2 * math.sqrt( max_freq *  (2 * emp_vc_dim * math.log(ds_size + 1)) \
+            / ds_size) +  math.sqrt((2 * math.log(2 / delta)) / ds_size)
 
 
 def epsilons(delta, ds_size, vc_dim, emp_vc_dim, max_freq=1.0):
@@ -90,7 +90,7 @@ def epsilon_dataset(delta, dataset, use_additional_knowledge=False):
 if __name__ == "__main__":
     """When invoked as standalone, compute the epsilons and print them."""
     if len(sys.argv) != 4:
-        error_exit("Usage: {} {1|2|3} delta dataset.dat (no path, must be in datasetsinfo.py)\n".format(sys.argv[0]))
+        error_exit("Usage: {} {{0|1}} delta dataset.dat (no path, must be in datasetsinfo.py)\n".format(sys.argv[0]))
     try:
         phase = int(sys.argv[1])
     except ValueError:

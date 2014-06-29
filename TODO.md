@@ -8,7 +8,7 @@ TODO
 	highest item frequency for the bound
   - [x] Improve code to use highest item(set) frequency in the set that we care
 	about
-  - [ ] Implement the code in [epsilon.py](code/epsilon.py) to use the
+  - [x] Implement the code in [epsilon.py](code/epsilon.py) to use the
 	highest item frequency for the bound
 - [ ] Test new bound Rademacher
 - [ ] Present new bound EVC
