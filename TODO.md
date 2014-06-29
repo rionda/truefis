@@ -12,6 +12,7 @@ TODO
 	highest item frequency for the bound
 - [ ] Test new bound Rademacher
 - [ ] Present new bound EVC
+- [ ] Present 3-phases algorithm (test first)
 - [ ] Check [SDM reviews](paper/SDM14/ReviewsSDM.pdf) for other changes
 - [ ] The LaTeX sources contain a lot of comments. Check to see if anything is
   relevant
