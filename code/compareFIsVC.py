@@ -104,7 +104,7 @@ def main():
     """
     # Verify arguments
     if len(sys.argv) != 9: 
-        error_exit("Usage: {} PHASES={2,3} ADDITONALKNOWLEDGE={0,1} DELTA MINFREQ GAP DATASETNAME ORIGRES SAMPLERES\n".format(os.path.basename(sys.argv[0])))
+        error_exit("Usage: {} PHASES={{2|3}} ADDITONALKNOWLEDGE={{0|1}} DELTA MINFREQ GAP DATASETNAME ORIGRES SAMPLERES\n".format(os.path.basename(sys.argv[0])))
     dataset_name = sys.argv[6]
     orig_res_filename = os.path.expanduser(sys.argv[7])
     if not os.path.isfile(orig_res_filename):
