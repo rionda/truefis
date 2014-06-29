@@ -307,7 +307,7 @@ def main():
         not_emp_vc_dim = int(math.floor(math.log2(optimal_sol_upp_bound))) +1
         not_emp_epsilon_2 = epsilon.get_eps_vc_dim(delta_2,
                 ds_stats[dataset_name]['size'], not_emp_vc_dim,
-                ds_stats[dataset_name]['maxfreq'])
+                ds_stats[dataset_name]['maxsupp'] / ds_stats[dataset_name]['size'])
         sys.stderr.write("{} {} {} {}\n".format(capacity, optimal_sol_upp_bound,
             not_emp_vc_dim, not_emp_epsilon_2))
 
@@ -372,7 +372,7 @@ def main():
         # Compute the second candidate for epsilon_2
         emp_epsilon_2 = epsilon.get_eps_emp_vc_dim(delta_2,
                 ds_stats[dataset_name]['size'], emp_vc_dim,
-                ds_stats[dataset_name]['maxfreq'])
+                ds_stats[dataset_name]['maxsupp'] /ds_stats[dataset_name]['size'])
         sys.stderr.write("{} {} {} {}\n".format(cand_len, optimal_sol_upp_bound,
             emp_vc_dim, emp_epsilon_2))
 
@@ -464,9 +464,12 @@ def main():
     # frequency < min_freq + epsilon_2
     # This is part of what makes it a superset.
     sys.stderr.write("Creating negative border base set...")
+    max_freq = 0
     for itemset in freq_itemsets_2_dict:
         if freq_itemsets_2_dict[itemset] < min_freq + epsilon_2: 
             negative_border.add(itemset)
+            if freq_itemsets_2_dict[itemset] > max_freq:
+                max_freq = freq_itemsets_2_dict[itemset]
     sys.stderr.write("done. Length now: {} ({} non-freq items)\n".format(len(negative_border), len(non_freq_items_2)))
     sys.stderr.flush()
     negative_border = sorted(negative_border,key=len, reverse=True)
@@ -650,8 +653,7 @@ def main():
     #Compute non-empirical VC-dimension and first candidate to epsilon_3
     not_emp_vc_dim = int(math.floor(math.log2(optimal_sol_upp_bound))) +1
     not_emp_epsilon_3 = epsilon.get_eps_vc_dim(delta_3,
-            ds_stats[dataset_name]['size'], not_emp_vc_dim,
-            ds_stats[dataset_name]['maxfreq'])
+            ds_stats[dataset_name]['size'], not_emp_vc_dim, max_freq)
     sys.stderr.write("{} {} {} {}\n".format(items_num - 1, optimal_sol_upp_bound, not_emp_vc_dim, not_emp_epsilon_3))
 
     # Loop to compute empirical VC-dimension using lengths distribution
@@ -713,8 +715,7 @@ def main():
     
     # Compute second candidate to epsilon_3
     emp_epsilon_3 = epsilon.get_eps_emp_vc_dim(delta_3,
-            ds_stats[dataset_name]['size'], emp_vc_dim,
-            ds_stats[dataset_name]['maxfreq'])
+            ds_stats[dataset_name]['size'], emp_vc_dim, max_freq)
     sys.stderr.write("{} {} {} {}\n".format(cand_len, optimal_sol_upp_bound, emp_vc_dim, emp_epsilon_3))
 
     epsilon_3 = min(emp_epsilon_3, not_emp_epsilon_3)
