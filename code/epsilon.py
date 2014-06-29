@@ -57,22 +57,23 @@ def epsilons(delta, ds_size, vc_dim, emp_vc_dim, max_freq=1.0):
     return (eps_vc_dim, eps_emp_vc_dim, returned)
 
 
-def epsilon_dataset(type, delta, dataset):
+def epsilon_dataset(delta, dataset, use_additional_knowledge=False):
     """ Call epsilons() filling in the appropriate values for the parameters
-    depending on the requested 'type'. See below for type descriptions.
+    depending whether to use additional knowledge or not. See below for type
+    descriptions.
     """
     
-    assert type > 0 and type < 3
+    assert use_additional_knowledge >= 0 and use_additional_knowledge < 2
     assert delta > 0 and delta < 1
     assert dataset in ds_stats
     
-    if type == 1:
+    if use_additional_knowledge:
         # make no assumption on the generative process. VC-dimension is number
         # of items - 1.
         (eps_vc_dim, eps_emp_vc_dim, returned) = epsilons(delta,
                 ds_stats[dataset]['size'], ds_stats[dataset]['numitems'] -1,
                 ds_stats[dataset]['dindex'], ds_stats[dataset]['maxfreq'])
-    elif type == 2: 
+    else: 
         # incorporate available information about the unknown probability
         # distribution, more precisely assuming that it cannot generate
         # transactions longer than twice the longest transactions available in

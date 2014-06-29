@@ -103,13 +103,13 @@ def main():
     
     """
     # Verify arguments
-    if len(sys.argv) != 8: 
-        error_exit("Usage: {} PHASES DELTA MINFREQ GAP DATASETNAME ORIGRES SAMPLERES\n".format(os.path.basename(sys.argv[0])))
-    dataset_name = sys.argv[5]
-    orig_res_filename = os.path.expanduser(sys.argv[6])
+    if len(sys.argv) != 9: 
+        error_exit("Usage: {} PHASES ADDITONALKNOWLEDGE DELTA MINFREQ GAP DATASETNAME ORIGRES SAMPLERES\n".format(os.path.basename(sys.argv[0])))
+    dataset_name = sys.argv[6]
+    orig_res_filename = os.path.expanduser(sys.argv[7])
     if not os.path.isfile(orig_res_filename):
         error_exit("{} does not exist, or is not a file\n".format(orig_res_filename))
-    sample_res_filename = os.path.expanduser(sys.argv[7])
+    sample_res_filename = os.path.expanduser(sys.argv[8])
     if not os.path.isfile(sample_res_filename):
         error_exit("{} does not exist, or is not a file\n".format(sample_res_filename))
     try:
@@ -117,17 +117,21 @@ def main():
     except ValueError:
         error_exit("{} is not a number\n".format(sys.argv[1]))
     try:
-        delta = float(sys.argv[2])
+        use_additional_knowledge = int(sys.argv[2])
     except ValueError:
         error_exit("{} is not a number\n".format(sys.argv[2]))
     try:
-        min_freq = float(sys.argv[3])
+        delta = float(sys.argv[3])
     except ValueError:
         error_exit("{} is not a number\n".format(sys.argv[3]))
     try:
-        gap = float(sys.argv[4])
+        min_freq = float(sys.argv[4])
     except ValueError:
         error_exit("{} is not a number\n".format(sys.argv[4]))
+    try:
+        gap = float(sys.argv[5])
+    except ValueError:
+        error_exit("{} is not a number\n".format(sys.argv[5]))
 
     # One may want to play with giving different values for the different error
     # probabilities, but there isn't really much point in it.
@@ -139,10 +143,10 @@ def main():
         error_exit("'PHASES' parameter must be 2 or 3 ('{}' given)".format(phases))
 
     # Compute the first epsilon using results from the paper (Riondato and Upfal 2014)
-    #(eps_vc_dim, eps_emp_vc_dim, returned) = epsilon.epsilon_dataset(1, delta_1, dataset_name)
-    # Temporarily using 2 as first argument to incorporate 'previous knowledge'
-    # about generative process in computation of the VC-dimension
-    (eps_vc_dim, eps_emp_vc_dim, returned) = epsilon.epsilon_dataset(2, delta_1, dataset_name) 
+    # Incorporate or not 'previous knowledge' about generative process in
+    # computation of the VC-dimension, depending on the option passed on the
+    # command line
+    (eps_vc_dim, eps_emp_vc_dim, returned) = epsilon.epsilon_dataset(delta_1, dataset_name, use_additional_knowledge) 
     epsilon_1 = min(eps_vc_dim, eps_emp_vc_dim)
 
     # Extract the first (and largest) set of itemsets.
@@ -762,8 +766,9 @@ def main():
         avg_absolute_error = 0.0
         avg_relative_error = 0.0
 
-    print("large={},sample={},phases={},e1={},e2={},e3={},d={},min_freq={},origFIs={}".format(os.path.basename(orig_res_filename),
-        os.path.basename(sample_res_filename), phases, epsilon_1, epsilon_2, epsilon_3, delta, min_freq,
+    print("large={},sample={},phases={},use_add_knowl={},e1={},e2={},e3={},d={},min_freq={},origFIs={}".format(os.path.basename(orig_res_filename),
+        os.path.basename(sample_res_filename), phases,
+        use_additional_knowledge, epsilon_1, epsilon_2, epsilon_3, delta, min_freq,
         len(orig_res_set)))
     print("inter={},fn={},fp={},jaccard={}".format(len(intersection),
         false_negatives, false_positives, jaccard))
@@ -772,11 +777,12 @@ def main():
     print("we={},maxabserr={},avgabserr={},avgrelerr={}".format(wrong_eps,
         max_absolute_error, avg_absolute_error, avg_relative_error))
     sys.stderr.write("{}\n".format(",".join((str(i) for i in (os.path.basename(orig_res_filename),
-        os.path.basename(sample_res_filename), phases, epsilon_1, epsilon_2, epsilon_3, delta,
-        min_freq,len(orig_res_set), len(intersection), false_negatives, false_positives,
-        jaccard, maximal_itemsets_size, negative_border_size, emp_vc_dim,
-        not_emp_vc_dim, wrong_eps, max_absolute_error,
-        avg_absolute_error, avg_relative_error)))))
+        os.path.basename(sample_res_filename), phases, use_additional_knowledge,
+        epsilon_1, epsilon_2, epsilon_3, delta, min_freq,len(orig_res_set),
+        len(intersection), false_negatives, false_positives, jaccard,
+        maximal_itemsets_size, negative_border_size, emp_vc_dim,
+        not_emp_vc_dim, wrong_eps, max_absolute_error, avg_absolute_error,
+        avg_relative_error)))))
 
 if __name__ == "__main__":
     main()
