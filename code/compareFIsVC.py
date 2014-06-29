@@ -298,7 +298,9 @@ def main():
     
     # Compute the first candidate for epsilon_2 
     not_emp_vc_dim = int(math.floor(math.log2(optimal_sol_upp_bound))) +1
-    not_emp_epsilon_2 = epsilon.get_eps_vc_dim(delta_2, ds_stats[dataset_name]['size'], not_emp_vc_dim)
+    not_emp_epsilon_2 = epsilon.get_eps_vc_dim(delta_2,
+            ds_stats[dataset_name]['size'], not_emp_vc_dim,
+            ds_stats[dataset_name]['maxfreq'])
     sys.stderr.write("{} {} {} {}\n".format(capacity, optimal_sol_upp_bound,
         not_emp_vc_dim, not_emp_epsilon_2))
 
@@ -361,7 +363,9 @@ def main():
     os.remove(tmpfile_name)
 
     # Compute the second candidate for epsilon_2
-    emp_epsilon_2 = epsilon.get_eps_emp_vc_dim(delta_2, ds_stats[dataset_name]['size'], emp_vc_dim)
+    emp_epsilon_2 = epsilon.get_eps_emp_vc_dim(delta_2,
+            ds_stats[dataset_name]['size'], emp_vc_dim,
+            ds_stats[dataset_name]['maxfreq'])
     sys.stderr.write("{} {} {} {}\n".format(cand_len, optimal_sol_upp_bound,
         emp_vc_dim, emp_epsilon_2))
 
@@ -637,7 +641,9 @@ def main():
 
         #Compute non-empirical VC-dimension and first candidate to epsilon_3
         not_emp_vc_dim = int(math.floor(math.log2(optimal_sol_upp_bound))) +1
-        not_emp_epsilon_3 = epsilon.get_eps_vc_dim(delta_3, ds_stats[dataset_name]['size'], not_emp_vc_dim)
+        not_emp_epsilon_3 = epsilon.get_eps_vc_dim(delta_3,
+                ds_stats[dataset_name]['size'], not_emp_vc_dim,
+                ds_stats[dataset_name]['maxfreq'])
         sys.stderr.write("{} {} {} {}\n".format(items_num - 1, optimal_sol_upp_bound, not_emp_vc_dim, not_emp_epsilon_3))
 
         # Loop to compute empirical VC-dimension using lengths distribution
@@ -698,7 +704,9 @@ def main():
         os.remove(tmpfile_name)
         
         # Compute second candidate to epsilon_3
-        emp_epsilon_3 = epsilon.get_eps_emp_vc_dim(delta_3, ds_stats[dataset_name]['size'], emp_vc_dim)
+        emp_epsilon_3 = epsilon.get_eps_emp_vc_dim(delta_3,
+                ds_stats[dataset_name]['size'], emp_vc_dim,
+                ds_stats[dataset_name]['maxfreq'])
         sys.stderr.write("{} {} {} {}\n".format(cand_len, optimal_sol_upp_bound, emp_vc_dim, emp_epsilon_3))
 
         epsilon_3 = min(emp_epsilon_3, not_emp_epsilon_3)

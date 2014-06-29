@@ -24,28 +24,29 @@ def error_exit(msg):
     sys.exit(1)
 
 
-def get_eps_vc_dim(delta, ds_size, vc_dim, c=0.5):
+def get_eps_vc_dim(delta, ds_size, vc_dim, max_freq=1.0, c=0.5):
     """Return the epsilon computed using vc_dim as bound to the VC-dimension,
-    given a 'sample' of size ds_size, and a confidence parameter delta. The
-    parameter 'c' is the universal constant, which we set to 0.5 by default as
-    suggested by Loffler and Phillips (see paper)"""
+    given a 'sample' of size ds_size, where the maximum frequency of an item is
+    max_freq, and a confidence parameter delta. The parameter 'c' is the
+    universal constant, which we set to 0.5 by default as suggested by Loffler
+    and Phillips (see paper)"""
     return math.sqrt( (c / ds_size) * ( vc_dim + math.log(1 / delta)))
 
 
-def get_eps_emp_vc_dim(delta, ds_size, emp_vc_dim):
+def get_eps_emp_vc_dim(delta, ds_size, emp_vc_dim, max_freq=1.0):
     """Return the epsilon computed using emp_vc_dim as bound to the *empirical*
-    VC-dimension, given a 'sample' of size ds_size, and a confidence parameter
-    delta."""
+    VC-dimension, given a 'sample' of size ds_size, where the maximum frequency
+    of an item is max_freq, and a confidence parameter delta."""
     return 2 * math.sqrt( (2 * emp_vc_dim * math.log(ds_size + 1)) / ds_size) + \
             math.sqrt((2 * math.log(2 / delta)) / ds_size)
 
 
-def epsilons(delta, ds_size, vc_dim, emp_vc_dim):
+def epsilons(delta, ds_size, vc_dim, emp_vc_dim, max_freq=1.0):
     """Return a tuple containing the epsilon w.r.t. the VC-dimension, the
     epsilon w.r.t. the empirical VC-dimension, and a string that points out
     which one is the smallest (or 'equal' if they are equal)."""
-    eps_vc_dim = get_eps_vc_dim(delta, ds_size, vc_dim)
-    eps_emp_vc_dim = get_eps_emp_vc_dim(delta, ds_size, emp_vc_dim)
+    eps_vc_dim = get_eps_vc_dim(delta, ds_size, vc_dim, max_freq)
+    eps_emp_vc_dim = get_eps_emp_vc_dim(delta, ds_size, emp_vc_dim, max_freq)
 
     if eps_vc_dim < eps_emp_vc_dim:
         returned = "vc_dim"
@@ -70,7 +71,7 @@ def epsilon_dataset(type, delta, dataset):
         # of items - 1.
         (eps_vc_dim, eps_emp_vc_dim, returned) = epsilons(delta,
                 ds_stats[dataset]['size'], ds_stats[dataset]['numitems'] -1,
-                ds_stats[dataset]['dindex'])
+                ds_stats[dataset]['dindex'], ds_stats[dataset]['maxfreq'])
     elif type == 2: 
         # incorporate available information about the unknown probability
         # distribution, more precisely assuming that it cannot generate
@@ -78,13 +79,13 @@ def epsilon_dataset(type, delta, dataset):
         # the dataset (using this quantity as bound to the VC-dimension).
         (eps_vc_dim, eps_emp_vc_dim, returned) = epsilons(delta,
                 ds_stats[dataset]['size'], 2*(ds_stats[dataset]['maxlen']) -1, 
-                ds_stats[dataset]['dindex'])
+                ds_stats[dataset]['dindex'], ds-stats[dataset]['maxfreq'])
  
     return (eps_vc_dim, eps_emp_vc_dim, returned)
 
 
 if __name__ == "__main__":
-"""When invoked as standalone, compute the epsilons and print them."""
+    """When invoked as standalone, compute the epsilons and print them."""
     if len(sys.argv) != 4:
         error_exit("Usage: {} {1|2|3} delta dataset.dat (no path, must be in datasetsinfo.py)\n".format(sys.argv[0]))
     try:
