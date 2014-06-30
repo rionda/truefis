@@ -10,10 +10,12 @@ TODO
 	about
   - [x] Implement the code in [epsilon.py](code/epsilon.py) to use the
 	highest item frequency for the bound
+- [ ] Test new bound Rademacher
   - [x] Implement in [epsilon.py](code/epsilon.py) the code to compute the
 	epsilon using other bounds to the shatter coefficient than the empirical
-	VC-dimension. 
-- [ ] Test new bound Rademacher
+	VC-dimension
+  - [ ] Implement code in [compareFIsVC.py](code/compareFIsVC.py) to use a
+	different bound to the shatter coefficient
 - [ ] Present new bound EVC
 - [ ] Present 3-phases algorithm (test first)
 - [ ] Check [SDM reviews](paper/SDM14/ReviewsSDM.pdf) for other changes
