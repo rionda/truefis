@@ -10,6 +10,9 @@ TODO
 	about
   - [x] Implement the code in [epsilon.py](code/epsilon.py) to use the
 	highest item frequency for the bound
+  - [x] Implement in [epsilon.py](code/epsilon.py) the code to compute the
+	epsilon using other bounds to the shatter coefficient than the empirical
+	VC-dimension. 
 - [ ] Test new bound Rademacher
 - [ ] Present new bound EVC
 - [ ] Present 3-phases algorithm (test first)
