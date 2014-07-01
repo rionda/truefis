@@ -208,7 +208,7 @@ def main():
     # An itemset is maximal frequent if none of its immediate supersets is frequent.
     sys.stderr.write("Computing maximal itemsets...")
     maximal_itemsets_dict = get_maximal_itemsets(closed_itemsets)
-    maximal_itemsets = list(maximal_itemsets_dict.keys)
+    maximal_itemsets = list(maximal_itemsets_dict.keys())
     maximal_itemsets_size = len(maximal_itemsets)
     sys.stderr.write("done. Found {} maximal itemsets\n".format(maximal_itemsets_size))
     sys.stderr.flush()

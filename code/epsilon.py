@@ -89,7 +89,7 @@ def epsilon_dataset(delta, dataset, use_additional_knowledge=False):
         # the dataset (using this quantity as bound to the VC-dimension).
         (eps_vc_dim, eps_emp_vc_dim, returned) = epsilons(delta,
                 ds_stats[dataset]['size'], 2*(ds_stats[dataset]['maxlen']) -1, 
-                ds_stats[dataset]['dindex'], ds-stats[dataset]['maxsupp'] /
+                ds_stats[dataset]['dindex'], ds_stats[dataset]['maxsupp'] /
                 ds_stats[dataset]['size'])
  
     return (eps_vc_dim, eps_emp_vc_dim, returned)
