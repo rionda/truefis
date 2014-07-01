@@ -14,10 +14,10 @@ TODO
   - [x] Implement in [epsilon.py](code/epsilon.py) the code to compute the
 	epsilon using other bounds to the shatter coefficient than the empirical
 	VC-dimension
-  - [ ] Implement code in [compareFIsVC.py](code/compareFIsVC.py) to use a
+  - [x] Implement code in [compareFIsVC.py](code/compareFIsVC.py) to use a
 	different bound to the shatter coefficient
 - [ ] Present new bound EVC
-- [ ] Present 3-phases algorithm (test first)
+- [ ] Present multi-phases algorithm (test first)
 - [ ] Check [SDM reviews](paper/SDM14/ReviewsSDM.pdf) for other changes
 - [ ] The LaTeX sources contain a lot of comments. Check to see if anything is
   relevant
