@@ -34,19 +34,34 @@ def get_closed_itemsets(itemsets):
     whose keys are itemsets (frozensets) and whose values are the frequencies.
     Return a similar dict.
 
-    XXX This is definitively not the most efficient implementation.
     """
     closed_itemsets = dict()
-    itemsets_revsorted_by_size = sorted(itemsets.keys(), key=len, reverse=True)
-    for itemset in itemsets_revsorted_by_size:
-        to_add = True
-        for closed in closed_itemsets:
-            if itemset < closed and itemsets[itemset] == itemsets[closed]:
-                to_add = False
-                break
-        if to_add:
-            closed_itemsets[itemset] = itemsets[itemset]
+    border = set()
+    itemsets_sorted_by_size = sorted(itemsets, key=len)
+    for itemset in itemsets_sorted_by_size:
+        to_remove = set()
+        to_remove_border = set()
+        for closed in border:
+            if itemset > closed:
+                if itemsets[closed] == itemsets[itemset]:
+                    to_remove.add(closed)
+                to_remove_border.add(closed)
+        border -= to_remove_border
+        border.add(itemset)
+        for key in to_remove:
+            del closed_itemsets[key]
+        closed_itemsets[itemset] = itemsets[itemset]
+        
+    #check_closed_itemsets(closed_itemsets)
     return closed_itemsets
+
+
+def check_closed_itemsets(closed_itemsets):
+    """ Check that closed_itemsets is a collection of closed itemsets. """
+    for itemset1 in closed_itemsets:
+        for itemset2 in closed_itemsets:
+            if itemset1 < itemset2:
+                assert closed_itemsets[itemset1] > closed_itemsets[itemset2]
 
 
 def get_maximal_itemsets(itemsets):
@@ -56,18 +71,19 @@ def get_maximal_itemsets(itemsets):
     whose keys are itemsets (frozensets) and whose values are the frequencies.
     Return a similar dict.
 
-    XXX This is definitively not the most efficient implementation.
     """
     maximal_itemsets = dict()
+    maximal_itemsets_list = []
     itemsets_revsorted_by_size = sorted(itemsets.keys(), key=len, reverse=True)
     for itemset in itemsets_revsorted_by_size:
         to_add = True
-        for maximal in maximal_itemsets:
+        for maximal in maximal_itemsets_list:
             if itemset < maximal:
                 to_add = False
                 break
         if to_add:
             maximal_itemsets[itemset] = itemsets[itemset]
+            maximal_itemsets_list.append(itemset)
     return maximal_itemsets
 
 
