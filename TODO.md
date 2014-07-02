@@ -16,7 +16,7 @@ TODO
 	VC-dimension
   - [x] Implement code in [compareFIsVC.py](code/compareFIsVC.py) to use a
 	different bound to the shatter coefficient
-- [ ] Check code binomial
+- [x] Check code binomial
 - [ ] Check code holdout
 - [ ] Write glue code for experiments
 - [ ] Present new bound EVC
