@@ -15,7 +15,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import sys
+import operator, sys
 
 def error_exit(msg):
     """Print message msg to stderr and exit."""
@@ -120,4 +120,25 @@ def create_results(file_name, min_freq):
                 else:
                     break
     return results
+
+
+def print_itemset(itemset, frequency, ds_size=1):
+    """ Print an itemset and its support (frequency * ds_size).
+    
+    Uses the 'standard' FIMI format: 'item1 item2 item3 (support)'"""
+    print("{} ({})".format(" ".join(str(item) for item in itemset),
+        int(frequency * ds_size)))
+
+
+def print_itemsets(itemsets, ds_size=1):
+    """ Print a collection of itemsets with their support. 
+
+    The first line to be printed is the size of the dataset in parentheses,
+    then come the itemsets, in reverse sorted order by support, printed in the
+    'standard' FIMI format: 'item1 item2 item3 (support)'."""
+
+    print(" ({})".format(ds_size)) # The space at the beginning makes sense.
+
+    for itemset in sorted(itemsets, key=lambda x: itemsets[x], reverse=True):
+        print_itemset(itemset, itemsets[itemset], ds_size)
 
