@@ -16,7 +16,7 @@
 # limitations under the License.
 
 import math, os.path, sys
-import my_utils as my
+import utils
 from datasetsinfo import ds_stats
 
 
@@ -30,7 +30,7 @@ def get_trueFIs_binom(dataset_name, res_filename, min_freq, delta, pvalue_mode, 
     stats = dict()
 
     if use_additional_knowledge:
-        stats['union_bound_factor'] = my.get_union_bound_factor(ds_stats[dataset_name]['numitems'], 2 * \
+        stats['union_bound_factor'] = utils.get_union_bound_factor(ds_stats[dataset_name]['numitems'], 2 * \
                 ds_stats[dataset_name]['maxlen']) 
     else:
         stats['union_bound_factor'] = ds_stats[dataset_name]['numitems']
@@ -39,12 +39,12 @@ def get_trueFIs_binom(dataset_name, res_filename, min_freq, delta, pvalue_mode, 
 
     supposed_freq = (math.ceil(ds_stats[dataset_name]['size'] * min_freq) - 1) / ds_stats[dataset_name]['size']
 
-    sample_res = my.create_results(res_filename, min_freq)
+    sample_res = utils.create_results(res_filename, min_freq)
 
     survivors = dict()
     stats['removed'] = 0
     for itemset in sample_res.keys():
-        p_value = my.pvalue(pvalue_mode, sample_res[itemset],
+        p_value = utils.pvalue(pvalue_mode, sample_res[itemset],
                 ds_stats[dataset_name]['size'], supposed_freq)
         if p_value <= stats['critical_value']:
             survivors[itemset] = sample_res[itemset]
@@ -57,31 +57,31 @@ def get_trueFIs_binom(dataset_name, res_filename, min_freq, delta, pvalue_mode, 
 def main():
     # Verify arguments
     if len(sys.argv) != 7: 
-        my.error_exit("Usage: {} use_additional_knowledge={{0|1}} delta min_freq mode={{c|e}} dataset results_filename\n".format(os.path.basename(sys.argv[0])))
+        utils.error_exit("Usage: {} use_additional_knowledge={{0|1}} delta min_freq mode={{c|e}} dataset results_filename\n".format(os.path.basename(sys.argv[0])))
     dataset_name = sys.argv[5]
     res_filename = sys.argv[6]
     if not os.path.isfile(res_filename):
-        my.error_exit("{} does not exist, or is not a file\n".format(res_filename))
+        utils.error_exit("{} does not exist, or is not a file\n".format(res_filename))
     pvalue_mode = sys.argv[4].upper()
     if pvalue_mode != "C" and pvalue_mode != "E":
-        my.error_exit("p-value mode must be either 'c' or 'e'. You passed {}\n".format(pvalue_mode))
+        utils.error_exit("p-value mode must be either 'c' or 'e'. You passed {}\n".format(pvalue_mode))
     try:
         use_additional_knowledge = int(sys.argv[1])
     except ValueError:
-        my.error_exit("{} is not a number\n".format(sys.argv[1]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[1]))
     try:
         delta = float(sys.argv[2])
     except ValueError:
-        my.error_exit("{} is not a number\n".format(sys.argv[2]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[2]))
     try:
         min_freq = float(sys.argv[3])
     except ValueError:
-        my.error_exit("{} is not a number\n".format(sys.argv[3]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[3]))
 
     (trueFIs, stats) = get_trueFIs_binom(dataset_name, res_filename, min_freq,
             delta, pvalue_mode, use_additional_knowledge)
 
-    my.print_itemsets(trueFIs, ds_stats[dataset_name]['size'])
+    utils.print_itemsets(trueFIs, ds_stats[dataset_name]['size'])
 
     sys.stderr.write("res_file={},use_add_knowl={},pvalue_mode={},d={},min_freq={},trueFIs={}\n".format(os.path.basename(res_filename),
         use_additional_knowledge, pvalue_mode, delta, min_freq, len(trueFIs)))

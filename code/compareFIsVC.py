@@ -16,44 +16,43 @@
 # limitations under the License.
 
 import os, os.path, sys
-import compareFIs, getTrueFIsVC
-import my_utils as my
+import compareFIs, getTrueFIsVC, utils
 
 
 def main():
     # Verify arguments
     if len(sys.argv) != 8: 
-        my.error_exit("Usage: {} ADDITIONALKNOWLEDGE={{0|1}} DELTA MINFREQ GAP DATASETNAME ORIGRES SAMPLERES\n".format(os.path.basename(sys.argv[0])))
+        utils.error_exit("Usage: {} ADDITIONALKNOWLEDGE={{0|1}} DELTA MINFREQ GAP DATASETNAME ORIGRES SAMPLERES\n".format(os.path.basename(sys.argv[0])))
     dataset_name = sys.argv[5]
     orig_res_filename = os.path.expanduser(sys.argv[6])
     if not os.path.isfile(orig_res_filename):
-        my.error_exit("{} does not exist, or is not a file\n".format(orig_res_filename))
+        utils.error_exit("{} does not exist, or is not a file\n".format(orig_res_filename))
     sample_res_filename = os.path.expanduser(sys.argv[7])
     if not os.path.isfile(sample_res_filename):
-        my.error_exit("{} does not exist, or is not a file\n".format(sample_res_filename))
+        utils.error_exit("{} does not exist, or is not a file\n".format(sample_res_filename))
     try:
         use_additional_knowledge = int(sys.argv[1])
     except ValueError:
-        my.error_exit("{} is not a number\n".format(sys.argv[1]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[1]))
     try:
         delta = float(sys.argv[2])
     except ValueError:
-        my.error_exit("{} is not a number\n".format(sys.argv[2]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[2]))
     try:
         min_freq = float(sys.argv[3])
     except ValueError:
-        my.error_exit("{} is not a number\n".format(sys.argv[3]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[3]))
     try:
         gap = float(sys.argv[4])
     except ValueError:
-        my.error_exit("{} is not a number\n".format(sys.argv[4]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[4]))
 
     # Get the TFIs
     (sample_res, tfi_stats) = getTrueFIsVC.get_trueFIs_VC(dataset_name, sample_res_filename, min_freq, delta, gap, use_additional_knowledge)
 
     # Do comparison between the original set of TFIs and the one extracted
     # from the sample.
-    orig_res = my.create_results(orig_res_filename, min_freq)
+    orig_res = utils.create_results(orig_res_filename, min_freq)
     comp_stats = compareFIs.compare(orig_res, sample_res, tfi_stats['epsilon_2'])
 
     print("large={},sample={},use_add_knowl={},e1={},e2={},d={},min_freq={},origFIs={}".format(os.path.basename(orig_res_filename),

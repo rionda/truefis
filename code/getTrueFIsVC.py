@@ -17,8 +17,7 @@
 
 import locale, math, os, os.path, subprocess, sys, tempfile
 import networkx as nx
-import epsilon
-import my_utils as my
+import epsilon, utils
 from datasetsinfo import ds_stats
 
 
@@ -50,7 +49,7 @@ def get_trueFIs_VC(dataset_name, res_filename, min_freq, delta, gap=0.0, use_add
     # Extract the first (and largest) set of itemsets with frequency at least
     # min-freq - stats['epsilon_1'] 
     lower_bound_freq = min_freq - stats['epsilon_1'] - (1 / ds_stats[dataset_name]['size'])
-    freq_itemsets_1_dict = my.create_results(res_filename, lower_bound_freq)
+    freq_itemsets_1_dict = utils.create_results(res_filename, lower_bound_freq)
     freq_itemsets_1_set = frozenset(freq_itemsets_1_dict.keys())
     freq_items_1 = set()
     for itemset in freq_itemsets_1_set:
@@ -83,7 +82,7 @@ def get_trueFIs_VC(dataset_name, res_filename, min_freq, delta, gap=0.0, use_add
     # Compute Closed Itemsets
     sys.stderr.write("Computing closed itemsets...")
     sys.stderr.flush()
-    closed_itemsets = my.get_closed_itemsets(base_set)
+    closed_itemsets = utils.get_closed_itemsets(base_set)
     sys.stderr.write("done. Found {} closed itemsets\n".format(len(closed_itemsets)))
     sys.stderr.flush()
 
@@ -91,7 +90,7 @@ def get_trueFIs_VC(dataset_name, res_filename, min_freq, delta, gap=0.0, use_add
     # An itemset is maximal frequent if none of its immediate supersets is frequent.
     sys.stderr.write("Computing maximal itemsets...")
     sys.stderr.flush()
-    maximal_itemsets_dict = my.get_maximal_itemsets(closed_itemsets)
+    maximal_itemsets_dict = utils.get_maximal_itemsets(closed_itemsets)
     maximal_itemsets = list(maximal_itemsets_dict.keys())
     stats['maximal_itemsets'] = len(maximal_itemsets)
     sys.stderr.write("done. Found {} maximal itemsets\n".format(stats['maximal_itemsets']))
@@ -317,7 +316,7 @@ def get_trueFIs_VC(dataset_name, res_filename, min_freq, delta, gap=0.0, use_add
         cplex_output_binary_str = subprocess.check_output(["python2.6", tmpfile_name], env = my_environ, cwd=os.environ["PWD"])
     except subprocess.CalledProcessError as err:
         os.remove(tmpfile_name)
-        my.error_exit("CPLEX exited with error code {}: {}\n".format(err.returncode, err.output))
+        utils.error_exit("CPLEX exited with error code {}: {}\n".format(err.returncode, err.output))
     #finally:
     #    os.remove(tmpfile_name)
 
@@ -327,12 +326,12 @@ def get_trueFIs_VC(dataset_name, res_filename, min_freq, delta, gap=0.0, use_add
     try:
         cplex_solution = eval(cplex_solution_line)
     except Exception:
-        my.error_exit("Error evaluating the CPLEX solution line: {}\n".format(cplex_solution_line))
+        utils.error_exit("Error evaluating the CPLEX solution line: {}\n".format(cplex_solution_line))
 
     sys.stderr.write("cplex_solution={}\n".format(cplex_solution))
     sys.stderr.flush()
     #if cplex_solution[0] not in (1, 101, 102):
-    #    my.error_exit("CPLEX didn't find the optimal solution: {} {} {}\n".format(cplex_solution[0], cplex_solution[1], cplex_solution[2]))
+    #    utils.error_exit("CPLEX didn't find the optimal solution: {} {} {}\n".format(cplex_solution[0], cplex_solution[1], cplex_solution[2]))
 
     optimal_sol_upp_bound = int(math.ceil(cplex_solution[2] / (1 - cplex_solution[3])))
 
@@ -366,7 +365,7 @@ def get_trueFIs_VC(dataset_name, res_filename, min_freq, delta, gap=0.0, use_add
             cplex_output_binary_str = subprocess.check_output(["python2.6", tmpfile_name], env = my_environ, cwd=os.environ["PWD"])
         except subprocess.CalledProcessError as err:
             os.remove(tmpfile_name)
-            my.error_exit("CPLEX exited with error code {}: {}\n".format(err.returncode, err.output))
+            utils.error_exit("CPLEX exited with error code {}: {}\n".format(err.returncode, err.output))
         #finally:
         #    os.remove(tmpfile_name)
 
@@ -376,11 +375,11 @@ def get_trueFIs_VC(dataset_name, res_filename, min_freq, delta, gap=0.0, use_add
         try:
             cplex_solution = eval(cplex_solution_line)
         except Exception:
-            my.error_exit("Error evaluating the CPLEX solution line: {}\n".format(cplex_solution_line))
+            utils.error_exit("Error evaluating the CPLEX solution line: {}\n".format(cplex_solution_line))
 
         sys.stderr.write("{}\n".format(cplex_solution))
         #if cplex_solution[0] not in (1, 101, 102):
-         #   my.error_exit("CPLEX didn't find the optimal solution: {} {} {}\n".format(cplex_solution[0], cplex_solution[1], cplex_solution[2]))
+         #   utils.error_exit("CPLEX didn't find the optimal solution: {} {} {}\n".format(cplex_solution[0], cplex_solution[1], cplex_solution[2]))
 
         #if cplex_solution[0] == 102:
         optimal_sol_upp_bound = int(math.ceil(cplex_solution[2] / (1 - cplex_solution[3])))
@@ -427,32 +426,32 @@ def get_trueFIs_VC(dataset_name, res_filename, min_freq, delta, gap=0.0, use_add
 
 def main():
     if len(sys.argv) != 7:
-        my.error_exit("USAGE: {} use_additional_knowledge={{0|1}} delta min_freq gap dataset results_filename\n".format( os.path.basename(sys.argv[0])))
+        utils.error_exit("USAGE: {} use_additional_knowledge={{0|1}} delta min_freq gap dataset results_filename\n".format( os.path.basename(sys.argv[0])))
     dataset_name = sys.argv[5]
     res_filename = os.path.expanduser(sys.argv[6])
     if not os.path.isfile(res_filename):
-        my.error_exit("{} does not exist, or is not a file\n".format(res_filename))
+        utils.error_exit("{} does not exist, or is not a file\n".format(res_filename))
     try:
         use_additional_knowledge = int(sys.argv[1])
     except ValueError:
-        my.error_exit("{} is not a number\n".format(sys.argv[1]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[1]))
     try:
         delta = float(sys.argv[2])
     except ValueError:
-        my.error_exit("{} is not a number\n".format(sys.argv[2]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[2]))
     try:
         min_freq = float(sys.argv[3])
     except ValueError:
-        my.error_exit("{} is not a number\n".format(sys.argv[3]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[3]))
     try:
         gap = float(sys.argv[4])
     except ValueError:
-        my.error_exit("{} is not a number\n".format(sys.argv[4]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[4]))
 
     (trueFIs, stats) = get_trueFIs_VC(dataset_name, res_filename, min_freq,
             delta, gap, use_additional_knowledge)
 
-    my.print_itemsets(trueFIs, ds_stats[dataset_name]['size'])
+    utils.print_itemsets(trueFIs, ds_stats[dataset_name]['size'])
 
     sys.stderr.write("res_file={},use_add_knowl={},e1={},e2={},d={},min_freq={},trueFIs={}\n".format(os.path.basename(res_filename), use_additional_knowledge, stats['epsilon_1'], stats['epsilon_2'], delta, min_freq,
         len(trueFIs)))

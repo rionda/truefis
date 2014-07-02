@@ -16,15 +16,14 @@
 # limitations under the License.
 
 import os.path, sys
-import my_utils as my
+import utils
 
 
 def compare(orig_res, other_res, epsilon=1.0):
     """Compare two sets of FIs and return statistics about them.
 
     'orig_res' and 'other_res' are dict whose keys are itemsets (frozensets)
-    and values are frequencies, like those returned by
-    my_utils.create_results().
+    and values are frequencies, like those returned by utils.create_results().
     
     Returns a dict with the following keys (and meanings):
         intersection: size of the intersection
@@ -80,24 +79,24 @@ def compare(orig_res, other_res, epsilon=1.0):
 
 def main():
     if len(sys.argv) != 4:
-        my.error_exit("USAGE: {} min_freq epsilon sampleRes origRes\n".format(sys.argv[0]))
+        utils.error_exit("USAGE: {} min_freq epsilon sampleRes origRes\n".format(sys.argv[0]))
     orig_res_filename = os.path.expanduser(sys.argv[3])
     if not os.path.isfile(orig_res_filename):
-        my.error_exit("{} does not exist, or is not a file\n".format(orig_res_filename))
+        utils.error_exit("{} does not exist, or is not a file\n".format(orig_res_filename))
     sample_res_filename = os.path.expanduser(sys.argv[2])
     if not os.path.isfile(sample_res_filename):
-        my.error_exit("{} does not exist, or is not a file\n".format(sample_res_filename))
+        utils.error_exit("{} does not exist, or is not a file\n".format(sample_res_filename))
     try:
         min_freq = float(sys.argv[1])
     except ValueError:
-        my.error_exit("{} is not a number\n".format(sys.argv[1]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[1]))
     try:
         epsilon = float(sys.argv[2])
     except ValueError:
-        my.error_exit("{} is not a number\n".format(sys.argv[2]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[2]))
 
-    origFIs = my.create_results(orig_res_filename, min_freq)
-    sampleFIs = my.create_results(sample_res_filename, min_freq)
+    origFIs = utils.create_results(orig_res_filename, min_freq)
+    sampleFIs = utils.create_results(sample_res_filename, min_freq)
 
     stats = compare(origFIs, sampleFIs, epsilon)
 
