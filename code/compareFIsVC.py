@@ -19,111 +19,7 @@ import locale, math, os, os.path, subprocess, sys, tempfile
 import networkx as nx
 import epsilon
 from datasetsinfo import ds_stats
-
-
-def error_exit(msg):
-    """Print message msg to stderr and exit."""
-    sys.stderr.write(msg)
-    sys.exit(1)
-
-
-def get_closed_itemsets(itemsets):
-    """Compute the closed itemsets.
-    
-    Return the set of closed itemsets in 'itemsets', which is a dictionary
-    whose keys are itemsets (frozensets) and whose values are the frequencies.
-    Return a similar dict.
-
-    """
-    closed_itemsets = dict()
-    border = set()
-    itemsets_sorted_by_size = sorted(itemsets, key=len)
-    for itemset in itemsets_sorted_by_size:
-        to_remove = set()
-        to_remove_border = set()
-        for closed in border:
-            if itemset > closed:
-                if itemsets[closed] == itemsets[itemset]:
-                    to_remove.add(closed)
-                to_remove_border.add(closed)
-        border -= to_remove_border
-        border.add(itemset)
-        for key in to_remove:
-            del closed_itemsets[key]
-        closed_itemsets[itemset] = itemsets[itemset]
-        
-    #check_closed_itemsets(closed_itemsets)
-    return closed_itemsets
-
-
-def check_closed_itemsets(closed_itemsets):
-    """ Check that closed_itemsets is a collection of closed itemsets. """
-    for itemset1 in closed_itemsets:
-        for itemset2 in closed_itemsets:
-            if itemset1 < itemset2:
-                assert closed_itemsets[itemset1] > closed_itemsets[itemset2]
-
-
-def get_maximal_itemsets(itemsets):
-    """Compute the maximal itemsets.
-
-    Return the set of maximal itemsets in 'itemsets', which is a dictionary
-    whose keys are itemsets (frozensets) and whose values are the frequencies.
-    Return a similar dict.
-
-    """
-    maximal_itemsets = dict()
-    maximal_itemsets_list = []
-    itemsets_revsorted_by_size = sorted(itemsets.keys(), key=len, reverse=True)
-    for itemset in itemsets_revsorted_by_size:
-        to_add = True
-        for maximal in maximal_itemsets_list:
-            if itemset < maximal:
-                to_add = False
-                break
-        if to_add:
-            maximal_itemsets[itemset] = itemsets[itemset]
-            maximal_itemsets_list.append(itemset)
-    return maximal_itemsets
-
-
-def create_results(file_name, min_freq):
-    """Read Frequent Itemsets at threshold min_freq from filename.
-    
-    Return a dict where the keys are frequent itemsets (represented as
-    frozensets) and the values are their frequencies. Only itemsets with
-    frequency at least min_freq are returned.
-
-    The first line of the results file file_name has the form (SIZE) where SIZE
-    is the number of transactions in the dataset from which the itemsets where
-    extracted. The following lines have the format N1 N2 N3 N4 (SUPPORT) where
-    NX is an item (integer) and SUPPORT is the support of the itemset. The
-    itemsets are expected to appear in the file in reverse sorted order by
-    support (from most frequent to least frequent).
-
-    """
-    results = dict()
-    with open(file_name) as FILE:
-        size_line = FILE.readline()
-        try:
-            size = int(size_line[1:-2])
-        except ValueError:
-            error_exit("Cannot compute size of the original dataset: {} is not a number\n".format(size_line[1:-2]))
-        prev_freq = 1.0
-        for line in FILE:
-            if line.find("(") > -1:
-                tokens = line.split("(")
-                itemset = frozenset(map(int, tokens[0].split()))
-                support = int(tokens[1][:-2])
-                freq = support / size
-                if freq > prev_freq:
-                    error_exit("Results file must be sorted\n")
-                if freq >= min_freq:
-                    results[itemset] = freq
-                    prev_freq = freq
-                else:
-                    break
-    return results
+import my_utils as my
 
 
 def main():
@@ -137,41 +33,41 @@ def main():
     """
     # Verify arguments
     if len(sys.argv) != 9: 
-        error_exit("Usage: {} ADDITIONALKNOWLEDGE={{0|1}} PHASES DELTA MINFREQ GAP DATASETNAME ORIGRES SAMPLERES\n".format(os.path.basename(sys.argv[0])))
+        my.error_exit("Usage: {} ADDITIONALKNOWLEDGE={{0|1}} PHASES DELTA MINFREQ GAP DATASETNAME ORIGRES SAMPLERES\n".format(os.path.basename(sys.argv[0])))
     dataset_name = sys.argv[6]
     orig_res_filename = os.path.expanduser(sys.argv[7])
     if not os.path.isfile(orig_res_filename):
-        error_exit("{} does not exist, or is not a file\n".format(orig_res_filename))
+        my.error_exit("{} does not exist, or is not a file\n".format(orig_res_filename))
     sample_res_filename = os.path.expanduser(sys.argv[8])
     if not os.path.isfile(sample_res_filename):
-        error_exit("{} does not exist, or is not a file\n".format(sample_res_filename))
+        my.error_exit("{} does not exist, or is not a file\n".format(sample_res_filename))
     try:
         use_additional_knowledge = int(sys.argv[1])
     except ValueError:
-        error_exit("{} is not a number\n".format(sys.argv[1]))
+        my.error_exit("{} is not a number\n".format(sys.argv[1]))
     try:
         phases = int(sys.argv[2])
     except ValueError:
-        error_exit("{} is not a number\n".format(sys.argv[2]))
+        my.error_exit("{} is not a number\n".format(sys.argv[2]))
     try:
         delta = float(sys.argv[3])
     except ValueError:
-        error_exit("{} is not a number\n".format(sys.argv[3]))
+        my.error_exit("{} is not a number\n".format(sys.argv[3]))
     try:
         min_freq = float(sys.argv[4])
     except ValueError:
-        error_exit("{} is not a number\n".format(sys.argv[4]))
+        my.error_exit("{} is not a number\n".format(sys.argv[4]))
     try:
         gap = float(sys.argv[5])
     except ValueError:
-        error_exit("{} is not a number\n".format(sys.argv[5]))
+        my.error_exit("{} is not a number\n".format(sys.argv[5]))
 
     # One may want to play with giving different values for the different error
     # probabilities, but there isn't really much point in it.
     if phases > 1:
         lower_delta = 1.0 - math.pow(1 - delta, 1.0 / phases)
     else:
-        error_exit("'PHASES' parameter must be greater than 1 ('{}' given)".format(phases))
+        my.error_exit("'PHASES' parameter must be greater than 1 ('{}' given)".format(phases))
 
     # Compute the first epsilon using results from the paper (Riondato and Upfal 2014)
     # Incorporate or not 'previous knowledge' about generative process in
@@ -188,7 +84,7 @@ def main():
     lengths_dict = ds_stats[dataset_name]['lengths']
     lengths = sorted(lengths_dict.keys(), reverse=True)
     lower_bound_freq = min_freq - epsilon_1 - (1 / ds_stats[dataset_name]['size'])
-    freq_itemsets_1_dict = create_results(sample_res_filename, lower_bound_freq)
+    freq_itemsets_1_dict = my.create_results(sample_res_filename, lower_bound_freq)
     freq_itemsets_1_set = frozenset(freq_itemsets_1_dict.keys())
     freq_items_1 = set()
     for itemset in freq_itemsets_1_set:
@@ -220,7 +116,7 @@ def main():
     # Compute Closed Itemsets
     sys.stderr.write("Computing closed itemsets...")
     sys.stderr.flush()
-    closed_itemsets = get_closed_itemsets(base_set)
+    closed_itemsets = my.get_closed_itemsets(base_set)
     sys.stderr.write("done. Found {} closed itemsets\n".format(len(closed_itemsets)))
     sys.stderr.flush()
 
@@ -228,7 +124,7 @@ def main():
     # An itemset is maximal frequent if none of its immediate supersets is frequent.
     sys.stderr.write("Computing maximal itemsets...")
     sys.stderr.flush()
-    maximal_itemsets_dict = get_maximal_itemsets(closed_itemsets)
+    maximal_itemsets_dict = my.get_maximal_itemsets(closed_itemsets)
     maximal_itemsets = list(maximal_itemsets_dict.keys())
     maximal_itemsets_size = len(maximal_itemsets)
     sys.stderr.write("done. Found {} maximal itemsets\n".format(maximal_itemsets_size))
@@ -459,7 +355,7 @@ def main():
         cplex_output_binary_str = subprocess.check_output(["python2.6", tmpfile_name], env = my_environ, cwd=os.environ["PWD"])
     except subprocess.CalledProcessError as err:
         os.remove(tmpfile_name)
-        error_exit("CPLEX exited with error code {}: {}\n".format(err.returncode, err.output))
+        my.error_exit("CPLEX exited with error code {}: {}\n".format(err.returncode, err.output))
     #finally:
     #    os.remove(tmpfile_name)
 
@@ -469,12 +365,12 @@ def main():
     try:
         cplex_solution = eval(cplex_solution_line)
     except Exception:
-        error_exit("Error evaluating the CPLEX solution line: {}\n".format(cplex_solution_line))
+        my.error_exit("Error evaluating the CPLEX solution line: {}\n".format(cplex_solution_line))
 
     sys.stderr.write("cplex_solution={}\n".format(cplex_solution))
     sys.stderr.flush()
     #if cplex_solution[0] not in (1, 101, 102):
-    #    error_exit("CPLEX didn't find the optimal solution: {} {} {}\n".format(cplex_solution[0], cplex_solution[1], cplex_solution[2]))
+    #    my.error_exit("CPLEX didn't find the optimal solution: {} {} {}\n".format(cplex_solution[0], cplex_solution[1], cplex_solution[2]))
 
     optimal_sol_upp_bound = int(math.ceil(cplex_solution[2] / (1 - cplex_solution[3])))
 
@@ -508,7 +404,7 @@ def main():
             cplex_output_binary_str = subprocess.check_output(["python2.6", tmpfile_name], env = my_environ, cwd=os.environ["PWD"])
         except subprocess.CalledProcessError as err:
             os.remove(tmpfile_name)
-            error_exit("CPLEX exited with error code {}: {}\n".format(err.returncode, err.output))
+            my.error_exit("CPLEX exited with error code {}: {}\n".format(err.returncode, err.output))
         #finally:
         #    os.remove(tmpfile_name)
 
@@ -518,11 +414,11 @@ def main():
         try:
             cplex_solution = eval(cplex_solution_line)
         except Exception:
-            error_exit("Error evaluating the CPLEX solution line: {}\n".format(cplex_solution_line))
+            my.error_exit("Error evaluating the CPLEX solution line: {}\n".format(cplex_solution_line))
 
         sys.stderr.write("{}\n".format(cplex_solution))
         #if cplex_solution[0] not in (1, 101, 102):
-         #   error_exit("CPLEX didn't find the optimal solution: {} {} {}\n".format(cplex_solution[0], cplex_solution[1], cplex_solution[2]))
+         #   my.error_exit("CPLEX didn't find the optimal solution: {} {} {}\n".format(cplex_solution[0], cplex_solution[1], cplex_solution[2]))
 
         #if cplex_solution[0] == 102:
         optimal_sol_upp_bound = int(math.ceil(cplex_solution[2] / (1 - cplex_solution[3])))
@@ -568,7 +464,7 @@ def main():
     # from the sample.
     # TODO some of the following code could use the 'statistics' module from
     # Python-3.4.
-    orig_res = create_results(orig_res_filename, min_freq)
+    orig_res = my.create_results(orig_res_filename, min_freq)
     orig_res_set = set(orig_res.keys())
     sample_res_set = set(sample_res.keys())
 
