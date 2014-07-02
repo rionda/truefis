@@ -15,7 +15,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import operator, sys
+import math, sys
+from scipy.stats import binom as scipy_binom
+from scipy.misc import logsumexp as scipy_logsumexp
+
 
 def error_exit(msg):
     """Print message msg to stderr and exit."""
@@ -141,4 +144,49 @@ def print_itemsets(itemsets, ds_size=1):
 
     for itemset in sorted(itemsets, key=lambda x: itemsets[x], reverse=True):
         print_itemset(itemset, itemsets[itemset], ds_size)
+
+def log_factorial(m,n):
+    """ Compute the logarithm of m * (m+1) * ... * n """
+    sum = 0
+    for i in range(m,n+1): sum += math.log(i)
+    return sum
+
+
+def log_binomial(n,k): 
+    """ Compute the logarithm of n choose k """
+    if k > (n-k):
+        return (log_factorial(n-k+1,n)-log_factorial(2,k))
+    else:
+        return (log_factorial(k+1,n)-log_factorial(2,n-k))
+
+
+def get_union_bound_factor(n, d):
+    """ Compute the logarithm of the number of itemsets """
+    binoms = []
+    for i in range(1,d+1):
+        binoms.append(log_binomial(n, i))
+    return scipy_logsumexp(binoms) / math.log(2.0)
+
+
+def pvalue_exact(support, size, supposed_freq):
+    """ Compute p-value using the exact binomial distribution """
+    return scipy_binom.logsf(support -1, size, supposed_freq)
+
+
+def pvalue_chernoff(support, size, supposed_freq):
+    """ Compute p-value using Chernoff bounds """
+    mu = supposed_freq * size
+    delta = (support - mu) / mu
+    return mu * ( delta - ((1+ delta) * math.log(1 + delta)))
+    #return - pow(support - mu, 2) / (3 * mu)
+
+
+def pvalue(mode, support, size, supposed_freq):
+    """ Compute the p-value using the selected method """
+    if mode == "E":
+        return pvalue_exact(support, size, supposed_freq)
+    elif mode == "C":
+        return pvalue_chernoff(support, size, supposed_freq)
+    else: # NOT REACHED
+        assert False
 
