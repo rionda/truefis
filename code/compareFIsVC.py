@@ -27,26 +27,14 @@ def error_exit(msg):
     sys.exit(1)
 
 
-def check_neg_bord(neg_bord, cand):
-    """Check that cand can be added to neg_bord.
-
-    Return true if none of the sets in neg_bord is a superset or a subset of
-    cand
-    """
-    ret = True
-    for i in neg_bord:
-        if i < cand or cand < i: 
-            print(i, cand)
-            ret = False
-            break
-    return ret
-
 def get_closed_itemsets(itemsets):
     """Compute the closed itemsets.
     
     Return the set of closed itemsets in 'itemsets', which is a dictionary
     whose keys are itemsets (frozensets) and whose values are the frequencies.
     Return a similar dict.
+
+    XXX This is definitively not the most efficient implementation.
     """
     closed_itemsets = dict()
     itemsets_revsorted_by_size = sorted(itemsets.keys(), key=len, reverse=True)
@@ -60,12 +48,15 @@ def get_closed_itemsets(itemsets):
             closed_itemsets[itemset] = itemsets[itemset]
     return closed_itemsets
 
+
 def get_maximal_itemsets(itemsets):
     """Compute the maximal itemsets.
 
     Return the set of maximal itemsets in 'itemsets', which is a dictionary
     whose keys are itemsets (frozensets) and whose values are the frequencies.
     Return a similar dict.
+
+    XXX This is definitively not the most efficient implementation.
     """
     maximal_itemsets = dict()
     itemsets_revsorted_by_size = sorted(itemsets.keys(), key=len, reverse=True)
@@ -201,12 +192,15 @@ def main():
 
     # Compute Closed Itemsets
     sys.stderr.write("Computing closed itemsets...")
+    sys.stderr.flush()
     closed_itemsets = get_closed_itemsets(freq_itemsets_1_dict)
     sys.stderr.write("done. Found {} closed itemsets\n".format(len(closed_itemsets)))
+    sys.stderr.flush()
 
     # Compute maximal itemsets. We will use them to compute the negative border.
     # An itemset is maximal frequent if none of its immediate supersets is frequent.
     sys.stderr.write("Computing maximal itemsets...")
+    sys.stderr.flush()
     maximal_itemsets_dict = get_maximal_itemsets(closed_itemsets)
     maximal_itemsets = list(maximal_itemsets_dict.keys())
     maximal_itemsets_size = len(maximal_itemsets)
@@ -217,6 +211,7 @@ def main():
     sys.stderr.write("Computing negative border...")
     sys.stderr.flush()
     negative_border = set()
+    negative_border_items = set()
     # The idea is to look for "children" of maximal itemsets, and for "siblings"
     # of maximal itemsets
     for maximal in maximal_itemsets:
@@ -238,6 +233,7 @@ def main():
                         break
                 if to_add:
                     negative_border.add(candidate)
+                    negative_border_items |= candidate
                 if not to_add: # if we added the sibling, there's no way we can add the child
                     candidate2 = maximal | frozenset([item]) # create child
                     if candidate2 in negative_border:
@@ -250,13 +246,23 @@ def main():
                             break
                     if to_add:
                         negative_border.add(candidate2)
+                        negative_border_items |= candidate
+    # We don't need to add the non-frequent-items because none of them (or
+    # their supersets) will ever be included in the output, so at most we lose
+    # some statistical power, but it's not a problem of avoiding false
+    # positives.
+    #for item in non_freq_items_1:
+    #    negative_border.add(frozenset([item]))
+    #    negative_border_items.add(item)
     sys.stderr.write("done. Length now: {}\n".format(len(negative_border)))
     sys.stderr.flush()
 
-    # Add the "base set" (terrible name), that is the set of closed itemsets with
-    # frequency < min_freq + epsilon_2
-    # This is part of what makes it a superset of the "true" negative border
+    # Add the "base set" (terrible name) to the negative border, that is the
+    # set of closed itemsets with frequency < min_freq + epsilon_2
+    # This is part of what makes the set "negative_border" a superset of the
+    # "true" negative border (with some caveat about single items, see above)
     sys.stderr.write("Creating negative border base set...")
+    sys.stderr.flush()
     max_freq = 0
     for itemset in closed_itemsets:
         if closed_itemsets[itemset] < min_freq + epsilon_1: 
@@ -267,6 +273,7 @@ def main():
     sys.stderr.flush()
     negative_border = sorted(negative_border,key=len, reverse=True)
     negative_border_size = len(negative_border)
+    negative_border_items_sorted = sorted(negative_border_items)
 
     # Create the graph that we will use to compute the chain constraints.
     # The nodes are the itemsets in negative_border. There is an edge between
@@ -301,7 +308,7 @@ def main():
     sys.stderr.write("done\n")
     sys.stderr.flush()
 
-    vars_num = negative_border_size + freq_items_1_num
+    vars_num = negative_border_size + len(negative_border_items)
     constr_names = []
 
     (tmpfile_handle, tmpfile_name) = tempfile.mkstemp(prefix="cplx", dir=os.environ['PWD'], text=True)
@@ -315,7 +322,7 @@ def main():
         cplex_script.write("os.environ[\"ILOG_LICENSE_FILE\"] = \"/local/projects/cplex/ilm/site.access.ilm\"\n") 
         cplex_script.write("vals = [-1.0, 1.0]\n")
         cplex_script.write("sets_num = {}\n".format(negative_border_size))
-        cplex_script.write("items_num = {}\n".format(freq_items_1_num))
+        cplex_script.write("items_num = {}\n".format(len(negative_border_items)))
         cplex_script.write("vars_num = {}\n".format(vars_num))
         cplex_script.write("my_ub = [1.0] * vars_num\n")
         cplex_script.write("my_types = \"\".join(\"I\" for i in range(vars_num))\n")
@@ -324,10 +331,11 @@ def main():
         cplex_script.write("rows = [ ")
 
         sys.stderr.write("Writing knapsack constraints...")
+        sys.stderr.flush()
         constr_num = 0
-        for item_index in range(freq_items_1_num):
+        for item_index in range(len(negative_border_items)):
             try:
-                for itemset_index in negative_border_items_in_sets_dict[freq_items_1_sorted[item_index]]:
+                for itemset_index in negative_border_items_in_sets_dict[negative_border_items_sorted[item_index]]:
                     constr_str = "".join((constr_start_str,
                             "\"set{}\",\"item{}\"".format(itemset_index,item_index), constr_end_str))
                     cplex_script.write("{},".format(constr_str))
@@ -335,33 +343,35 @@ def main():
                     name = "s{}i{}".format(item_index, itemset_index)
                     constr_names.append(name)
             except KeyError:
-                sys.stderr.write("item_index={} sorted_items[item_index]={}\n".format(item_index, sorted_items[item_index]))
-                sys.stderr.write("{} in items: {}\n".format(sorted_items[item_index], sorted_items[item_index] in items))
-                sys.stderr.write("{} in freq_items_1: {}\n".format(sorted_items[item_index], sorted_items[item_index] in
-                        freq_items_1))
-                sys.stderr.write("{} in non_freq_items_1: {}\n".format(sorted_items[item_index], sorted_items[item_index] in
-                        non_freq_items_1))
+                sys.stderr.write("item_index={} negative_border_items_sorted[item_index]={}\n".format(item_index,
+                            negative_border_items_sorted[item_index]))
+                sys.stderr.write("{} in items: {}\n".format(negative_border_items_sorted[item_index],
+                            negative_border_items_sorted[item_index] in items))
+                sys.stderr.write("{} in freq_items_1: {}\n".format(negative_border_items_sorted[item_index],
+                            negative_border_items_sorted[item_index] in freq_items_1))
+                sys.stderr.write("{} in non_freq_items_1: {}\n".format(negative_border_items_sorted[item_index],
+                        negative_border_items_sorted[item_index] in non_freq_items_1))
                 in_pos_border = False
                 pos_border_itemset = frozenset()
                 for itemset in maximal_itemsets:
-                    if freq_items_1_sorted[item_index] in itemset:
+                    if negative_border_items_sorted[item_index] in itemset:
                         in_pos_border = True
                         pos_border_itemset = itemset
                         break
-                sys.stderr.write("{} in maximal_itemsets: {}. Itemset: {}\n".format(freq_items_1_sorted[item_index], in_pos_border, pos_border_itemset))
+                sys.stderr.write("{} in maximal_itemsets: {}. Itemset: {}\n".format(negative_border_items_sorted[item_index], in_pos_border, pos_border_itemset))
                 in_neg_border = False
                 neg_border_itemset = frozenset()
                 for itemset in negative_border:
-                    if freq_items_1_sorted[item_index] in itemset:
+                    if negative_border_items_sorted[item_index] in itemset:
                         in_neg_border = True
                         neg_border_itemset = itemset
                         break
-                sys.stderr.write("{} in negative_border: {}. Itemset: {}\n".format(freq_items_1_sorted[item_index], in_neg_border, neg_border_itemset))
+                sys.stderr.write("{} in negative_border: {}. Itemset: {}\n".format(negative_border_items_sorted[item_index], in_neg_border, neg_border_itemset))
                 sys.exit(1)
 
         # Create capacity constraints and write it to script
-        constr_str = "".join((constr_start_str, ",".join("\"item{}\"".format(j) for
-            j in range(freq_items_1_num)), "], val=[", ",".join("1.0" for j in range(freq_items_1_num)), "])"))
+        constr_str = "".join((constr_start_str, ",".join("\"item{}\"".format(j) for 
+            j in range(len(negative_border_items))), "], val=[", ",".join("1.0" for j in range(len(negative_border_items))), "])"))
         cplex_script.write(constr_str)
         last_tell = cplex_script.tell()
         cplex_script.write(",")
@@ -372,6 +382,7 @@ def main():
 
         # Create chain constraints and write them to script
         sys.stderr.write("Writing chain constraints...")
+        sys.stderr.flush()
         chains_index = 0
         for clique in nx.find_cliques(graph):
             if len(clique) == 1:
@@ -387,7 +398,7 @@ def main():
         sys.stderr.write("done\n")
         sys.stderr.flush()
 
-        sys.stderr.write("vars_num={} negative_border_size={} items_num={} constr_num={} chains_index={}\n".format(vars_num, negative_border_size, freq_items_1_num, constr_num, chains_index))
+        sys.stderr.write("vars_num={} negative_border_size={} negative_border_items_num={} constr_num={} chains_index={}\n".format(vars_num, negative_border_size, len(negative_border_items), constr_num, chains_index))
         sys.stderr.flush()
 
         cplex_script.seek(last_tell) # go back one character to remove last comma ","
@@ -437,7 +448,8 @@ def main():
     except Exception:
         error_exit("Error evaluating the CPLEX solution line: {}\n".format(cplex_solution_line))
 
-    sys.stderr.write("{}\n".format(cplex_solution))
+    sys.stderr.write("cplex_solution={}\n".format(cplex_solution))
+    sys.stderr.flush()
     #if cplex_solution[0] not in (1, 101, 102):
     #    error_exit("CPLEX didn't find the optimal solution: {} {} {}\n".format(cplex_solution[0], cplex_solution[1], cplex_solution[2]))
 
@@ -447,18 +459,19 @@ def main():
     not_emp_vc_dim = int(math.floor(math.log2(optimal_sol_upp_bound))) +1
     not_emp_epsilon_2 = epsilon.get_eps_vc_dim(lower_delta,
             ds_stats[dataset_name]['size'], not_emp_vc_dim, max_freq)
-    sys.stderr.write("{} {} {} {}\n".format(items_num - 1, optimal_sol_upp_bound, not_emp_vc_dim, not_emp_epsilon_2))
+    sys.stderr.write("items_num-1={} opt_sol_upp_bound={} not_emp_vc_dim={} not_emp_e2={}\n".format(items_num - 1, optimal_sol_upp_bound, not_emp_vc_dim, not_emp_epsilon_2))
+    sys.stderr.flush()
 
     # Loop to compute empirical VC-dimension using lengths distribution
-    items_num_str_len = len(str(freq_items_1_num-1))
+    items_num_str_len = len(str(len(negative_border_items) - 1))
     longer_equal = 0
     for i in range(len(lengths)):
         cand_len = lengths[i]
         if cand_len == items_num: 
             continue
         longer_equal += lengths_dict[cand_len]
-        if cand_len >= freq_items_1_num:
-            cand_len = freq_items_1_num - 1
+        if cand_len >= len(negative_border_items):
+            cand_len = len(negative_border_items) - 1
 
         # Modify the script to use the new capacity.
         with open(tmpfile_name, 'r+t') as cplex_script:
@@ -508,12 +521,16 @@ def main():
     # Compute second candidate to epsilon_2
     emp_epsilon_2 = epsilon.get_eps_emp_vc_dim(lower_delta,
             ds_stats[dataset_name]['size'], emp_vc_dim, max_freq)
-    sys.stderr.write("{} {} {} {}\n".format(cand_len, optimal_sol_upp_bound, emp_vc_dim, emp_epsilon_2))
+    sys.stderr.write("cand_len={} optimal_sol_upp_bound={} emp_vc_dim={} emp_e2={}\n".format(cand_len, optimal_sol_upp_bound, emp_vc_dim, emp_epsilon_2))
+    sys.stderr.flush()
 
     # Compute third candidate to epsilon_2
     shatter_epsilon_2 = epsilon.get_eps_shattercoeff_bound(lower_delta,
             ds_stats[dataset_name]['size'], negative_border_size, max_freq)
 
+    sys.stderr.write("not_emp_e2={}, emp_e2={}, shatter_e2={}".format(not_emp_epsilon_2, emp_epsilon_2,
+                shatter_epsilon_2))
+    sys.stderr.flush()
     epsilon_2 = min(emp_epsilon_2, not_emp_epsilon_2, shatter_epsilon_2)
 
     #sys.stderr.write("{} {} {} {}\n".format(len(maximal_itemsets), negative_border_size, vc_dim, epsilon_second))
@@ -573,6 +590,7 @@ def main():
         negative_border_size, emp_vc_dim, not_emp_vc_dim))
     print("we={},maxabserr={},avgabserr={},avgrelerr={}".format(wrong_eps,
         max_absolute_error, avg_absolute_error, avg_relative_error))
+    sys.stderr.write("orig_res,sample_res,phases,add_knowl,e_1,e_2,delta,min_freq,origFIs,intersect,false_neg,false_pos,jaccard,maximal_itemsets,negative_border,emp_vc_dim,not_emp_vc_dim,wrong_eps,max_abs_err,avg_abs_err,avg_rel_err\n")
     sys.stderr.write("{}\n".format(",".join((str(i) for i in (os.path.basename(orig_res_filename),
         os.path.basename(sample_res_filename), phases, use_additional_knowledge,
         epsilon_1, epsilon_2, delta, min_freq,len(orig_res_set),
