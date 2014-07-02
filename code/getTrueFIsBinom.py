@@ -20,7 +20,7 @@ import utils
 from datasetsinfo import ds_stats
 
 
-def get_trueFIs_binom(dataset_name, res_filename, min_freq, delta, pvalue_mode, use_additional_knowledge=False):
+def get_trueFIs(dataset_name, res_filename, min_freq, delta, pvalue_mode, use_additional_knowledge=False):
     """ Compute the True Frequent Itemsets.
     
     Returns a pair (trueFIs, stats) where trueFIs is a dict whose keys are
@@ -78,8 +78,8 @@ def main():
     except ValueError:
         utils.error_exit("{} is not a number\n".format(sys.argv[3]))
 
-    (trueFIs, stats) = get_trueFIs_binom(dataset_name, res_filename, min_freq,
-            delta, pvalue_mode, use_additional_knowledge)
+    (trueFIs, stats) = get_trueFIs(dataset_name, res_filename, min_freq, delta,
+            pvalue_mode, use_additional_knowledge)
 
     utils.print_itemsets(trueFIs, ds_stats[dataset_name]['size'])
 

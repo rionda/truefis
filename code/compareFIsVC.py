@@ -48,7 +48,7 @@ def main():
         utils.error_exit("{} is not a number\n".format(sys.argv[4]))
 
     # Get the TFIs
-    (sample_res, tfi_stats) = getTrueFIsVC.get_trueFIs_VC(dataset_name, sample_res_filename, min_freq, delta, gap, use_additional_knowledge)
+    (sample_res, tfi_stats) = getTrueFIsVC.get_trueFIs(dataset_name, sample_res_filename, min_freq, delta, gap, use_additional_knowledge)
 
     # Do comparison between the original set of TFIs and the one extracted
     # from the sample.

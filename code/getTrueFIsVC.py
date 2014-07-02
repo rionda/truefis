@@ -21,7 +21,7 @@ import epsilon, utils
 from datasetsinfo import ds_stats
 
 
-def get_trueFIs_VC(dataset_name, res_filename, min_freq, delta, gap=0.0, use_additional_knowledge=False):
+def get_trueFIs(dataset_name, res_filename, min_freq, delta, gap=0.0, use_additional_knowledge=False):
     """ Compute the True Frequent Itemsets.
     
     Returns a pair (trueFIs, stats) where trueFIs is a dict whose keys are
@@ -448,7 +448,7 @@ def main():
     except ValueError:
         utils.error_exit("{} is not a number\n".format(sys.argv[4]))
 
-    (trueFIs, stats) = get_trueFIs_VC(dataset_name, res_filename, min_freq,
+    (trueFIs, stats) = get_trueFIs(dataset_name, res_filename, min_freq,
             delta, gap, use_additional_knowledge)
 
     utils.print_itemsets(trueFIs, ds_stats[dataset_name]['size'])
