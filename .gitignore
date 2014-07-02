@@ -87,3 +87,11 @@ sympy-plots-for-*.tex/
 
 # xindy
 *.xdy
+
+# Vim
+*.swp
+*.swo
+
+# python
+*.pyc
+*__pycache__*
