@@ -26,7 +26,8 @@ def get_trueFIs_VC(dataset_name, res_filename, min_freq, delta, gap=0.0, use_add
     """ Compute the True Frequent Itemsets.
     
     Returns a pair (trueFIs, stats) where trueFIs is a dict whose keys are
-    itemsets ( FIXME."""
+    itemsets (frozensets) and values are frequencies. 'stats' is also a dict
+    with the following keys (and meanings): FIXME."""
 
     stats = dict()
 
@@ -453,12 +454,12 @@ def main():
 
     my.print_itemsets(trueFIs, ds_stats[dataset_name]['size'])
 
-    sys.stderr.write("res_file={},use_add_knowl={},e1={},e2={},d={},min_freq={},trueFIs={}".format(os.path.basename(res_filename), use_additional_knowledge, stats['epsilon_1'], stats['epsilon_2'], delta, min_freq,
+    sys.stderr.write("res_file={},use_add_knowl={},e1={},e2={},d={},min_freq={},trueFIs={}\n".format(os.path.basename(res_filename), use_additional_knowledge, stats['epsilon_1'], stats['epsilon_2'], delta, min_freq,
         len(trueFIs)))
-    sys.stderr.write("base_set={},maximal_itemsets={},negbor={},emp_vc_dim={},not_emp_vc_dim={}".format(stats['base_set'],
+    sys.stderr.write("base_set={},maximal_itemsets={},negbor={},emp_vc_dim={},not_emp_vc_dim={}\n".format(stats['base_set'],
         stats['maximal_itemsets'], stats['negative_border'],
         stats['emp_vc_dim'], stats['not_emp_vc_dim']))
-    sys.stderr.write("res_filw,add_knowl,e_1,e_2,delta,min_freq,trueFIs,base_set,maximal_itemsets,negative_border,emp_vc_dim,not_emp_vc_dim\n")
+    sys.stderr.write("res_file,add_knowl,e_1,e_2,delta,min_freq,trueFIs,base_set,maximal_itemsets,negative_border,emp_vc_dim,not_emp_vc_dim\n")
     sys.stderr.write("{}\n".format(",".join((str(i) for i in (os.path.basename(res_filename),
         use_additional_knowledge, stats['epsilon_1'],
         stats['epsilon_2'], delta, min_freq,len(trueFIs), stats['base_set'],
