@@ -189,8 +189,7 @@ def main():
     lengths = sorted(lengths_dict.keys(), reverse=True)
     lower_bound_freq = min_freq - epsilon_1 - (1 / ds_stats[dataset_name]['size'])
     freq_itemsets_1_dict = create_results(sample_res_filename, lower_bound_freq)
-    freq_itemsets_1 = sorted(freq_itemsets_1_dict.keys(), key=len, reverse=True)
-    freq_itemsets_1_set = frozenset(freq_itemsets_1)
+    freq_itemsets_1_set = frozenset(freq_itemsets_1_dict.keys())
     freq_items_1 = set()
     for itemset in freq_itemsets_1_set:
         if len(itemset) == 1:
@@ -198,7 +197,7 @@ def main():
     freq_items_1_num = len(freq_items_1)    
     non_freq_items_1 = items - freq_items_1
 
-    sys.stderr.write("First set of FI's: {} itemsets\n".format(len(freq_itemsets_1)))
+    sys.stderr.write("First set of FI's: {} itemsets\n".format(len(freq_itemsets_1_set)))
     sys.stderr.flush()
 
     constr_start_str = "cplex.SparsePair(ind = ["
