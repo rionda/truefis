@@ -168,10 +168,10 @@ def main():
 
     # One may want to play with giving different values for the different error
     # probabilities, but there isn't really much point in it.
-    if phases > 0:
+    if phases > 1:
         lower_delta = 1.0 - math.pow(1 - delta, 1.0 / phases)
     else:
-        error_exit("'PHASES' parameter must be positive ('{}' given)".format(phases))
+        error_exit("'PHASES' parameter must be greater than 1 ('{}' given)".format(phases))
 
     # Compute the first epsilon using results from the paper (Riondato and Upfal 2014)
     # Incorporate or not 'previous knowledge' about generative process in
