@@ -17,9 +17,9 @@
 
 import locale, math, os, os.path, subprocess, sys, tempfile
 import networkx as nx
-import epsilon
-from datasetsinfo import ds_stats
+import epsilon, compareFIs
 import my_utils as my
+from datasetsinfo import ds_stats
 
 
 def main():
@@ -462,61 +462,28 @@ def main():
 
     # Do comparison between the original set of TFIs and the one extracted
     # from the sample.
-    # TODO some of the following code could use the 'statistics' module from
-    # Python-3.4.
     orig_res = my.create_results(orig_res_filename, min_freq)
-    orig_res_set = set(orig_res.keys())
-    sample_res_set = set(sample_res.keys())
-
-    intersection = orig_res_set & sample_res_set
-
-    false_negatives = len(orig_res_set - sample_res_set)
-
-    false_positives = len(sample_res_set - orig_res_set)
-    if false_positives > 0:
-        for itemset in sample_res_set - orig_res_set:
-            sys.stderr.write("{} {}\n".format(itemset, sample_res[itemset]))
-
-    jaccard = len(intersection) / len(orig_res_set | sample_res_set) 
-
-    max_absolute_error = 0.0
-    absolute_error_sum = 0.0
-    relative_error_sum = 0.0
-    wrong_eps = 0
-    for itemset in intersection:
-        absolute_error = abs(sample_res[itemset] - orig_res[itemset])
-        absolute_error_sum += absolute_error
-        if absolute_error > max_absolute_error:
-            max_absolute_error = absolute_error
-        if absolute_error > epsilon_2:
-            wrong_eps = wrong_eps + 1
-        relative_error_sum += absolute_error / orig_res[itemset]
-
-    if len(intersection) > 0:
-        avg_absolute_error = absolute_error_sum / len(intersection)
-        avg_relative_error = relative_error_sum / len(intersection)
-    else:
-        avg_absolute_error = 0.0
-        avg_relative_error = 0.0
+    stats = compareFIs.compare(orig_res, sample_res, epsilon_2)
 
     print("large={},sample={},phases={},use_add_knowl={},e1={},e2={},d={},min_freq={},origFIs={}".format(os.path.basename(orig_res_filename),
         os.path.basename(sample_res_filename), phases,
         use_additional_knowledge, epsilon_1, epsilon_2, delta, min_freq,
-        len(orig_res_set)))
-    print("inter={},fn={},fp={},jaccard={}".format(len(intersection),
-        false_negatives, false_positives, jaccard))
+        len(orig_res)))
+    print("inter={},fn={},fp={},jaccard={}".format(stats['intersection'],
+        stats['false_negatives'], stats['false_positives'], stats['jaccard']))
     print("posbor={},negbor={},emp_vc_dim={},not_emp_vc_dim={}".format(maximal_itemsets_size,
         negative_border_size, emp_vc_dim, not_emp_vc_dim))
-    print("we={},maxabserr={},avgabserr={},avgrelerr={}".format(wrong_eps,
-        max_absolute_error, avg_absolute_error, avg_relative_error))
+    print("we={},maxabserr={},avgabserr={},avgrelerr={}".format(stats['wrong_eps'],
+        stats['max_absolute_error'], stats['avg_absolute_error'], stats['avg_relative_error']))
     sys.stderr.write("orig_res,sample_res,phases,add_knowl,e_1,e_2,delta,min_freq,origFIs,intersect,false_neg,false_pos,jaccard,maximal_itemsets,negative_border,emp_vc_dim,not_emp_vc_dim,wrong_eps,max_abs_err,avg_abs_err,avg_rel_err\n")
     sys.stderr.write("{}\n".format(",".join((str(i) for i in (os.path.basename(orig_res_filename),
         os.path.basename(sample_res_filename), phases, use_additional_knowledge,
-        epsilon_1, epsilon_2, delta, min_freq,len(orig_res_set),
-        len(intersection), false_negatives, false_positives, jaccard,
-        maximal_itemsets_size, negative_border_size, emp_vc_dim,
-        not_emp_vc_dim, wrong_eps, max_absolute_error, avg_absolute_error,
-        avg_relative_error)))))
+        epsilon_1, epsilon_2, delta, min_freq,len(orig_res),
+        stats['intersection'], stats['false_negatives'],
+        stats['false_positives'], stats['jaccard'], maximal_itemsets_size,
+        negative_border_size, emp_vc_dim, not_emp_vc_dim, stats['wrong_eps'],
+        stats['max_absolute_error'], stats['avg_absolute_error'],
+        stats['avg_relative_error'])))))
 
 if __name__ == "__main__":
     main()
