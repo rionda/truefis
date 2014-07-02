@@ -184,7 +184,6 @@ def main():
     # min-freq - epsilon_1 
 
     items = ds_stats[dataset_name]['items']
-    sorted_items = sorted(items)
     items_num = len(items)
     lengths_dict = ds_stats[dataset_name]['lengths']
     lengths = sorted(lengths_dict.keys(), reverse=True)
@@ -197,7 +196,6 @@ def main():
         if len(itemset) == 1:
             freq_items_1 |= itemset
     freq_items_1_num = len(freq_items_1)    
-    freq_items_1_sorted = sorted(freq_items_1)
     non_freq_items_1 = items - freq_items_1
 
     sys.stderr.write("First set of FI's: {} itemsets\n".format(len(freq_itemsets_1)))
@@ -206,10 +204,24 @@ def main():
     constr_start_str = "cplex.SparsePair(ind = ["
     constr_end_str = "], val = vals)"
 
+    # Compute the "base set" (terrible name), that is the set of closed 
+    # itemsets with frequency < min_freq + epsilon_2
+    sys.stderr.write("Creating base set...")
+    sys.stderr.flush()
+    max_freq = 0
+    base_set = dict()
+    for itemset in freq_itemsets_1_dict:
+        if freq_itemsets_1_dict[itemset] < min_freq + epsilon_1: 
+            base_set[itemset] = freq_itemsets_1_dict[itemset]
+            if freq_itemsets_1_dict[itemset] > max_freq:
+                max_freq = freq_itemsets_1_dict[itemset]
+    sys.stderr.write("done: {} itemsets\n".format(len(base_set)))
+    sys.stderr.flush()
+    
     # Compute Closed Itemsets
     sys.stderr.write("Computing closed itemsets...")
     sys.stderr.flush()
-    closed_itemsets = get_closed_itemsets(freq_itemsets_1_dict)
+    closed_itemsets = get_closed_itemsets(base_set)
     sys.stderr.write("done. Found {} closed itemsets\n".format(len(closed_itemsets)))
     sys.stderr.flush()
 
@@ -273,18 +285,14 @@ def main():
     sys.stderr.write("done. Length now: {}\n".format(len(negative_border)))
     sys.stderr.flush()
 
-    # Add the "base set" (terrible name) to the negative border, that is the
-    # set of closed itemsets with frequency < min_freq + epsilon_2
-    # This is part of what makes the set "negative_border" a superset of the
-    # "true" negative border (with some caveat about single items, see above)
-    sys.stderr.write("Creating negative border base set...")
+    # Add the "base set" to negative_border, so that it becomes a superset of
+    # the "true" negative border (with some caveats about non-frequent single
+    # items and their supersets, see comment above)
+    sys.stderr.write("Adding base set...")
     sys.stderr.flush()
-    max_freq = 0
-    for itemset in closed_itemsets:
-        if closed_itemsets[itemset] < min_freq + epsilon_1: 
-            negative_border.add(itemset)
-            if closed_itemsets[itemset] > max_freq:
-                max_freq = closed_itemsets[itemset]
+    for itemset in base_set:
+        negative_border.add(itemset)
+        negative_border_items |= itemset
     sys.stderr.write("done. Length now: {} ({} non-freq items)\n".format(len(negative_border), len(non_freq_items_1)))
     sys.stderr.flush()
     negative_border = sorted(negative_border,key=len, reverse=True)
@@ -544,7 +552,7 @@ def main():
     shatter_epsilon_2 = epsilon.get_eps_shattercoeff_bound(lower_delta,
             ds_stats[dataset_name]['size'], negative_border_size, max_freq)
 
-    sys.stderr.write("not_emp_e2={}, emp_e2={}, shatter_e2={}".format(not_emp_epsilon_2, emp_epsilon_2,
+    sys.stderr.write("not_emp_e2={}, emp_e2={}, shatter_e2={}\n".format(not_emp_epsilon_2, emp_epsilon_2,
                 shatter_epsilon_2))
     sys.stderr.flush()
     epsilon_2 = min(emp_epsilon_2, not_emp_epsilon_2, shatter_epsilon_2)
