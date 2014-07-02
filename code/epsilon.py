@@ -36,7 +36,7 @@ def get_eps_vc_dim(delta, ds_size, vc_dim, max_freq=1.0, c=0.5):
 def get_eps_shattercoeff_bound(delta, ds_size, bound, max_freq=1.0):
     """Return the epsilon computed using 'bound' as bound to the shatter
     coefficient, given a 'sample' of size ds_size', where the maximum frequency
-    of an item is max_freq, and a confidence paramter delta."""
+    of an item is max_freq, and a confidence parameter delta."""
     return 2 * math.sqrt( max_freq *  2 * bound / ds_size) + \
             math.sqrt((2 * math.log(2 / delta)) / ds_size)
 
