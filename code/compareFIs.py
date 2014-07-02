@@ -19,7 +19,7 @@ import os.path, sys
 import my_utils as my
 
 
-def compare(orig_res, other_res, epsilon):
+def compare(orig_res, other_res, epsilon=1.0):
     """Compare two sets of FIs and return statistics about them.
 
     'orig_res' and 'other_res' are dict whose keys are itemsets (frozensets)
