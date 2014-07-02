@@ -1,7 +1,7 @@
 TODO
 ====
 
-- [ ] Test new bound EVC
+- [x] Test new bound EVC
   - [x] Implement code in [getDatasetInfo.py](code/getDatasetInfo.py) to
     compute highest item frequency
   - [x] Implement code in [compareFIsVC.py](code/compareFIsVC.py) to use the
@@ -10,12 +10,15 @@ TODO
 	about
   - [x] Implement the code in [epsilon.py](code/epsilon.py) to use the
 	highest item frequency for the bound
-- [ ] Test new bound Rademacher
+- [x] Test new bound Rademacher
   - [x] Implement in [epsilon.py](code/epsilon.py) the code to compute the
 	epsilon using other bounds to the shatter coefficient than the empirical
 	VC-dimension
   - [x] Implement code in [compareFIsVC.py](code/compareFIsVC.py) to use a
 	different bound to the shatter coefficient
+- [ ] Check code binomial
+- [ ] Check code holdout
+- [ ] Write glue code for experiments
 - [ ] Present new bound EVC
 - [ ] Present multi-phases algorithm (test first)
 - [ ] Check [SDM reviews](paper/SDM14/ReviewsSDM.pdf) for other changes
