@@ -292,7 +292,7 @@ def main():
     for itemset in base_set:
         negative_border.add(itemset)
         negative_border_items |= itemset
-    sys.stderr.write("done. Length now: {} ({} non-freq items)\n".format(len(negative_border), len(non_freq_items_1)))
+    sys.stderr.write("done. Length now: {}\n".format(len(negative_border)))
     sys.stderr.flush()
     negative_border = sorted(negative_border,key=len, reverse=True)
     negative_border_size = len(negative_border)
