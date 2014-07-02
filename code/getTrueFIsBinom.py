@@ -147,7 +147,7 @@ def main():
     sample_res = create_results(sample_res_filename, min_freq)
 
     # Compute critical value
-    critical_value = math.log(delta) - (get_union_bound_factor(ds_stats[orig_ds]['numitems'], 2 * ds_stats[orig_ds]['maxlen']) / math.log2(math.e)) # XXX
+    critical_value = math.log(delta) - (get_union_bound_factor(ds_stats[orig_ds]['numitems'], 2 * ds_stats[orig_ds]['maxlen']) / math.log2(math.e))
 
     # Compute TFIs according to this method
     survivors = []
