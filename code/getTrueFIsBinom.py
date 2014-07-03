@@ -16,11 +16,10 @@
 # limitations under the License.
 
 import math, os.path, sys
-import utils
-from datasetsinfo import ds_stats
+import getDatasetInfo, utils
 
 
-def get_trueFIs(dataset_name, res_filename, min_freq, delta, pvalue_mode, use_additional_knowledge=False):
+def get_trueFIs(ds_stats, res_filename, min_freq, delta, pvalue_mode, use_additional_knowledge=False):
     """ Compute the True Frequent Itemsets using the Binomial test with a
     Bonferroni correction.
 
@@ -39,14 +38,14 @@ def get_trueFIs(dataset_name, res_filename, min_freq, delta, pvalue_mode, use_ad
     stats = dict()
 
     if use_additional_knowledge:
-        stats['union_bound_factor'] = utils.get_union_bound_factor(ds_stats[dataset_name]['numitems'], 2 * \
-                ds_stats[dataset_name]['maxlen']) 
+        stats['union_bound_factor'] = utils.get_union_bound_factor(ds_stats['numitems'], 2 * \
+                ds_stats['maxlen']) 
     else:
-        stats['union_bound_factor'] = ds_stats[dataset_name]['numitems']
+        stats['union_bound_factor'] = ds_stats['numitems']
 
     stats['critical_value'] = math.log(delta) - (stats['union_bound_factor'] / math.log2(math.e))
 
-    supposed_freq = (math.ceil(ds_stats[dataset_name]['size'] * min_freq) - 1) / ds_stats[dataset_name]['size']
+    supposed_freq = (math.ceil(ds_stats['size'] * min_freq) - 1) / ds_stats['size']
 
     sample_res = utils.create_results(res_filename, min_freq)
 
@@ -54,7 +53,7 @@ def get_trueFIs(dataset_name, res_filename, min_freq, delta, pvalue_mode, use_ad
     stats['removed'] = 0
     for itemset in sample_res.keys():
         p_value = utils.pvalue(pvalue_mode, sample_res[itemset],
-                ds_stats[dataset_name]['size'], supposed_freq)
+                ds_stats['size'], supposed_freq)
         if p_value <= stats['critical_value']:
             survivors[itemset] = sample_res[itemset]
         else:
@@ -67,7 +66,7 @@ def main():
     # Verify arguments
     if len(sys.argv) != 7: 
         utils.error_exit("Usage: {} use_additional_knowledge={{0|1}} delta min_freq mode={{c|e}} dataset results_filename\n".format(os.path.basename(sys.argv[0])))
-    dataset_name = sys.argv[5]
+    dataset = sys.argv[5]
     res_filename = sys.argv[6]
     if not os.path.isfile(res_filename):
         utils.error_exit("{} does not exist, or is not a file\n".format(res_filename))
@@ -87,10 +86,12 @@ def main():
     except ValueError:
         utils.error_exit("{} is not a number\n".format(sys.argv[3]))
 
-    (trueFIs, stats) = get_trueFIs(dataset_name, res_filename, min_freq, delta,
+    ds_stats = getDatasetInfo.get_ds_stats(dataset)
+
+    (trueFIs, stats) = get_trueFIs(ds_stats, res_filename, min_freq, delta,
             pvalue_mode, use_additional_knowledge)
 
-    utils.print_itemsets(trueFIs, ds_stats[dataset_name]['size'])
+    utils.print_itemsets(trueFIs, ds_stats['size'])
 
     sys.stderr.write("res_file={},use_add_knowl={},pvalue_mode={},d={},min_freq={},trueFIs={}\n".format(os.path.basename(res_filename),
         use_additional_knowledge, pvalue_mode, delta, min_freq, len(trueFIs)))

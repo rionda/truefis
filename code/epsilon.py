@@ -16,12 +16,7 @@
 # limitations under the License.
 
 import math, sys
-from datasetsinfo import ds_stats
-
-
-def error_exit(msg):
-    sys.stderr.write(msg)
-    sys.exit(1)
+import getDatasetInfo, util
 
 
 def get_eps_vc_dim(delta, ds_size, vc_dim, max_freq=1.0, c=0.5):
@@ -65,51 +60,52 @@ def epsilons(delta, ds_size, vc_dim, emp_vc_dim, max_freq=1.0):
     return (eps_vc_dim, eps_emp_vc_dim, returned)
 
 
-def epsilon_dataset(delta, dataset, use_additional_knowledge=False):
+def epsilon_dataset(delta, ds_stats, use_additional_knowledge=False):
     """ Call epsilons() filling in the appropriate values for the parameters
     depending whether to use additional knowledge or not. See below for type
     descriptions.
     """
     
-    assert use_additional_knowledge >= 0 and use_additional_knowledge < 2
-    assert delta > 0 and delta < 1
-    assert dataset in ds_stats
-    
     if use_additional_knowledge:
         # make no assumption on the generative process. VC-dimension is number
         # of items - 1.
         (eps_vc_dim, eps_emp_vc_dim, returned) = epsilons(delta,
-                ds_stats[dataset]['size'], ds_stats[dataset]['numitems'] -1,
-                ds_stats[dataset]['dindex'], ds_stats[dataset]['maxsupp'] /
-                ds_stats[dataset]['size'])
+                ds_stats['size'], ds_stats['numitems'] -1,
+                ds_stats['dindex'], ds_stats['maxsupp'] /
+                ds_stats['size'])
     else: 
         # incorporate available information about the unknown probability
         # distribution, more precisely assuming that it cannot generate
         # transactions longer than twice the longest transactions available in
         # the dataset (using this quantity as bound to the VC-dimension).
         (eps_vc_dim, eps_emp_vc_dim, returned) = epsilons(delta,
-                ds_stats[dataset]['size'], 2*(ds_stats[dataset]['maxlen']) -1, 
-                ds_stats[dataset]['dindex'], ds_stats[dataset]['maxsupp'] /
-                ds_stats[dataset]['size'])
+                ds_stats['size'], 2*(ds_stats['maxlen']) -1, 
+                ds_stats['dindex'], ds_stats['maxsupp'] /
+                ds_stats['size'])
  
     return (eps_vc_dim, eps_emp_vc_dim, returned)
 
 
-if __name__ == "__main__":
-    """When invoked as standalone, compute the epsilons and print them."""
+def main():
     if len(sys.argv) != 4:
-        error_exit("Usage: {} {{0|1}} delta dataset.dat (no path, must be in datasetsinfo.py)\n".format(sys.argv[0]))
+        util.error_exit("Usage: {} use_additional_knowledge={{0|1}} delta dataset\n".format(sys.argv[0]))
     try:
-        phase = int(sys.argv[1])
+        use_additional_knowledge = int(sys.argv[1])
     except ValueError:
-        error_exit("{} is not an integer\n".format(sys.argv[1]))
+        util.error_exit("{} is not an integer\n".format(sys.argv[1]))
     try:
         delta = float(sys.argv[2])
     except ValueError:
-        error_exit("{} is not an integer\n".format(sys.argv[2]))
+        util.error_exit("{} is not an integer\n".format(sys.argv[2]))
 
-    (eps_vc_dim, eps_emp_vc_dim, returned) = epsilon_dataset(phase, delta, sys.argv[3])
+    ds_stats = getDatasetInfo.get_ds_stats(sys.argv[3])
+
+    (eps_vc_dim, eps_emp_vc_dim, returned) = epsilon_dataset(delta, ds_stats, use_additional_knowledge)
 
     print("{} {}".format(eps_vc_dim, eps_emp_vc_dim))
     print("{}\t{}".format(min(eps_vc_dim, eps_emp_vc_dim), returned))
+
+
+if __name__ == "__main__":
+    main()
 

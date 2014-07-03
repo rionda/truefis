@@ -17,11 +17,10 @@
 
 import locale, math, os, os.path, subprocess, sys, tempfile
 import networkx as nx
-import epsilon, utils
-from datasetsinfo import ds_stats
+import epsilon, getDatasetInfo, utils
 
 
-def get_trueFIs(dataset_name, res_filename, min_freq, delta, gap=0.0, use_additional_knowledge=False):
+def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional_knowledge=False):
     """ Compute the True Frequent Itemsets using the method we present in the
     paper.
 
@@ -49,17 +48,17 @@ def get_trueFIs(dataset_name, res_filename, min_freq, delta, gap=0.0, use_additi
     # Incorporate or not 'previous knowledge' about generative process in
     # computation of the VC-dimension, depending on the option passed on the
     # command line
-    (eps_vc_dim, eps_emp_vc_dim, returned) = epsilon.epsilon_dataset(lower_delta, dataset_name, use_additional_knowledge) 
+    (eps_vc_dim, eps_emp_vc_dim, returned) = epsilon.epsilon_dataset(lower_delta, ds_stats, use_additional_knowledge) 
     stats['epsilon_1'] = min(eps_vc_dim, eps_emp_vc_dim)
 
-    items = ds_stats[dataset_name]['items']
+    items = ds_stats['items']
     items_num = len(items)
-    lengths_dict = ds_stats[dataset_name]['lengths']
+    lengths_dict = ds_stats['lengths']
     lengths = sorted(lengths_dict.keys(), reverse=True)
 
     # Extract the first (and largest) set of itemsets with frequency at least
     # min-freq - stats['epsilon_1'] 
-    lower_bound_freq = min_freq - stats['epsilon_1'] - (1 / ds_stats[dataset_name]['size'])
+    lower_bound_freq = min_freq - stats['epsilon_1'] - (1 / ds_stats['size'])
     freq_itemsets_1_dict = utils.create_results(res_filename, lower_bound_freq)
     freq_itemsets_1_set = frozenset(freq_itemsets_1_dict.keys())
     freq_items_1 = set()
@@ -67,7 +66,6 @@ def get_trueFIs(dataset_name, res_filename, min_freq, delta, gap=0.0, use_additi
         if len(itemset) == 1:
             freq_items_1 |= itemset
     freq_items_1_num = len(freq_items_1)    
-    non_freq_items_1 = items - freq_items_1
 
     sys.stderr.write("First set of FI's: {} itemsets\n".format(len(freq_itemsets_1_set)))
     sys.stderr.flush()
@@ -240,6 +238,7 @@ def get_trueFIs(dataset_name, res_filename, min_freq, delta, gap=0.0, use_additi
                             negative_border_items_sorted[item_index] in items))
                 sys.stderr.write("{} in freq_items_1: {}\n".format(negative_border_items_sorted[item_index],
                             negative_border_items_sorted[item_index] in freq_items_1))
+                non_freq_items_1 = items - freq_items_1
                 sys.stderr.write("{} in non_freq_items_1: {}\n".format(negative_border_items_sorted[item_index],
                         negative_border_items_sorted[item_index] in non_freq_items_1))
                 in_pos_border = False
@@ -349,7 +348,7 @@ def get_trueFIs(dataset_name, res_filename, min_freq, delta, gap=0.0, use_additi
     #Compute non-empirical VC-dimension and first candidate to epsilon_2
     stats['not_emp_vc_dim'] = int(math.floor(math.log2(optimal_sol_upp_bound))) +1
     not_emp_epsilon_2 = epsilon.get_eps_vc_dim(lower_delta,
-            ds_stats[dataset_name]['size'], stats['not_emp_vc_dim'], max_freq)
+            ds_stats['size'], stats['not_emp_vc_dim'], max_freq)
     sys.stderr.write("items_num-1={} opt_sol_upp_bound={} not_emp_vc_dim={} not_emp_e2={}\n".format(items_num - 1, optimal_sol_upp_bound, stats['not_emp_vc_dim'], not_emp_epsilon_2))
     sys.stderr.flush()
 
@@ -411,13 +410,13 @@ def get_trueFIs(dataset_name, res_filename, min_freq, delta, gap=0.0, use_additi
     
     # Compute second candidate to epsilon_2
     emp_epsilon_2 = epsilon.get_eps_emp_vc_dim(lower_delta,
-            ds_stats[dataset_name]['size'], stats['emp_vc_dim'], max_freq)
+            ds_stats['size'], stats['emp_vc_dim'], max_freq)
     sys.stderr.write("cand_len={} optimal_sol_upp_bound={} emp_vc_dim={} emp_e2={}\n".format(cand_len, optimal_sol_upp_bound, stats['emp_vc_dim'], emp_epsilon_2))
     sys.stderr.flush()
 
     # Compute third candidate to epsilon_2
     shatter_epsilon_2 = epsilon.get_eps_shattercoeff_bound(lower_delta,
-            ds_stats[dataset_name]['size'], math.log(stats['negative_border']), max_freq)
+            ds_stats['size'], math.log(stats['negative_border']), max_freq)
 
     sys.stderr.write("not_emp_e2={}, emp_e2={}, shatter_e2={}\n".format(not_emp_epsilon_2, emp_epsilon_2,
                 shatter_epsilon_2))
@@ -438,7 +437,7 @@ def get_trueFIs(dataset_name, res_filename, min_freq, delta, gap=0.0, use_additi
 def main():
     if len(sys.argv) != 7:
         utils.error_exit("USAGE: {} use_additional_knowledge={{0|1}} delta min_freq gap dataset results_filename\n".format( os.path.basename(sys.argv[0])))
-    dataset_name = sys.argv[5]
+    dataset = sys.argv[5]
     res_filename = os.path.expanduser(sys.argv[6])
     if not os.path.isfile(res_filename):
         utils.error_exit("{} does not exist, or is not a file\n".format(res_filename))
@@ -459,10 +458,12 @@ def main():
     except ValueError:
         utils.error_exit("{} is not a number\n".format(sys.argv[4]))
 
-    (trueFIs, stats) = get_trueFIs(dataset_name, res_filename, min_freq,
+    ds_stats = getDatasetInfo.get_ds_stats(dataset)
+
+    (trueFIs, stats) = get_trueFIs(ds_stats, res_filename, min_freq,
             delta, gap, use_additional_knowledge)
 
-    utils.print_itemsets(trueFIs, ds_stats[dataset_name]['size'])
+    utils.print_itemsets(trueFIs, ds_stats['size'])
 
     sys.stderr.write("res_file={},use_add_knowl={},e1={},e2={},d={},min_freq={},trueFIs={}\n".format(os.path.basename(res_filename), use_additional_knowledge, stats['epsilon_1'], stats['epsilon_2'], delta, min_freq,
         len(trueFIs)))
