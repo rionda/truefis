@@ -13,13 +13,13 @@ $(MAINFILE).aux: *.tex
 
 $(MAINFILE).blg: *.bib $(MAINFILE).aux
 	$(LATEX) $(MAINFILE).tex
-	#bibtex --min-crossrefs=20 $(MAINFILE)
+	bibtex --min-crossrefs=20 $(MAINFILE)
 	$(LATEX) $(MAINFILE).tex
 	$(LATEX) $(MAINFILE).tex
 
 $(MAINFILE).pdf: *.tex *.bib
 	$(LATEX) $(MAINFILE).tex
-	#bibtex --min-crossrefs=20 $(MAINFILE)
+	bibtex --min-crossrefs=20 $(MAINFILE)
 	$(LATEX) $(MAINFILE).tex
 	$(LATEX) $(MAINFILE).tex
 
