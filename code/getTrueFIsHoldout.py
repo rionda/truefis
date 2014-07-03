@@ -46,8 +46,6 @@ def get_trueFIs(explore_res_filename, eval_res_filename, min_freq, delta, pvalue
 
     stats = dict()
 
-    # We use the following method to compute the size as the exploration and
-    # the evaluation datasets may not be available in datasetsinfo.py
     with open(explore_res_filename) as FILE:
         exp_size_line = FILE.readline()
         try:
