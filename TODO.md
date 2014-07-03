@@ -17,10 +17,9 @@ TODO
   - [x] Implement code in [compareFIsVC.py](code/compareFIsVC.py) to use a
 	different bound to the shatter coefficient
 - [x] Check code binomial
-- [ ] Check code holdout
+- [x] Check code holdout
 - [ ] Write glue code for experiments
 - [ ] Present new bound EVC
-- [ ] Present multi-phases algorithm (test first)
 - [ ] Check [SDM reviews](paper/SDM14/ReviewsSDM.pdf) for other changes
 - [ ] The LaTeX sources contain a lot of comments. Check to see if anything is
   relevant
