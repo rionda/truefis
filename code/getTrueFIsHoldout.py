@@ -19,7 +19,7 @@ import math, os.path, sys
 import util
 
 
-def get_trueFIs(explore_res_filename, eval_res_filename, min_freq, delta, pvalue_mode, do_filter=False):
+def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mode, do_filter=False):
     """ Compute the True Frequent Itemsets using the holdout method.
     
     The holdout method is described in Geoffrey I. Webb, "Discovering
@@ -28,7 +28,7 @@ def get_trueFIs(explore_res_filename, eval_res_filename, min_freq, delta, pvalue
 
     The dataset is split in two parts, an exploratory part and an evaluation
     part. Each are mined separately at frequency 'min_freq'. The results are
-    contained in 'explore_res_filename' and 'eval_res_filename' respectively.
+    contained in 'exp_res_filename' and 'eval_res_filename' respectively.
     The parameter 'do_filter' controls a variant of the algorithm where the
     results from the exploratory part are filtered more.
     
@@ -46,7 +46,7 @@ def get_trueFIs(explore_res_filename, eval_res_filename, min_freq, delta, pvalue
 
     stats = dict()
 
-    with open(explore_res_filename) as FILE:
+    with open(exp_res_filename) as FILE:
         exp_size_line = FILE.readline()
         try:
             size_str = exp_size_line.split("(")[1].split(")")
@@ -66,30 +66,30 @@ def get_trueFIs(explore_res_filename, eval_res_filename, min_freq, delta, pvalue
 
     supposed_freq = (math.ceil( stats['orig_size'] * min_freq) - 1) / stats['orig_size']
 
-    explore_res = util.create_results(explore_res_filename, min_freq)
-    stats['explorer_res'] = len(explore_res)
+    exp_res = util.create_results(exp_res_filename, min_freq)
+    stats['explorer_res'] = len(exp_res)
 
     if do_filter:
-        explore_res_filtered = dict()
-        for itemset in explore_res:
-            if util.pvalue(pvalue_mode, explore_res[itemset], exp_size, supposed_freq) <= delta:
-                explore_res_filtered[itemset] = explore_res[itemset]
+        exp_res_filtered = dict()
+        for itemset in exp_res:
+            if util.pvalue(pvalue_mode, exp_res[itemset], exp_size, supposed_freq) <= delta:
+                exp_res_filtered[itemset] = exp_res[itemset]
     else:
-        explore_res_filtered = explore_res
-    explore_res_filtered_set = set(explore_res_filtered.keys())
-    stats['explore_res_filtered'] = len(explore_res_filtered_set)
+        exp_res_filtered = exp_res
+    exp_res_filtered_set = set(exp_res_filtered.keys())
+    stats['exp_res_filtered'] = len(exp_res_filtered_set)
 
     eval_res = util.create_results(eval_res_filename, min_freq)
     eval_res_set = set(eval_res.keys())
     stats['eval_res'] = len(eval_res)
 
-    intersection = explore_res_filtered_set & eval_res_set
+    intersection = exp_res_filtered_set & eval_res_set
     stats['intersection'] = len(intersection)
-    stats['false_negatives'] = len(explore_res_filtered_set - eval_res_set)
-    stats['false_positives'] = len(eval_res_set - explore_res_filtered_set)
-    stats['jaccard'] = len(intersection) / len(explore_res_filtered_set | eval_res_set) 
+    stats['false_negatives'] = len(exp_res_filtered_set - eval_res_set)
+    stats['false_positives'] = len(eval_res_set - exp_res_filtered_set)
+    stats['jaccard'] = len(intersection) / len(exp_res_filtered_set | eval_res_set) 
 
-    stats['critical_value'] = math.log(delta) - math.log(len(explore_res_filtered_set))
+    stats['critical_value'] = math.log(delta) - math.log(len(exp_res_filtered_set))
 
     trueFIs = dict()
     stats['removed'] = 0
@@ -108,9 +108,9 @@ def main():
     # Verify arguments
     if len(sys.argv) != 7: 
         util.error_exit("Usage: {} do_filter={{0|1}} delta min_freq pvalue_mode={{e|c}} exploreres evalres\n".format(os.path.basename(sys.argv[0])))
-    explore_res_filename = sys.argv[5]
-    if not os.path.isfile(explore_res_filename):
-        util.error_exit("{} does not exist, or is not a file\n".format(explore_res_filename))
+    exp_res_filename = sys.argv[5]
+    if not os.path.isfile(exp_res_filename):
+        util.error_exit("{} does not exist, or is not a file\n".format(exp_res_filename))
     eval_res_filename = sys.argv[6]
     if not os.path.isfile(eval_res_filename):
         util.error_exit("{} does not exist, or is not a file\n".format(eval_res_filename))
@@ -130,17 +130,26 @@ def main():
     except ValueError:
         util.error_exit("{} is not a number\n".format(sys.argv[3]))
 
-    (trueFIs, stats) = get_trueFIs(explore_res_filename, eval_res_filename, delta, min_freq, pvalue_mode, do_filter)
+    (trueFIs, stats) = get_trueFIs(exp_res_filename, eval_res_filename, delta, min_freq, pvalue_mode, do_filter)
 
     util.print_itemsets(trueFIs, stats['orig_size'])
 
-    # TODO print more stats
-    sys.stderr.write("explore_res_file={},eval_res_file={},do_filter={},pvalue_mode={},d={},min_freq={},trueFIs={}\n".format(os.path.basename(explore_res_filename),os.path.basename(eval_res_filename), do_filter, pvalue_mode, delta, min_freq, len(trueFIs)))
+    sys.stderr.write("exp_res_file={},eval_res_file={},do_filter={},pvalue_mode={},d={},min_freq={},trueFIs={}\n".format(os.path.basename(exp_res_filename),os.path.basename(eval_res_filename), do_filter, pvalue_mode, delta, min_freq, len(trueFIs)))
+    sys.stderr.write("orig_size={},exp_size={},eval_size={}\n".format(stats['orig_size'],
+        stats['exp_size'], stats['eval_size']))
+    sys.stderr.write("exp_res={},exp_res_filtered={},eval_res={}\n".format(stats['exp_res'],
+        stats['exp_res_filtered'], stats['eval_res']))
+    sys.stderr.write("intersection={},false_positives={},false_negatives={},jaccard={}\n".format(stats['intersection'],
+        stats['false_positives'], stats['false_negatives'], stats['jaccard']))
     sys.stderr.write("critical_value={},removed={}\n".format(stats['critical_value'],stats['removed']))
-    sys.stderr.write("explore_res_file,eval_res_file,do_filter,pvalue_mode,delta,min_freq,trueFIs,critical_value,removed\n")
+    sys.stderr.write("exp_res_file,eval_res_file,do_filter,pvalue_mode,delta,min_freq,trueFIs,orig_size,exp_size,eval_size,exp_res,exp_res_filtered,eval_res,intersection,false_positives,false_negatives,jaccard,critical_value,removed\n")
     sys.stderr.write("{}\n".format(",".join((str(i) for i in
-        (os.path.basename(explore_res_filename), os.path.basename(eval_res_filename),
+        (os.path.basename(exp_res_filename), os.path.basename(eval_res_filename),
         do_filter, pvalue_mode, delta, min_freq,len(trueFIs),
+        stats['orig_size'], stats['exp_size'], stats['eval_size'],
+        stats['exp_res'], stats['exp_res_filtered'], stats['eval_res'],
+        stats['intersection'], stats['false_positives'],
+        stats['false_negatives'], stats['jaccard'],
         stats['critical_value'],stats['removed'])))))
 
 
