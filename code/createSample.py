@@ -16,66 +16,56 @@
 # limitations under the License.
 
 import itertools, os, random, sys
-from datasetsinfo import dsStats
 from timeit import Timer
+import getDatasetInfo, util
 
-sampleSize = 0
-populationSize = 0
-largeFileName = ""
-sampleFileName = ""
-
-def errorExit(msg):
-    sys.stderr.write(msg)
-    sys.exit(1)
+sample_size = 0
+population_size = 0
+dataset = ""
 
 
-def createSample():
+def create_sample():
     # Compute indexes of sample lines
     _random, _int = random.random, int  # speed hack XXX really?
-    sampleLines = sorted([_int(_random() * populationSize) for i in itertools.repeat(None, sampleSize)])
+    sample_lines = sorted([_int(_random() * population_size) for i in itertools.repeat(None, sample_size)])
 
-    indexSample = 0
-    indexLines = 0
-    with open(largeFileName, "rt") as largeFILE, open(sampleFileName, "wt") as sampleFILE:
-        while indexSample < sampleSize:
-            while indexLines < sampleLines[indexSample]:
+    index_sample = 0
+    index_lines = 0
+    with open(dataset, "rt") as largeFILE:
+        while index_sample < sample_size:
+            while index_lines < sample_lines[index_sample]:
                 line = largeFILE.readline()
-                indexLines = indexLines + 1
+                index_lines = index_lines + 1
             line = largeFILE.readline()
-            indexLines = indexLines + 1
-            indexSample = indexSample + 1
-            sampleFILE.write(line)
+            index_lines = index_lines + 1
+            index_sample = index_sample + 1
+            sys.stdout.write(line)
 
             # Handle the case when a line is sampled multiple times.
-            while indexSample < sampleSize and sampleLines[indexSample] == sampleLines[indexSample - 1]:
-                sampleFILE.write(line)
-                indexSample = indexSample + 1
-    return(0)
+            while index_sample < sample_size and sample_lines[index_sample] == sample_lines[index_sample - 1]:
+                sys.stdout.write(line)
+                index_sample = index_sample + 1
 
 
 def main():
-    global sampleSize 
-    global populationSize
-    global largeFileName
-    global sampleFileName
+    global sample_size 
+    global population_size
+    global dataset
     # Verify arguments
-    if len(sys.argv) != 4: 
-        errorExit("Usage: {} SAMPLESIZE SAMPLEFILE DATASETFILE\n".format(os.path.basename(sys.argv[0])))
-    sampleFileName = sys.argv[2]
-    largeFileName = sys.argv[3]
-    if not os.path.isfile(largeFileName):
-        errorExit("{} does not exist, or is not a file\n".format(largeFileName))
+    if len(sys.argv) != 3: 
+        util.error_exit("Usage: {} samplesize dataset\n".format(os.path.basename(sys.argv[0])))
+    dataset = sys.argv[2]
     try:
-        sampleSize = int(sys.argv[1])
+        sample_size = int(sys.argv[1])
     except ValueError:
-        errorExit("{} is not a number\n".format(sys.argv[1]))
+        util.error_exit("{} is not a number\n".format(sys.argv[1]))
 
-    baseLargeFileName = os.path.basename(largeFileName)
-    populationSize = dsStats[baseLargeFileName]['size']
+    ds_stats = getDatasetInfo.get_stats(dataset)
+    population_size = ds_stats['size']
 
     random.seed()
 
-    t = Timer("createSample()", "from __main__ import createSample")
+    t = Timer("create_sample()", "from __main__ import create_sample")
     sys.stderr.write("Creating the sample took: {} ms \n".format(t.timeit(1) * 1000))
 
 
