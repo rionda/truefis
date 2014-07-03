@@ -19,12 +19,30 @@ import math, os.path, sys
 import util
 
 
-def get_trueFIs(explore_res_filename, eval_res_filename, min_freq, delta, do_filter=False):
-    """ Compute the True Frequent Itemsets.
+def get_trueFIs(explore_res_filename, eval_res_filename, min_freq, delta, pvalue_mode, do_filter=False):
+    """ Compute the True Frequent Itemsets using the holdout method.
     
-    Returns a pair (trueFIs, stats) where trueFIs is a dict whose keys are
-    itemsets (frozensets) and values are frequencies. 'stats' is also a dict
-    with the following keys (and meanings): FIXME."""
+    The holdout method is described in Geoffrey I. Webb, "Discovering
+    significant patterns" in Machine Learning, Vol. 68, Issue (1), pp. 1-3,
+    2007.
+
+    The dataset is split in two parts, an exploratory part and an evaluation
+    part. Each are mined separately at frequency 'min_freq'. The results are
+    contained in 'explore_res_filename' and 'eval_res_filename' respectively.
+    The parameter 'do_filter' controls a variant of the algorithm where the
+    results from the exploratory part are filtered more.
+    
+    The p-values for the Binomial tests are computed using the mode specified
+    by pvalue_mode, eiter 'c' for Chernoff or 'e' for exact. The parameter
+    'use_additional_knowledge' can be used to incorporate additional knowledge
+    about the data generation process.
+    
+    Returns a pair (trueFIs, stats). 
+    'trueFIs' is a dict whose keys are itemsets (frozensets) and values are
+    frequencies. This collection of itemsets contains only TFIs with
+    probability at least 1 - delta.
+    'stats' is a dict containing various statistics used in computing the
+    collection of itemsets."""
 
     stats = dict()
 
@@ -33,7 +51,7 @@ def get_trueFIs(explore_res_filename, eval_res_filename, min_freq, delta, do_fil
     with open(explore_res_filename) as FILE:
         exp_size_line = FILE.readline()
         try:
-            size_str = eval_size_line.split("(")[1].split(")")
+            size_str = exp_size_line.split("(")[1].split(")")
             exp_size = int(size_str)
         except ValueError:
             util.error_exit("Cannot compute size of the explore dataset: {} is not a number\n".format(size_str))
@@ -56,7 +74,7 @@ def get_trueFIs(explore_res_filename, eval_res_filename, min_freq, delta, do_fil
     if do_filter:
         explore_res_filtered = dict()
         for itemset in explore_res:
-            if util.pvalue(explore_res[itemset], exp_size, supposed_freq) <= delta:
+            if util.pvalue(pvalue_mode, explore_res[itemset], exp_size, supposed_freq) <= delta:
                 explore_res_filtered[itemset] = explore_res[itemset]
     else:
         explore_res_filtered = explore_res
@@ -78,7 +96,8 @@ def get_trueFIs(explore_res_filename, eval_res_filename, min_freq, delta, do_fil
     trueFIs = dict()
     stats['removed'] = 0
     for itemset in intersection:
-        p_value = util.pvalue(pvalue_mode, eval_res[itemset], eval_size, supposed_freq)
+        p_value = util.pvalue(pvalue_mode, eval_res[itemset],
+                stats['eval_size'], supposed_freq)
         if p_value <= stats['critical_value']:
             trueFIs[itemset] = eval_res[itemset]
         else:
