@@ -21,11 +21,20 @@ from datasetsinfo import ds_stats
 
 
 def get_trueFIs(dataset_name, res_filename, min_freq, delta, pvalue_mode, use_additional_knowledge=False):
-    """ Compute the True Frequent Itemsets.
+    """ Compute the True Frequent Itemsets using the Binomial test with a
+    Bonferroni correction.
+
+    The p-values for the Binomial tests are computed using the mode specified
+    by pvalue_mode, eiter 'c' for Chernoff or 'e' for exact. The parameter
+    'use_additional_knowledge' can be used to incorporate additional knowledge
+    about the data generation process.
     
-    Returns a pair (trueFIs, stats) where trueFIs is a dict whose keys are
-    itemsets (frozensets) and values are frequencies. 'stats' is also a dict
-    with the following keys (and meanings): FIXME."""
+    Returns a pair (trueFIs, stats). 
+    'trueFIs' is a dict whose keys are itemsets (frozensets) and values are
+    frequencies. This collection of itemsets contains only TFIs with
+    probability at least 1 - delta.
+    'stats' is a dict containing various statistics used in computing the
+    collection of itemsets."""
 
     stats = dict()
 

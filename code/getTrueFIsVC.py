@@ -22,11 +22,22 @@ from datasetsinfo import ds_stats
 
 
 def get_trueFIs(dataset_name, res_filename, min_freq, delta, gap=0.0, use_additional_knowledge=False):
-    """ Compute the True Frequent Itemsets.
-    
-    Returns a pair (trueFIs, stats) where trueFIs is a dict whose keys are
-    itemsets (frozensets) and values are frequencies. 'stats' is also a dict
-    with the following keys (and meanings): FIXME."""
+    """ Compute the True Frequent Itemsets using the method we present in the
+    paper.
+
+    The parameter 'use_additional_knowledge' can be used to incorporate
+    additional knowledge about the data generation process.
+
+    'gap' controls how close to the optimal solution we ask the CPLEX solver to
+    go. The right way to implement this would be to use a
+    user-defined function in CPLEX. 
+
+    Returns a pair (trueFIs, stats). 
+    'trueFIs' is a dict whose keys are itemsets (frozensets) and values are
+    frequencies. This collection of itemsets contains only TFIs with
+    probability at least 1 - delta.
+    'stats' is a dict containing various statistics used in computing the
+    collection of itemsets."""
 
     stats = dict()
 
