@@ -15,9 +15,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-from os.path import basename, isfile
+import os.path, sys
+import datasetsinfo, utils
 
-def ds_stats(dataset):
+
+def compute_ds_stats(dataset):
     """Compute various stats about the dataset. 
     
     Returns a dict where the keys are stats names and values are the stats
@@ -87,19 +89,31 @@ def ds_stats(dataset):
             transaction_lengths, 'items': items}
 
 
-if __name__ == '__main__':
-    from sys import argv, exit, stderr
-    def errorExit(msg):
-        stderr.write(msg)
-        exit(1)
+def get_ds_stats(dataset, force_compute = False):
+    """ Return a dict containing the statistics about the dataset.
+    
+    Look up 'dataset' in datasetsinfo.ds_stat. If present, return that dict,
+    otherwise, compute the stats.
 
-    # Verify arguments
-    if len(argv) != 2:
-        errorExit("Usage: {} dataset.dat (path)\n".format(basename(argv[0])))
+    See the comment at the beginning of compute_ds_stats() for info about the
+    dict."""
 
-    if not isfile(argv[1]):
-        errorExit("{} does not exist, or is not a file\n".format(argv[1]))
+    if dataset in datasetsinfo.ds_stats and force_compute == False:
+        return datasetsinfo.ds_stats[dataset]
+    else:
+        if not os.path.isfile(dataset):
+            utils.error_exit("{} not found in datasetsinfo.py and does not exist or is not a file\n".format(dataset))
+        return compute_ds_stats(dataset)
 
-    stats = ds_stats(argv[1])
+
+def main():
+    if len(sys.argv) != 2:
+        utils.error_exit("Usage: {} dataset\n".format(os.path.basename(argv[0])))
+
+    stats = get_ds_stats(argv[1])
     print("'{}': {},".format(basename(argv[1]), stats))
+
+
+if __name__ == '__main__':
+    main()
 
