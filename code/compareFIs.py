@@ -78,12 +78,12 @@ def compare(orig_res, other_res, epsilon=1.0):
 
 
 def main():
-    if len(sys.argv) != 4:
+    if len(sys.argv) != 5:
         utils.error_exit("USAGE: {} min_freq epsilon sampleRes origRes\n".format(sys.argv[0]))
-    orig_res_filename = os.path.expanduser(sys.argv[3])
+    orig_res_filename = os.path.expanduser(sys.argv[4])
     if not os.path.isfile(orig_res_filename):
         utils.error_exit("{} does not exist, or is not a file\n".format(orig_res_filename))
-    sample_res_filename = os.path.expanduser(sys.argv[2])
+    sample_res_filename = os.path.expanduser(sys.argv[3])
     if not os.path.isfile(sample_res_filename):
         utils.error_exit("{} does not exist, or is not a file\n".format(sample_res_filename))
     try:
