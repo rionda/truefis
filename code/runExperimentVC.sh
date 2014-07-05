@@ -36,7 +36,7 @@ fi
 DATASET_BASE=`echo ${DATASET} | rev | cut -d "." -f 2- | rev`
 
 for FREQ in `echo ${FREQS}`; do
-	RES_BASE="${DATASET_BASE}_d${DELTA}_t${FREQ}"
+	RES_BASE="${DATASET_BASE}_d${DELTA}_t${FREQ}_vc"
 	# Get the TFIs
 	sh ${SCRIPTS_BASE}/getTrueFIsVC.sh ${USE_ADDIT_KNOWL} ${DELTA} ${FREQ} ${GAP} ${DATASET} > ${TFIS_BASE}/${RES_BASE}.res 2> ${LOGS_BASE}/${RES_BASE}_mine.log
 	# Compare the TFIs
