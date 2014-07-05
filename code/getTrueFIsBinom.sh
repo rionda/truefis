@@ -58,7 +58,8 @@ if [ ${RESULTS_FILE:-empty} = "empty" ]; then
 	else
 		DS="${SAMPLES_BASE}/${DATASET}"
 	fi
-	sh ${SCRIPTS_BASE}/minedb-gra.sh ${LOWER_SUPP} ${DS} ${RESULTS_FILE}
+	SUPP=`echo "scale=scale(0.${MIN_FREQ}); supp=${SIZE} * 0.${MIN_FREQ}; print supp" | bc | cut -d. -f 1`
+	sh ${SCRIPTS_BASE}/minedb-gra.sh ${SUPP} ${DS} ${RESULTS_FILE}
 fi
 echo "done" >&2
 
