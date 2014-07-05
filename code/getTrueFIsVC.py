@@ -177,6 +177,7 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
     sys.stderr.flush()
     graph = nx.Graph()
     graph.add_nodes_from(negative_border)
+    sys.stderr.write("added nodes...adding edges...")
 
     negative_border_items_in_sets_dict = dict()
     negative_border_itemset_index = 0
