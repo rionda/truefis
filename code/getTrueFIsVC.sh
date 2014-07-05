@@ -61,7 +61,11 @@ done
 if [ ${RESULTS_FILE:-empty} = "empty" ]; then
 	echo -n "must mine the dataset..." >&2
 	RESULTS_FILE=${RESULTS_BASE}/${BASEDATASETNAME}_t${MIN_FREQ}.res
-	sh ${SCRIPTS_BASE}/minedb-gra.sh ${LOWER_SUPP} ~/myres/realfis/samples/dat/${DATASETNAME} ${RESULTS_FILE}
+	if [ -r ${DATASET} ]; then
+		DS=${DATASET}
+	else
+		DS="${SAMPLES_BASE}/${DATASET}"
+	sh ${SCRIPTS_BASE}/minedb-gra.sh ${LOWER_SUPP} ${DS} ${RESULTS_FILE}
 fi
 echo "done" >&2
 
