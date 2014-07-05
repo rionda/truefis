@@ -16,7 +16,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-. conf.sh
+. ./conf.sh
 
 USE_ADDIT_KNOWL=$1
 # We keep only the decimal part
@@ -39,7 +39,7 @@ LOWER_DELTA=`echo "scale=10; d = 1 - e(l(1 - 0.${DELTA})/2); print d" | bc -l | 
 EPSILON=`${PYTHON3} ${SCRIPTS_BASE}/epsilon.py ${USE_ADDIT_KNOWL} 0.${LOWER_DELTA} ${DATASET} | tail -1 | cut -f 1 | cut -d "." -f 2`
 LOWER_SUPP=`echo "scale=scale(${EPSILON}); supp=${SIZE} * (0.${MIN_FREQ} - 0.${EPSILON} ); print supp" | bc | cut -d. -f 1`  
 if [ ${LOWER_SUPP} -le 0 ]; then
-  echo "LOWER_SUPP=${LOWER_SUPP} less than 0. $1 ${FREQ} ${SGE_TASK_ID:-no_task}" > /dev/stderr
+    echo "LOWER_SUPP=${LOWER_SUPP} less than 0. USE_ADDIT_KNOWL=${USE_ADDIT_KNOWL} MIN_FREQ=${MIN_FREQ} EPSILON=${EPSILON}" >&2
   exit 1
 fi
 echo "done" >&2
