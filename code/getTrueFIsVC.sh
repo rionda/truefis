@@ -65,6 +65,7 @@ if [ ${RESULTS_FILE:-empty} = "empty" ]; then
 		DS=${DATASET}
 	else
 		DS="${SAMPLES_BASE}/${DATASET}"
+	fi
 	sh ${SCRIPTS_BASE}/minedb-gra.sh ${LOWER_SUPP} ${DS} ${RESULTS_FILE}
 fi
 echo "done" >&2
