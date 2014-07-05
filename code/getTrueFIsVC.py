@@ -470,7 +470,7 @@ def main():
     sys.stderr.write("base_set={},maximal_itemsets={},negbor={},emp_vc_dim={},not_emp_vc_dim={}\n".format(stats['base_set'],
         stats['maximal_itemsets'], stats['negative_border'],
         stats['emp_vc_dim'], stats['not_emp_vc_dim']))
-    sys.stderr.write("res_file,add_knowl,e_1,e_2,delta,min_freq,trueFIs,base_set,maximal_itemsets,negative_border,emp_vc_dim,not_emp_vc_dim\n")
+    sys.stderr.write("res_file,add_knowl,e1,e2,delta,min_freq,trueFIs,base_set,maximal_itemsets,negative_border,emp_vc_dim,not_emp_vc_dim\n")
     sys.stderr.write("{}\n".format(",".join((str(i) for i in (os.path.basename(res_filename),
         use_additional_knowledge, stats['epsilon_1'],
         stats['epsilon_2'], delta, min_freq,len(trueFIs), stats['base_set'],
