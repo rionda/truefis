@@ -42,11 +42,11 @@ fi
 DATASET_BASE=`echo ${DATASET} | rev | cut -d "." -f 2- | rev`
 
 for FREQ in `echo ${FREQS}`; do
+	echo $FREQ
 	RES_BASE="${DATASET_BASE}_d${DELTA}_t${FREQ}_${ALGO}"
 
 	# Get the TFIs
     if [ ${ALGO} = "binom" ]; then
-    elif [ ${ALGO} = "vc" ]; then
         sh ${SCRIPTS_BASE}/getTrueFIsBinom.sh ${USE_ADDIT_KNOWL} ${DELTA} ${FREQ} ${MODE} ${DATASET} > ${TFIS_BASE}/${RES_BASE}.res 2> ${LOGS_BASE}/${RES_BASE}_mine.log
         EPSILON="1.0" # TODO
     elif [ ${ALGO} = "holdout" ]; then
