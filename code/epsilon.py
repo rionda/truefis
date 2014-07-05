@@ -16,7 +16,7 @@
 # limitations under the License.
 
 import math, sys
-import getDatasetInfo, util
+import getDatasetInfo, utils
 
 
 def get_eps_vc_dim(delta, ds_size, vc_dim, max_freq=1.0, c=0.5):
@@ -88,15 +88,15 @@ def epsilon_dataset(delta, ds_stats, use_additional_knowledge=False):
 
 def main():
     if len(sys.argv) != 4:
-        util.error_exit("Usage: {} use_additional_knowledge={{0|1}} delta dataset\n".format(sys.argv[0]))
+        utils.error_exit("Usage: {} use_additional_knowledge={{0|1}} delta dataset\n".format(sys.argv[0]))
     try:
         use_additional_knowledge = int(sys.argv[1])
     except ValueError:
-        util.error_exit("{} is not an integer\n".format(sys.argv[1]))
+        utils.error_exit("{} is not an integer\n".format(sys.argv[1]))
     try:
         delta = float(sys.argv[2])
     except ValueError:
-        util.error_exit("{} is not an integer\n".format(sys.argv[2]))
+        utils.error_exit("{} is not an integer\n".format(sys.argv[2]))
 
     ds_stats = getDatasetInfo.get_ds_stats(sys.argv[3])
 
