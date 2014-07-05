@@ -17,7 +17,7 @@
 
 import itertools, os, random, sys
 from timeit import Timer
-import getDatasetInfo, util
+import getDatasetInfo, utils
 
 sample_size = 0
 population_size = 0
@@ -53,12 +53,12 @@ def main():
     global dataset
     # Verify arguments
     if len(sys.argv) != 3: 
-        util.error_exit("Usage: {} samplesize dataset\n".format(os.path.basename(sys.argv[0])))
+        utils.error_exit("Usage: {} samplesize dataset\n".format(os.path.basename(sys.argv[0])))
     dataset = sys.argv[2]
     try:
         sample_size = int(sys.argv[1])
     except ValueError:
-        util.error_exit("{} is not a number\n".format(sys.argv[1]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[1]))
 
     ds_stats = getDatasetInfo.get_stats(dataset)
     population_size = ds_stats['size']

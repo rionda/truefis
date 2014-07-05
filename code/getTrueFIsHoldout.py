@@ -16,7 +16,7 @@
 # limitations under the License.
 
 import math, os.path, sys
-import util
+import utils
 
 
 def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mode, do_filter=False):
@@ -52,7 +52,7 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mod
             size_str = exp_size_line.split("(")[1].split(")")
             exp_size = int(size_str)
         except ValueError:
-            util.error_exit("Cannot compute size of the explore dataset: {} is not a number\n".format(size_str))
+            utils.error_exit("Cannot compute size of the explore dataset: {} is not a number\n".format(size_str))
 
     with open(eval_res_filename) as FILE:
         eval_size_line = FILE.readline()
@@ -60,26 +60,26 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mod
             size_str = eval_size_line.split("(")[1].split(")")
             stats['eval_size'] = int(size_str)
         except ValueError:
-            util.error_exit("Cannot compute size of the eval dataset: {} is not a number\n".format(size_str))
+            utils.error_exit("Cannot compute size of the eval dataset: {} is not a number\n".format(size_str))
 
     stats['orig_size'] = stats['exp_size'] + stats['eval_size']
 
     supposed_freq = (math.ceil( stats['orig_size'] * min_freq) - 1) / stats['orig_size']
 
-    exp_res = util.create_results(exp_res_filename, min_freq)
+    exp_res = utils.create_results(exp_res_filename, min_freq)
     stats['explorer_res'] = len(exp_res)
 
     if do_filter:
         exp_res_filtered = dict()
         for itemset in exp_res:
-            if util.pvalue(pvalue_mode, exp_res[itemset], exp_size, supposed_freq) <= delta:
+            if utils.pvalue(pvalue_mode, exp_res[itemset], exp_size, supposed_freq) <= delta:
                 exp_res_filtered[itemset] = exp_res[itemset]
     else:
         exp_res_filtered = exp_res
     exp_res_filtered_set = set(exp_res_filtered.keys())
     stats['exp_res_filtered'] = len(exp_res_filtered_set)
 
-    eval_res = util.create_results(eval_res_filename, min_freq)
+    eval_res = utils.create_results(eval_res_filename, min_freq)
     eval_res_set = set(eval_res.keys())
     stats['eval_res'] = len(eval_res)
 
@@ -94,7 +94,7 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mod
     trueFIs = dict()
     stats['removed'] = 0
     for itemset in intersection:
-        p_value = util.pvalue(pvalue_mode, eval_res[itemset],
+        p_value = utils.pvalue(pvalue_mode, eval_res[itemset],
                 stats['eval_size'], supposed_freq)
         if p_value <= stats['critical_value']:
             trueFIs[itemset] = eval_res[itemset]
@@ -107,32 +107,32 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mod
 def main():
     # Verify arguments
     if len(sys.argv) != 7: 
-        util.error_exit("Usage: {} do_filter={{0|1}} delta min_freq pvalue_mode={{e|c}} exploreres evalres\n".format(os.path.basename(sys.argv[0])))
+        utils.error_exit("Usage: {} do_filter={{0|1}} delta min_freq pvalue_mode={{e|c}} exploreres evalres\n".format(os.path.basename(sys.argv[0])))
     exp_res_filename = sys.argv[5]
     if not os.path.isfile(exp_res_filename):
-        util.error_exit("{} does not exist, or is not a file\n".format(exp_res_filename))
+        utils.error_exit("{} does not exist, or is not a file\n".format(exp_res_filename))
     eval_res_filename = sys.argv[6]
     if not os.path.isfile(eval_res_filename):
-        util.error_exit("{} does not exist, or is not a file\n".format(eval_res_filename))
+        utils.error_exit("{} does not exist, or is not a file\n".format(eval_res_filename))
     pvalue_mode = sys.argv[4].upper()
     if pvalue_mode != "C" and pvalue_mode != "E":
-        util.error_exit("p-value mode must be either 'c' or 'e'. You passed {}\n".format(pvalue_mode))
+        utils.error_exit("p-value mode must be either 'c' or 'e'. You passed {}\n".format(pvalue_mode))
     try:
         do_filter = int(sys.argv[1])
     except ValueError:
-        util.error_exit("{} is not a number\n".format(sys.argv[1]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[1]))
     try:
         delta = float(sys.argv[2])
     except ValueError:
-        util.error_exit("{} is not a number\n".format(sys.argv[2]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[2]))
     try:
         min_freq = float(sys.argv[3])
     except ValueError:
-        util.error_exit("{} is not a number\n".format(sys.argv[3]))
+        utils.error_exit("{} is not a number\n".format(sys.argv[3]))
 
     (trueFIs, stats) = get_trueFIs(exp_res_filename, eval_res_filename, delta, min_freq, pvalue_mode, do_filter)
 
-    util.print_itemsets(trueFIs, stats['orig_size'])
+    utils.print_itemsets(trueFIs, stats['orig_size'])
 
     sys.stderr.write("exp_res_file={},eval_res_file={},do_filter={},pvalue_mode={},d={},min_freq={},trueFIs={}\n".format(os.path.basename(exp_res_filename),os.path.basename(eval_res_filename), do_filter, pvalue_mode, delta, min_freq, len(trueFIs)))
     sys.stderr.write("orig_size={},exp_size={},eval_size={}\n".format(stats['orig_size'],
