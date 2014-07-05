@@ -38,7 +38,7 @@ if [ $? -ne 0 ]; then
 fi
 
 ${SCRIPTS_BASE}/grahne/fim_all $2 $1 $3 && \
-${PYTHON3} ${SCRIPTS_BASE}/external_sort.py -k "int(line[line.index('(')+1:line.index(')')])" -t ${RESULTS_BASE} $3 ${TMPFILE} && \
+${PYTHON3} ${SCRIPTS_BASE}/externalSort.py -k "int(line[line.index('(')+1:line.index(')')])" -t ${RESULTS_BASE} $3 ${TMPFILE} && \
 ${TAC} ${TMPFILE} > $3
 rm ${TMPFILE}
 
