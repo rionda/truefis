@@ -108,10 +108,10 @@ def get_ds_stats(dataset, force_compute = False):
 
 def main():
     if len(sys.argv) != 2:
-        utils.error_exit("Usage: {} dataset\n".format(os.path.basename(argv[0])))
+        utils.error_exit("Usage: {} dataset\n".format(os.path.basename(sys.argv[0])))
 
-    stats = get_ds_stats(argv[1])
-    print("'{}': {},".format(basename(argv[1]), stats))
+    stats = get_ds_stats(sys.argv[1])
+    print("'{}': {},".format(os.path.basename(sys.argv[1]), stats))
 
 
 if __name__ == '__main__':
