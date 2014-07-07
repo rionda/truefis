@@ -19,9 +19,9 @@ TODO
 - [x] Check code binomial
 - [x] Check code holdout
 - [x] Write glue code for experiments
-- [ ] Write code holdoutVC
-  - [ ] write python code
-  - [ ] write glue code
+- [x] Write code holdoutVC
+  - [x] write python code
+  - [x] write glue code
 - [ ] Present holdoutVC
 - [ ] Present new bound EVC
 - [ ] Check [SDM reviews](paper/SDM14/ReviewsSDM.pdf) for other changes
