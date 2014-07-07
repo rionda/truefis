@@ -95,3 +95,6 @@ sympy-plots-for-*.tex/
 # python
 *.pyc
 *__pycache__*
+
+# C
+*.o
