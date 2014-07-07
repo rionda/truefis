@@ -19,6 +19,10 @@ TODO
 - [x] Check code binomial
 - [x] Check code holdout
 - [x] Write glue code for experiments
+- [ ] Write code holdoutVC
+  - [ ] write python code
+  - [ ] write glue code
+- [ ] Present holdoutVC
 - [ ] Present new bound EVC
 - [ ] Check [SDM reviews](paper/SDM14/ReviewsSDM.pdf) for other changes
 - [ ] The LaTeX sources contain a lot of comments. Check to see if anything is
