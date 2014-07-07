@@ -83,10 +83,10 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mod
     stats['eval_res'] = len(eval_res)
 
     intersection = exp_res_filtered_set & eval_res_set
-    stats['intersection'] = len(intersection)
-    stats['false_negatives'] = len(exp_res_filtered_set - eval_res_set)
-    stats['false_positives'] = len(eval_res_set - exp_res_filtered_set)
-    stats['jaccard'] = len(intersection) / len(exp_res_filtered_set | eval_res_set) 
+    stats['holdout_intersection'] = len(intersection)
+    stats['holdout_false_negatives'] = len(exp_res_filtered_set - eval_res_set)
+    stats['holdout_false_positives'] = len(eval_res_set - exp_res_filtered_set)
+    stats['holdout_jaccard'] = len(intersection) / len(exp_res_filtered_set | eval_res_set) 
 
     # Bonferroni correction (Union bound). We work in the log space.
     stats['critical_value'] = math.log(delta) - math.log(len(exp_res_filtered_set))
@@ -140,17 +140,17 @@ def main():
         stats['exp_size'], stats['eval_size']))
     sys.stderr.write("exp_res={},exp_res_filtered={},eval_res={}\n".format(stats['exp_res'],
         stats['exp_res_filtered'], stats['eval_res']))
-    sys.stderr.write("intersection={},false_positives={},false_negatives={},jaccard={}\n".format(stats['intersection'],
-        stats['false_positives'], stats['false_negatives'], stats['jaccard']))
+    sys.stderr.write("holdout_intersection={},holdout_false_positives={},holdout_false_negatives={},holdout_jaccard={}\n".format(stats['holdout_intersection'],
+        stats['holdout_false_positives'], stats['holdout_false_negatives'], stats['holdout_jaccard']))
     sys.stderr.write("critical_value={},removed={}\n".format(stats['critical_value'],stats['removed']))
-    sys.stderr.write("exp_res_file,eval_res_file,do_filter,pvalue_mode,delta,min_freq,trueFIs,orig_size,exp_size,eval_size,exp_res,exp_res_filtered,eval_res,intersection,false_positives,false_negatives,jaccard,critical_value,removed\n")
+    sys.stderr.write("exp_res_file,eval_res_file,do_filter,pvalue_mode,delta,min_freq,trueFIs,orig_size,exp_size,eval_size,exp_res,exp_res_filtered,eval_res,holdout_intersection,holdout_false_positives,holdout_false_negatives,holdout_jaccard,critical_value,removed\n")
     sys.stderr.write("{}\n".format(",".join((str(i) for i in
         (os.path.basename(exp_res_filename), os.path.basename(eval_res_filename),
         do_filter, pvalue_mode, delta, min_freq,len(trueFIs),
         stats['orig_size'], stats['exp_size'], stats['eval_size'],
         stats['exp_res'], stats['exp_res_filtered'], stats['eval_res'],
-        stats['intersection'], stats['false_positives'],
-        stats['false_negatives'], stats['jaccard'],
+        stats['holdout_intersection'], stats['holdout_false_positives'],
+        stats['holdout_false_negatives'], stats['holdout_jaccard'],
         stats['critical_value'],stats['removed'])))))
 
 
