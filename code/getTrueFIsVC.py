@@ -73,7 +73,7 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
     constr_start_str = "cplex.SparsePair(ind = ["
     constr_end_str = "], val = vals)"
 
-    # Compute the "base set" (terrible name), that is the set of closed 
+    # Compute the "base set" (terrible name), that is the set of
     # itemsets with frequency < min_freq + epsilon_1
     sys.stderr.write("Creating base set...")
     sys.stderr.flush()
@@ -92,7 +92,8 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
     sys.stderr.write("Computing closed itemsets...")
     sys.stderr.flush()
     closed_itemsets = utils.get_closed_itemsets(base_set)
-    sys.stderr.write("done. Found {} closed itemsets\n".format(len(closed_itemsets)))
+    closed_itemsets_len = len(closed_itemsets)
+    sys.stderr.write("done. Found {} closed itemsets\n".format(closed_itemsets_len))
     sys.stderr.flush()
 
     # Compute maximal itemsets. We will use them to compute the negative border.
@@ -152,7 +153,8 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
     #for item in non_freq_items_1:
     #    negative_border.add(frozenset([item]))
     #    negative_border_items.add(item)
-    sys.stderr.write("done. Length now: {}\n".format(len(negative_border)))
+    original_negative_border_len = len(negative_border)
+    sys.stderr.write("done. Length now: {}\n".format(original_negative_border_len))
     sys.stderr.flush()
 
     # Add the "base set" to negative_border, so that it becomes a superset of
@@ -415,9 +417,12 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
     sys.stderr.write("cand_len={} optimal_sol_upp_bound={} emp_vc_dim={} emp_e2={}\n".format(cand_len, optimal_sol_upp_bound, stats['emp_vc_dim'], emp_epsilon_2))
     sys.stderr.flush()
 
-    # Compute third candidate to epsilon_2
+    # Compute third candidate to epsilon_2. It uses the number of closed
+    # itemsets in the base set and the size of the negative border of the base
+    # set
     shatter_epsilon_2 = epsilon.get_eps_shattercoeff_bound(lower_delta,
-            ds_stats['size'], math.log(stats['negative_border']), max_freq)
+            ds_stats['size'], math.log(original_negative_border_len +
+                closed_itemsets_len), max_freq)
 
     sys.stderr.write("not_emp_e2={}, emp_e2={}, shatter_e2={}\n".format(not_emp_epsilon_2, emp_epsilon_2,
                 shatter_epsilon_2))
