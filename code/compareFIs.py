@@ -50,7 +50,7 @@ def compare(orig_res, other_res, epsilon=1.0):
     stats['false_positives'] = len(stats['false_positives_set'])
     if stats['false_positives'] > 0:
         for itemset in stats['false_positives_set']:
-            sys.stderr.write("WARNING! FALSE POSITIVE:{}, freq={}\n".format(itemset, other_res[itemset]))
+            sys.stderr.write("WARNING! FALSE POSITIVE: '{}', freq={}\n".format(" ".join(str(item) for item in itemset), other_res[itemset]))
 
     stats['jaccard'] = len(intersection) / len(orig_res_set | other_res_set) 
 
