@@ -105,10 +105,13 @@ def create_results(file_name, min_freq):
     with open(file_name) as FILE:
         size_line = FILE.readline()
         try:
-            
-            size = int(size_line.split("(")[1].split(")")[0])
+            size_str = size_line.split("(")[1].split(")")[0]
+        except IndexError:
+            error_exit("Cannot compute size of the original dataset: '{}' is not in the recognized format\n".format(size_line))
+        try:
+            size = int(size_str)
         except ValueError:
-            error_exit("Cannot compute size of the original dataset: {} is not a number\n".format(int(size_line.split("(")[1].split(")")[0])))
+            error_exit("Cannot compute size of the original dataset: '{}' is not a number\n".format(size_line.split("(")[1].split(")")[0]))
         prev_freq = 1.0
         for line in FILE:
             if line.find("(") > -1:
