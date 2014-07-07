@@ -22,7 +22,7 @@ USE_ADD_KNOWL=$1
 # We keep only the decimal part
 DELTA=`echo $2 | cut -d "." -f 2`
 MIN_FREQ=`echo $3 | cut -d "." -f 2`
-MODE=`echo $4 | cut -d "." -f 2`
+GAP=`echo $4 | cut -d "." -f 2`
 
 DATASET=$5
 echo -n "Getting dataset stats..." >&2
@@ -76,5 +76,5 @@ echo "done" >&2
 
 # Compute the True FIs
 echo "Getting TFIs..." >&2
-${PYTHON3} ${SCRIPTS_BASE}/getTrueFIsHoldoutVC.py ${USE_ADDIT_KNOWL} 0.${DELTA} 0.${MIN_FREQ} ${GAP} ${RESULTS_BASE}/${EXPL_RES} ${RESULTS_BASE}/${EVAL_RES}
+${PYTHON3} ${SCRIPTS_BASE}/getTrueFIsHoldoutVC.py ${USE_ADDIT_KNOWL} 0.${DELTA} 0.${MIN_FREQ} 0.${GAP} ${RESULTS_BASE}/${EXPL_RES} ${RESULTS_BASE}/${EVAL_RES}
 
