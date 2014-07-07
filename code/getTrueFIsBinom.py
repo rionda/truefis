@@ -37,7 +37,6 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, pvalue_mode, use_additi
 
     stats = dict()
 
-    supposed_freq = (math.ceil(ds_stats['size'] * min_freq) - 1) / ds_stats['size']
     sample_res = utils.create_results(res_filename, min_freq)
 
     # We work in the log-space
@@ -45,10 +44,11 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, pvalue_mode, use_additi
         stats['union_bound_factor'] = utils.get_union_bound_factor(ds_stats['numitems'], 2 * \
                 ds_stats['maxlen'])
     else:
-        stats['union_bound_factor'] = ds_stats['numitems'] / math.log2(math.e)
+        stats['union_bound_factor'] = ds_stats['numitems'] * math.log(2.0)
 
     # Bonferroni correction (Union bound)
-    stats['critical_value'] = math.log(delta) - (stats['union_bound_factor'])
+    stats['critical_value'] = math.log(delta) - stats['union_bound_factor']
+    supposed_freq = (math.ceil(ds_stats['size'] * min_freq) - 1) / ds_stats['size']
     survivors = dict()
     stats['removed'] = 0
     for itemset in sample_res.keys():
