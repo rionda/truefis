@@ -213,6 +213,9 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, f
 
     optimal_sol_upp_bound = int(math.ceil(cplex_solution[2] / (1 - cplex_solution[3])))
     stats['vcdim'] = int(math.floor(math.log2(optimal_sol_upp_bound))) + 1
+    if stats['vcdim'] > math.log2(len(candidates)):
+        sys.stderr.write("Lowering VC-dimension to maximum value\n")
+        stats['vcdim'] = int(math.floor(math.log2(len(candidates))))
     stats['epsilon_2'] = epsilon.get_eps_vc_dim(lower_delta,
             stats['orig_size'], stats['vcdim'])
 

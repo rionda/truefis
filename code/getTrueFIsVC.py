@@ -350,6 +350,9 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
 
     #Compute non-empirical VC-dimension and first candidate to epsilon_2
     stats['not_emp_vc_dim'] = int(math.floor(math.log2(optimal_sol_upp_bound))) +1
+    if stats['not_emp_vc_dim'] > math.log2(len(negative_border)):
+        sys.stderr.write("Lowering non_empirical VC-dimension to maximum value\n")
+        stats['not_emp_vc_dim'] = int(math.floor(math.log2(len(negative_border))))
     not_emp_epsilon_2 = epsilon.get_eps_vc_dim(lower_delta,
             ds_stats['size'], stats['not_emp_vc_dim'])
     sys.stderr.write("items_num-1={} opt_sol_upp_bound={} not_emp_vc_dim={} not_emp_e2={}\n".format(items_num - 1, optimal_sol_upp_bound, stats['not_emp_vc_dim'], not_emp_epsilon_2))
@@ -400,6 +403,9 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
         #    optimal_sol_upp_bound = cplex_solution[0]
 
         stats['emp_vc_dim'] = int(math.floor(math.log2(optimal_sol_upp_bound))) +1
+        if stats['emp_vc_dim'] > math.log2(len(negative_border)):
+            sys.stderr.write("Lowering VC-dimension to maximum value\n")
+            stats['emp_vc_dim'] = int(math.floor(math.log2(len(negative_border))))
         
 
         sys.stderr.write("cand_len={} longer_equal={} emp_vc_dim={} optimal_sol_upp_bound={}\n".format(cand_len, longer_equal, stats['emp_vc_dim'], optimal_sol_upp_bound))
