@@ -1,6 +1,6 @@
 #! /bin/sh
 
-DATASET="BMS_POS-e20M-1.dat"
+DATASET="BMS-POS-e20M-1.dat"
 ORIG_RES="~/myres/truefis/largeres/FI/BMS-POS_f005.res"
 GAP="05"
 DELTA="10"
