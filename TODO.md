@@ -18,7 +18,7 @@ TODO
 	different bound to the shatter coefficient
 - [x] Check code binomial
 - [x] Check code holdout
-- [ ] Write glue code for experiments
+- [x] Write glue code for experiments
 - [ ] Present new bound EVC
 - [ ] Check [SDM reviews](paper/SDM14/ReviewsSDM.pdf) for other changes
 - [ ] The LaTeX sources contain a lot of comments. Check to see if anything is
