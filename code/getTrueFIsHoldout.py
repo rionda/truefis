@@ -93,13 +93,14 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mod
 
     trueFIs = dict()
     stats['removed'] = 0
-    for itemset in intersection:
+    for itemset in sorted(intersection, key=lambda x : eval_res[x], reverse=True):
         p_value = utils.pvalue(pvalue_mode, eval_res[itemset],
                 stats['eval_size'], supposed_freq)
         if p_value <= stats['critical_value']:
             trueFIs[itemset] = eval_res[itemset]
         else:
-            stats['removed'] += 1
+            stats['removed'] = len(intersection) - len(trueFIs)
+            break
 
     return (trueFIs, stats)
 
