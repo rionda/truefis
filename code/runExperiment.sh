@@ -26,7 +26,7 @@ fi
 
 ALGO=$1
 
-if [ ${ALGO} = "binom" -a ${ALGO} != "holdout" -a ${ALGO} != "vc" ]; then
+if [ ${ALGO} != "binom" -a ${ALGO} != "holdout" -a ${ALGO} != "vc" ]; then
     echo "Algorithm '${ALGO}' not recognized. Must be binom, holdout, or vc" >&2
 	exit 1
 fi
