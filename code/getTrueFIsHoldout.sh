@@ -42,8 +42,8 @@ echo -n "Getting FIs..." >&2
 for RES in `ls ${RESULTS_BASE}/${BASEDATASETNAME}_t*_eval.res 2> /dev/null || echo ""`; do
 	FREQ=`basename ${RES} | rev | cut -d "_" -f 2 | rev| cut -d "t" -f 2`
 	# Floating point comparison
-	MINUS=`echo 0.${FREQ} - 0.${MIN_FREQ} | bc | cut -d "." -f 1`
-	if [ ${MINUS:-empty} = "-" ]; then
+	DIFFERENCE=`echo 0.${MIN_FREQ} - 0.${FREQ} | bc | cut -d "." -f 1`
+	if [ ${DIFFERENCE:-empty} != "-" ]; then
 		echo -n "found results for freq=${FREQ}..." >&2
 		RESULTS_FILE_BASE="${BASEDATASETNAME}_t${FREQ}"
 		EVAL_RES="${RESULTS_FILE_BASE}_eval.res"
