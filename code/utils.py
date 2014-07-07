@@ -172,15 +172,15 @@ def get_union_bound_factor(n, d):
     return scipy_logsumexp(binoms)
 
 
-def pvalue_exact(support, size, supposed_freq):
+def pvalue_exact(freq, size, supposed_freq):
     """ Compute p-value using the exact binomial distribution. 
     
     We work in the log space, so this is the logarithm of the real p-value.
     """
-    return scipy_binom.logsf(support -1, size, supposed_freq)
+    return scipy_binom.logsf(int(freq * size) - 1, size, supposed_freq)
 
 
-def pvalue_chernoff(support, size, supposed_freq):
+def pvalue_chernoff(freq, size, supposed_freq):
     """ Compute p-value using Chernoff bounds.
 
     We work in the log space, so this is the logarithm of the real p-value.
@@ -189,20 +189,21 @@ def pvalue_chernoff(support, size, supposed_freq):
     and Computing", Cambridge University Press, 2005.
     """
     mu = supposed_freq * size
-    delta = (support - mu) / mu
-    one_plus_delta = support / mu
+    delta = (freq - supposed_freq) / supposed_freq
+    assert delta > 0
+    one_plus_delta = freq / supposed_freq
     return mu * ( delta - ((one_plus_delta) * math.log(one_plus_delta)))
 
 
-def pvalue(mode, support, size, supposed_freq):
+def pvalue(mode, freq, size, supposed_freq):
     """ Compute the p-value using the selected method.
     
     We work in the log space, so this is the logarithm of the real p-value.
     """
     if mode == "E":
-        return pvalue_exact(support, size, supposed_freq)
+        return pvalue_exact(freq, size, supposed_freq)
     elif mode == "C":
-        return pvalue_chernoff(support, size, supposed_freq)
+        return pvalue_chernoff(freq, size, supposed_freq)
     else: # NOT REACHED
         assert False
 
