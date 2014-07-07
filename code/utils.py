@@ -165,28 +165,40 @@ def log_binomial(n,k):
 
 
 def get_union_bound_factor(n, d):
-    """ Compute the logarithm of the number of itemsets """
+    """ Compute the natural logarithm of the number of itemsets """
     binoms = []
     for i in range(1,d+1):
         binoms.append(log_binomial(n, i))
-    return scipy_logsumexp(binoms) / math.log(2.0)
+    return scipy_logsumexp(binoms)
 
 
 def pvalue_exact(support, size, supposed_freq):
-    """ Compute p-value using the exact binomial distribution """
+    """ Compute p-value using the exact binomial distribution. 
+    
+    We work in the log space, so this is the logarithm of the real p-value.
+    """
     return scipy_binom.logsf(support -1, size, supposed_freq)
 
 
 def pvalue_chernoff(support, size, supposed_freq):
-    """ Compute p-value using Chernoff bounds """
+    """ Compute p-value using Chernoff bounds.
+
+    We work in the log space, so this is the logarithm of the real p-value.
+    
+    We use Equation 4.1 from Thm. 4.4 in Mitzenmacher and Upfal, 'Probability
+    and Computing", Cambridge University Press, 2005.
+    """
     mu = supposed_freq * size
     delta = (support - mu) / mu
-    return mu * ( delta - ((1+ delta) * math.log(1 + delta)))
-    #return - pow(support - mu, 2) / (3 * mu)
+    one_plus_delta = support / mu
+    return mu * ( delta - ((one_plus_delta) * math.log(one_plus_delta)))
 
 
 def pvalue(mode, support, size, supposed_freq):
-    """ Compute the p-value using the selected method """
+    """ Compute the p-value using the selected method.
+    
+    We work in the log space, so this is the logarithm of the real p-value.
+    """
     if mode == "E":
         return pvalue_exact(support, size, supposed_freq)
     elif mode == "C":

@@ -37,18 +37,18 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, pvalue_mode, use_additi
 
     stats = dict()
 
-    if use_additional_knowledge:
-        stats['union_bound_factor'] = utils.get_union_bound_factor(ds_stats['numitems'], 2 * \
-                ds_stats['maxlen']) 
-    else:
-        stats['union_bound_factor'] = ds_stats['numitems']
-
-    stats['critical_value'] = math.log(delta) - (stats['union_bound_factor'] / math.log2(math.e))
-
     supposed_freq = (math.ceil(ds_stats['size'] * min_freq) - 1) / ds_stats['size']
-
     sample_res = utils.create_results(res_filename, min_freq)
 
+    # We work in the log-space
+    if use_additional_knowledge:
+        stats['union_bound_factor'] = utils.get_union_bound_factor(ds_stats['numitems'], 2 * \
+                ds_stats['maxlen'])
+    else:
+        stats['union_bound_factor'] = ds_stats['numitems'] / math.log2(math.e)
+
+    # Bonferroni correction (Union bound)
+    stats['critical_value'] = math.log(delta) - (stats['union_bound_factor'])
     survivors = dict()
     stats['removed'] = 0
     for itemset in sample_res.keys():
@@ -57,7 +57,7 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, pvalue_mode, use_additi
         if p_value <= stats['critical_value']:
             survivors[itemset] = sample_res[itemset]
         else:
-            stats['removed'] +=1
+            stats['removed'] += 1
 
     return (survivors, stats)
 

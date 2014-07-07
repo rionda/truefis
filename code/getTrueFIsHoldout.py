@@ -64,11 +64,10 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mod
 
     stats['orig_size'] = stats['exp_size'] + stats['eval_size']
 
-    supposed_freq = (math.ceil( stats['orig_size'] * min_freq) - 1) / stats['orig_size']
-
     exp_res = utils.create_results(exp_res_filename, min_freq)
     stats['explorer_res'] = len(exp_res)
 
+    supposed_freq = (math.ceil( stats['orig_size'] * min_freq) - 1) / stats['orig_size']
     if do_filter:
         exp_res_filtered = dict()
         for itemset in exp_res:
@@ -89,6 +88,7 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mod
     stats['false_positives'] = len(eval_res_set - exp_res_filtered_set)
     stats['jaccard'] = len(intersection) / len(exp_res_filtered_set | eval_res_set) 
 
+    # Bonferroni correction (Union bound). We work in the log space.
     stats['critical_value'] = math.log(delta) - math.log(len(exp_res_filtered_set))
 
     trueFIs = dict()
@@ -99,7 +99,7 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mod
         if p_value <= stats['critical_value']:
             trueFIs[itemset] = eval_res[itemset]
         else:
-            stats['removed'] +=1
+            stats['removed'] += 1
 
     return (trueFIs, stats)
 
