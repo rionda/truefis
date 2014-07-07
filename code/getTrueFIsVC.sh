@@ -66,7 +66,7 @@ if [ ${RESULTS_FILE:-empty} = "empty" ]; then
 	else
 		DS="${SAMPLES_BASE}/${DATASET}"
 	fi
-	sh ${SCRIPTS_BASE}/minedb-gra.sh ${LOWER_SUPP} ${DS} ${RESULTS_FILE}
+	sh ${SCRIPTS_BASE}/minedb-gra.sh ${LOWER_SUPP} ${DS} ${RESULTS_FILE} > /dev/null
 fi
 echo "done" >&2
 
