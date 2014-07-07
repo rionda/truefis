@@ -61,16 +61,15 @@ if [ ${EVAL_RES:-empty} = "empty" ]; then
 		DS="${SAMPLES_BASE}/${DATASET}"
 	fi
 	# Only split the dataset if we actually need to
-	if [ ( ! -r ${SAMPLES_BASE}/${BASEDATASETNAME}_expl.dat ) -o ( ! -r
-		${SAMPLES_BASE}/${BASEDATASETNAME}_eval.dat ) ]; then
+	if [ ! -r ${SAMPLES_BASE}/${BASEDATASETNAME}_expl.dat -o ! -r ${SAMPLES_BASE}/${BASEDATASETNAME}_eval.dat ]; then
 		${PYTHON3} ${SCRIPTS_BASE}/splitDataset.py ${SIZE} ${DS} ${SAMPLES_BASE}/${BASEDATASETNAME}_expl.dat ${SAMPLES_BASE}/${BASEDATASETNAME}_eval.dat
 	fi
 	SUPP=`echo "scale=scale(0.${MIN_FREQ}); supp=${SIZE} * 0.${MIN_FREQ}; print supp" | bc | cut -d. -f 1`
 	RESULTS_FILE_BASE="${BASEDATASETNAME}_t${FREQ}"
 	EVAL_RES="${RESULTS_FILE_BASE}_eval.res"
 	EXPL_RES="${RESULTS_FILE_BASE}_expl.res"
-	sh ${SCRIPTS_BASE}/minedb-gra.sh ${SUPP} ${SAMPLES_BASE}/${BASEDATASETNAME}_expl.dat ${RESULTS_BASE}/${EXPL_RES}
-	sh ${SCRIPTS_BASE}/minedb-gra.sh ${SUPP} ${SAMPLES_BASE}/${BASEDATASETNAME}_eval.dat ${RESULTS_BASE}/${EVAL_RES}
+	sh ${SCRIPTS_BASE}/minedb-gra.sh ${SUPP} ${SAMPLES_BASE}/${BASEDATASETNAME}_expl.dat ${RESULTS_BASE}/${EXPL_RES} > /dev/null
+	sh ${SCRIPTS_BASE}/minedb-gra.sh ${SUPP} ${SAMPLES_BASE}/${BASEDATASETNAME}_eval.dat ${RESULTS_BASE}/${EVAL_RES} > /dev/null
 fi
 echo "done" >&2
 
