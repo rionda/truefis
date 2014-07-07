@@ -61,8 +61,7 @@ if [ ${EVAL_RES:-empty} = "empty" ]; then
 		DS="${SAMPLES_BASE}/${DATASET}"
 	fi
 	# Only split the dataset if we actually need to
-	if [ ( ! -r ${SAMPLES_BASE}/${BASEDATASETNAME}_expl.dat ) -o ( ! -r
-		${SAMPLES_BASE}/${BASEDATASETNAME}_eval.dat ) ]; then
+	if [ ! -r ${SAMPLES_BASE}/${BASEDATASETNAME}_expl.dat -o ! -r ${SAMPLES_BASE}/${BASEDATASETNAME}_eval.dat ]; then
 		${PYTHON3} ${SCRIPTS_BASE}/splitDataset.py ${SIZE} ${DS} ${SAMPLES_BASE}/${BASEDATASETNAME}_expl.dat ${SAMPLES_BASE}/${BASEDATASETNAME}_eval.dat
 	fi
 	SUPP=`echo "scale=scale(0.${MIN_FREQ}); supp=${SIZE} * 0.${MIN_FREQ}; print supp" | bc | cut -d. -f 1`
