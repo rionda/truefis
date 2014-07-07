@@ -19,7 +19,7 @@ import math, sys
 import getDatasetInfo, utils
 
 
-def get_eps_vc_dim(delta, ds_size, vc_dim, max_freq=1.0, c=0.5):
+def get_eps_vc_dim(delta, ds_size, vc_dim, c=0.5):
     """Return the epsilon computed using vc_dim as bound to the VC-dimension,
     given a 'sample' of size ds_size, where the maximum frequency of an item is
     max_freq, and a confidence parameter delta. The parameter 'c' is the
@@ -48,7 +48,7 @@ def epsilons(delta, ds_size, vc_dim, emp_vc_dim, max_freq=1.0):
     """Return a tuple containing the epsilon w.r.t. the VC-dimension, the
     epsilon w.r.t. the empirical VC-dimension, and a string that points out
     which one is the smallest (or 'equal' if they are equal)."""
-    eps_vc_dim = get_eps_vc_dim(delta, ds_size, vc_dim, max_freq)
+    eps_vc_dim = get_eps_vc_dim(delta, ds_size, vc_dim)
     eps_emp_vc_dim = get_eps_emp_vc_dim(delta, ds_size, emp_vc_dim, max_freq)
 
     if eps_vc_dim < eps_emp_vc_dim:
