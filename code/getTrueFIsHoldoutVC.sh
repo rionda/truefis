@@ -63,9 +63,11 @@ if [ ${EVAL_RES:-empty} = "empty" ]; then
 	# Only split the dataset if we actually need to
 	if [ ! -r ${SAMPLES_BASE}/${BASEDATASETNAME}_expl.dat -o ! -r ${SAMPLES_BASE}/${BASEDATASETNAME}_eval.dat ]; then
 		${PYTHON3} ${SCRIPTS_BASE}/splitDataset.py ${SIZE} ${DS} ${SAMPLES_BASE}/${BASEDATASETNAME}_expl.dat ${SAMPLES_BASE}/${BASEDATASETNAME}_eval.dat
+	else
+		echo -n "found existing parts..." >&2
 	fi
 	SUPP=`echo "scale=scale(0.${MIN_FREQ}); supp=${SIZE} * 0.${MIN_FREQ}; print supp" | bc | cut -d. -f 1`
-	RESULTS_FILE_BASE="${BASEDATASETNAME}_t${FREQ}"
+	RESULTS_FILE_BASE="${BASEDATASETNAME}_t${MIN_FREQ}"
 	EVAL_RES="${RESULTS_FILE_BASE}_eval.res"
 	EXPL_RES="${RESULTS_FILE_BASE}_expl.res"
 	sh ${SCRIPTS_BASE}/minedb-gra.sh ${SUPP} ${SAMPLES_BASE}/${BASEDATASETNAME}_expl.dat ${RESULTS_BASE}/${EXPL_RES} > /dev/null
@@ -74,6 +76,9 @@ fi
 echo "done" >&2
 
 # Compute the True FIs
+
+ORIG_EPSILON=`${PYTHON3} ${SCRIPTS_BASE}/epsilon.py ${USE_ADD_KNOWL} 0.${DELTA} ${DATASET} | tail -1 |cut -f 1`
+EPSILON=`echo "scale=scale(${ORIG_EPSILON}); ${ORIG_EPSILON} * sqrt(2)" | bc`
 echo "Getting TFIs..." >&2
-${PYTHON3} ${SCRIPTS_BASE}/getTrueFIsHoldoutVC.py ${USE_ADDIT_KNOWL} 0.${DELTA} 0.${MIN_FREQ} 0.${GAP} ${RESULTS_BASE}/${EXPL_RES} ${RESULTS_BASE}/${EVAL_RES}
+${PYTHON3} ${SCRIPTS_BASE}/getTrueFIsHoldoutVC.py ${EPSILON} 0.${DELTA} 0.${MIN_FREQ} 0.${GAP} ${RESULTS_BASE}/${EXPL_RES} ${RESULTS_BASE}/${EVAL_RES}
 

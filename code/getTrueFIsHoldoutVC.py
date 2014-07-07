@@ -19,7 +19,7 @@ import locale, math, os.path, subprocess, sys, tempfile
 import epsilon, utils
 
 
-def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, use_additional_knowledge=False):
+def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, first_epsilon=1.0):
     """ Compute the True Frequent Itemsets using the 'holdout-VC' method.
 
     TODO Add more details."""
@@ -29,7 +29,7 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, u
     with open(exp_res_filename) as FILE:
         size_line = FILE.readline()
         try:
-            size_str = size_line.split("(")[1].split(")")
+            size_str = size_line.split("(")[1].split(")")[0]
         except IndexError:
             utils.error_exit("Cannot compute size of the explore dataset: '{}' is not in the recognized format\n".format(size_line))
         try:
@@ -40,7 +40,7 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, u
     with open(eval_res_filename) as FILE:
         size_line = FILE.readline()
         try:
-            size_str = size_line.split("(")[1].split(")")
+            size_str = size_line.split("(")[1].split(")")[0]
         except IndexError:
             utils.error_exit("Cannot compute size of the eval dataset: '{}' is not in the recognized format\n".format(size_line))
         try:
@@ -51,7 +51,7 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, u
     stats['orig_size'] = stats['exp_size'] + stats['eval_size']
 
     exp_res = utils.create_results(exp_res_filename, min_freq)
-    stats['explorer_res'] = len(exp_res)
+    stats['exp_res'] = len(exp_res)
     exp_res_set = set(exp_res.keys())
     eval_res = utils.create_results(eval_res_filename, min_freq)
     stats['eval_res'] = len(eval_res)
@@ -66,22 +66,17 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, u
     # probabilities, but there isn't really much point in it.
     lower_delta = 1.0 - math.sqrt(1 - delta)
 
-    # Compute the first epsilon using results from the paper (Riondato and Upfal 2014)
-    # Incorporate or not 'previous knowledge' about generative process in
-    # computation of the VC-dimension, depending on the option passed on the
-    # command line
-    (eps_vc_dim, eps_emp_vc_dim, returned) = epsilon.epsilon_dataset(lower_delta, ds_stats, use_additional_knowledge) 
-    stats['epsilon_1'] = min(eps_vc_dim, eps_emp_vc_dim)
+    stats['epsilon_1'] = first_epsilon
 
     sys.stderr.write("Computing candidates...")
     sys.stderr.flush()
     freq_bound = min_freq + stats['epsilon_1']
-    candidates = dict()
+    candidates = []
     candidates_items = set()
     trueFIs = dict()
     for itemset in exp_res:
         if exp_res[itemset] < freq_bound:
-            candidates[itemset] = exp_res[itemset]
+            candidates.append(itemset)
             candidates_items |= itemset
         else:
             # Add itemsets with frequency at last freq_bound to the TFIs
@@ -217,9 +212,9 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, u
     #    utils.error_exit("CPLEX didn't find the optimal solution: {} {} {}\n".format(cplex_solution[0], cplex_solution[1], cplex_solution[2]))
 
     optimal_sol_upp_bound = int(math.ceil(cplex_solution[2] / (1 - cplex_solution[3])))
-    stats['vc_dim'] = int(math.floor(math.log2(optimal_sol_upp_bound))) +1
+    stats['vcdim'] = int(math.floor(math.log2(optimal_sol_upp_bound))) + 1
     stats['epsilon_2'] = epsilon.get_eps_vc_dim(lower_delta,
-            stats['orig_size'], stats['vc_dim'])
+            stats['orig_size'], stats['vcdim'])
 
     freq_bound = min_freq + stats['epsilon_2']
     for itemset in eval_res:
@@ -232,7 +227,7 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, u
 def main():
     # Verify arguments
     if len(sys.argv) != 7: 
-        utils.error_exit("Usage: {} use_additional_knowledge={{0|1}} delta min_freq gap exploreres evalres\n".format(os.path.basename(sys.argv[0])))
+        utils.error_exit("Usage: {} first_epsilon delta min_freq gap exploreres evalres\n".format(os.path.basename(sys.argv[0])))
     exp_res_filename = sys.argv[5]
     if not os.path.isfile(exp_res_filename):
         utils.error_exit("{} does not exist, or is not a file\n".format(exp_res_filename))
@@ -240,7 +235,7 @@ def main():
     if not os.path.isfile(eval_res_filename):
         utils.error_exit("{} does not exist, or is not a file\n".format(eval_res_filename))
     try:
-        use_additional_knowledge = int(sys.argv[1])
+        first_epsilon = float(sys.argv[1])
     except ValueError:
         utils.error_exit("{} is not a number\n".format(sys.argv[1]))
     try:
@@ -257,12 +252,11 @@ def main():
         utils.error_exit("{} is not a number\n".format(sys.argv[4]))
 
     (trueFIs, stats) = get_trueFIs(exp_res_filename, eval_res_filename, delta,
-            min_freq, gap, use_additional_knowledge)
+            min_freq, gap, first_epsilon)
 
     utils.print_itemsets(trueFIs, stats['orig_size'])
 
-    sys.stderr.write("exp_res_file={},eval_res_file={},use_additional_knowledge={},d={},min_freq={},trueFIs={}\n".format(os.path.basename(exp_res_filename),os.path.basename(eval_res_filename),
-        use_additional_knowledge, delta, min_freq, len(trueFIs)))
+    sys.stderr.write("exp_res_file={},eval_res_file={},d={},min_freq={},trueFIs={}\n".format(os.path.basename(exp_res_filename),os.path.basename(eval_res_filename), delta, min_freq, len(trueFIs)))
     sys.stderr.write("orig_size={},exp_size={},eval_size={}\n".format(stats['orig_size'],
         stats['exp_size'], stats['eval_size']))
     sys.stderr.write("exp_res={},eval_res={}\n".format(stats['exp_res'], stats['eval_res']))
@@ -270,15 +264,15 @@ def main():
         stats['holdout_false_positives'], stats['holdout_false_negatives'], stats['holdout_jaccard']))
     sys.stderr.write("e_1={},e_2={},vcdim={}\n".format(stats['epsilon_1'],
         stats['epsilon_2'], stats['vcdim']))
-    sys.stderr.write("exp_res_file,eval_res_file,use_additional_knowledge,delta,min_freq,trueFIs,orig_size,exp_size,eval_size,exp_res,eval_res,holdout_intersection,holdout_false_positives,holdout_false_negatives,holdout_jaccard,e_1,e_2,vcdim\n")
+    sys.stderr.write("exp_res_file,eval_res_file,delta,min_freq,trueFIs,orig_size,exp_size,eval_size,exp_res,eval_res,holdout_intersection,holdout_false_positives,holdout_false_negatives,holdout_jaccard,e_1,e_2,vcdim\n")
     sys.stderr.write("{}\n".format(",".join((str(i) for i in
-        (os.path.basename(exp_res_filename), os.path.basename(eval_res_filename),
-        use_additional_knowledge, delta, min_freq,len(trueFIs),
+        (os.path.basename(exp_res_filename),
+        os.path.basename(eval_res_filename), delta, min_freq,len(trueFIs),
         stats['orig_size'], stats['exp_size'], stats['eval_size'],
-        stats['exp_res'], stats['eval_res'],
-        stats['holdout_intersection'], stats['holdout_false_positives'],
-        stats['holdout_false_negatives'], stats['holdout_jaccard'],
-        stats['epsilon_1'], stats['epsilon_2'], stats['vcdim'])))))
+        stats['exp_res'], stats['eval_res'], stats['holdout_intersection'],
+        stats['holdout_false_positives'], stats['holdout_false_negatives'],
+        stats['holdout_jaccard'], stats['epsilon_1'], stats['epsilon_2'],
+        stats['vcdim'])))))
 
 
 if __name__ == "__main__":
