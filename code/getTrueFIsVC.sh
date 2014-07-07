@@ -35,7 +35,7 @@ BASE_STATS=`echo ${DS_STATS} | cut -d ":" -f 2- | rev | cut -d "," -f 2- | rev`
 SIZE_COMMAND="stats=${BASE_STATS}; print(stats['size'])"
 SIZE=`${PYTHON3} -c "${SIZE_COMMAND}"`
 
-LOWER_DELTA=`echo "scale=10; d = 1 - e(l(1 - 0.${DELTA})/2); print d" | bc -l | cut -d . -f 2`
+LOWER_DELTA=`echo "scale=10; d = 1 - sqrt(1 - 0.${DELTA}); print d" | bc -l | cut -d . -f 2`
 EPSILON=`${PYTHON3} ${SCRIPTS_BASE}/epsilon.py ${USE_ADDIT_KNOWL} 0.${LOWER_DELTA} ${DATASET} | tail -1 | cut -f 1 | cut -d "." -f 2`
 LOWER_SUPP=`echo "scale=scale(${EPSILON}); supp=${SIZE} * (0.${MIN_FREQ} - 0.${EPSILON} ); print supp" | bc | cut -d. -f 1`  
 if [ ${LOWER_SUPP} -le 0 ]; then
