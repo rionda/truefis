@@ -47,25 +47,31 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mod
     stats = dict()
 
     with open(exp_res_filename) as FILE:
-        exp_size_line = FILE.readline()
+        size_line = FILE.readline()
         try:
-            size_str = exp_size_line.split("(")[1].split(")")
-            exp_size = int(size_str)
+            size_str = size_line.split("(")[1].split(")")[0]
+        except IndexError:
+            utils.error_exit("Cannot compute size of the explore dataset: '{}' is not in a recognized format\n".format(size_line))
+        try:
+            stats['exp_size'] = int(size_str)
         except ValueError:
-            utils.error_exit("Cannot compute size of the explore dataset: {} is not a number\n".format(size_str))
+            utils.error_exit("Cannot compute size of the explore dataset: '{}' is not a number\n".format(size_str))
 
     with open(eval_res_filename) as FILE:
-        eval_size_line = FILE.readline()
+        size_line = FILE.readline()
         try:
-            size_str = eval_size_line.split("(")[1].split(")")
+            size_str = size_line.split("(")[1].split(")")[0]
+        except IndexError:
+            utils.error_exit("Cannot compute size of the eval dataset: '{}' is not in a recognized format\n".format(size_line))
+        try:
             stats['eval_size'] = int(size_str)
         except ValueError:
-            utils.error_exit("Cannot compute size of the eval dataset: {} is not a number\n".format(size_str))
+            utils.error_exit("Cannot compute size of the eval dataset: '{}' is not a number\n".format(size_str))
 
     stats['orig_size'] = stats['exp_size'] + stats['eval_size']
 
     exp_res = utils.create_results(exp_res_filename, min_freq)
-    stats['explorer_res'] = len(exp_res)
+    stats['exp_res'] = len(exp_res)
 
     supposed_freq = (math.ceil( stats['orig_size'] * min_freq) - 1) / stats['orig_size']
     if do_filter:
