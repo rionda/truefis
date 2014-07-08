@@ -51,12 +51,29 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, pvalue_mode, use_additi
     supposed_freq = (math.ceil(ds_stats['size'] * min_freq) - 1) / ds_stats['size']
     trueFIs = dict()
     stats['removed'] = 0
+    last_accepted_freq = 0
     for itemset in sorted(sample_res.keys(),key=lambda x : sample_res[x], reverse=True):
         p_value = utils.pvalue(pvalue_mode, sample_res[itemset],
                 ds_stats['size'], supposed_freq)
         if p_value <= stats['critical_value']:
             trueFIs[itemset] = sample_res[itemset]
+            last_accepted_freq = sample_res[itemset]
         else:
+            # Compute epsilon for the binomial
+            last_non_accepted_freq = sample_res[itemset]
+            min_diff = 1e-6 # controls when to stop the binary search
+            while last_accepted_freq - last_non_accepted_freq > min_diff:
+                mid_point = (last_accepted_freq - last_non_accepted_freq) / 2
+                test_freq = last_non_accepted_freq + mid_point
+                p_value = utils.pvalue(pvalue_mode, test_freq,
+                        ds_stats['size'], supposed_freq)
+                if p_value <= stats['critical_value']:
+                    last_accepted_freq = test_freq
+                else:
+                    last_non_accepted_freq = test_freq
+
+            stats['epsilon'] = last_non_accepted_freq + ((last_accepted_freq -
+                last_non_accepted_freq) / 2) - min_freq
             stats['removed'] = len(sample_res) - len(trueFIs)
             break
 
@@ -96,11 +113,12 @@ def main():
 
     sys.stderr.write("res_file={},use_add_knowl={},pvalue_mode={},d={},min_freq={},trueFIs={}\n".format(os.path.basename(res_filename),
         use_additional_knowledge, pvalue_mode, delta, min_freq, len(trueFIs)))
-    sys.stderr.write("union_bound_factor={},critical_value={},removed={}\n".format(stats['union_bound_factor'],stats['critical_value'],stats['removed']))
-    sys.stderr.write("res_file,add_knowl,pvalue_mode,delta,min_freq,trueFIs,union_bound_factor,critical_value,removed\n")
+    sys.stderr.write("union_bound_factor={},critical_value={},removed={},epsilon={}\n".format(stats['union_bound_factor'],stats['critical_value'],stats['removed'],stats['epsilon']))
+    sys.stderr.write("res_file,add_knowl,pvalue_mode,delta,min_freq,trueFIs,union_bound_factor,critical_value,removed,epsilon\n")
     sys.stderr.write("{}\n".format(",".join((str(i) for i in (os.path.basename(res_filename),
         use_additional_knowledge, pvalue_mode, delta, min_freq,len(trueFIs),
-        stats['union_bound_factor'],stats['critical_value'],stats['removed'])))))
+        stats['union_bound_factor'], stats['critical_value'], stats['removed'],
+        stats['epsilon'])))))
 
 
 if __name__ == "__main__":

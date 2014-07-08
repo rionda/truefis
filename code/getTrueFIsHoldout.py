@@ -99,12 +99,29 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mod
 
     trueFIs = dict()
     stats['removed'] = 0
+    last_accepted_freq = 0
     for itemset in sorted(intersection, key=lambda x : eval_res[x], reverse=True):
         p_value = utils.pvalue(pvalue_mode, eval_res[itemset],
                 stats['eval_size'], supposed_freq)
         if p_value <= stats['critical_value']:
             trueFIs[itemset] = eval_res[itemset]
+            last_accepted_freq = eval_res[itemset]
         else:
+            # Compute epsilon for the binomial
+            last_non_accepted_freq = eval_res[itemset]
+            min_diff = 1e-6 # controls when to stop the binary search
+            while last_accepted_freq - last_non_accepted_freq > min_diff:
+                mid_point = (last_accepted_freq - last_non_accepted_freq) / 2
+                test_freq = last_non_accepted_freq + mid_point
+                p_value = utils.pvalue(pvalue_mode, test_freq,
+                        ds_stats['size'], supposed_freq)
+                if p_value <= stats['critical_value']:
+                    last_accepted_freq = test_freq
+                else:
+                    last_non_accepted_freq = test_freq
+
+            stats['epsilon'] = last_non_accepted_freq + ((last_accepted_freq -
+                last_non_accepted_freq) / 2) - min_freq
             stats['removed'] = len(intersection) - len(trueFIs)
             break
 
@@ -148,8 +165,9 @@ def main():
         stats['exp_res_filtered'], stats['eval_res']))
     sys.stderr.write("holdout_intersection={},holdout_false_positives={},holdout_false_negatives={},holdout_jaccard={}\n".format(stats['holdout_intersection'],
         stats['holdout_false_positives'], stats['holdout_false_negatives'], stats['holdout_jaccard']))
-    sys.stderr.write("critical_value={},removed={}\n".format(stats['critical_value'],stats['removed']))
-    sys.stderr.write("exp_res_file,eval_res_file,do_filter,pvalue_mode,delta,min_freq,trueFIs,orig_size,exp_size,eval_size,exp_res,exp_res_filtered,eval_res,holdout_intersection,holdout_false_positives,holdout_false_negatives,holdout_jaccard,critical_value,removed\n")
+    sys.stderr.write("critical_value={},removed={},epsilon={}\n".format(stats['critical_value'],
+        stats['removed'], stats['epsilon']))
+    sys.stderr.write("exp_res_file,eval_res_file,do_filter,pvalue_mode,delta,min_freq,trueFIs,orig_size,exp_size,eval_size,exp_res,exp_res_filtered,eval_res,holdout_intersection,holdout_false_positives,holdout_false_negatives,holdout_jaccard,critical_value,removed,epsilon\n")
     sys.stderr.write("{}\n".format(",".join((str(i) for i in
         (os.path.basename(exp_res_filename), os.path.basename(eval_res_filename),
         do_filter, pvalue_mode, delta, min_freq,len(trueFIs),
@@ -157,7 +175,7 @@ def main():
         stats['exp_res'], stats['exp_res_filtered'], stats['eval_res'],
         stats['holdout_intersection'], stats['holdout_false_positives'],
         stats['holdout_false_negatives'], stats['holdout_jaccard'],
-        stats['critical_value'],stats['removed'])))))
+        stats['critical_value'], stats['removed'], stats['epsilon'])))))
 
 
 if __name__ == "__main__":

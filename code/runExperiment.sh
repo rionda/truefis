@@ -49,10 +49,10 @@ for FREQ in `echo ${FREQS}`; do
 	# Get the TFIs
     if [ ${ALGO} = "binom" ]; then
         sh ${SCRIPTS_BASE}/getTrueFIsBinom.sh ${USE_ADDIT_KNOWL} ${DELTA} ${FREQ} ${MODE} ${DATASET} > ${TFIS_BASE}/${RES_BASE}.res 2> ${LOGS_BASE}/${RES_BASE}_mine.log
-        EPSILON="1.0" # TODO
+		EPSILON=`grep "epsilon=" ${LOGS_BASE}/${RES_BASE}_mine.log | tail -1 | cut -d "," -f 4 | cut -d "=" -f 2`
     elif [ ${ALGO} = "holdout" ]; then
         sh ${SCRIPTS_BASE}/getTrueFIsHoldout.sh ${DO_FILTER} ${DELTA} ${FREQ} ${MODE} ${DATASET} > ${TFIS_BASE}/${RES_BASE}.res 2> ${LOGS_BASE}/${RES_BASE}_mine.log
-        EPSILON="1.0" # TODO
+		EPSILON=`grep "epsilon=" ${LOGS_BASE}/${RES_BASE}_mine.log | tail -1 | cut -d "," -f 3 | cut -d "=" -f 2`
 	elif [ ${ALGO} = "holdoutvc" ]; then
         sh ${SCRIPTS_BASE}/getTrueFIsHoldoutVC.sh ${USE_ADDIT_KNOWL} ${DELTA} ${FREQ} ${GAP} ${DATASET} > ${TFIS_BASE}/${RES_BASE}.res 2> ${LOGS_BASE}/${RES_BASE}_mine.log
         EPSILON=`grep "e2=" ${LOGS_BASE}/${RES_BASE}_mine.log | tail -1 | cut -d "," -f 4 |cut -d "=" -f 2`
