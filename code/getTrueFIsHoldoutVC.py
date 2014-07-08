@@ -19,7 +19,7 @@ import locale, math, os.path, subprocess, sys, tempfile
 import epsilon, utils
 
 
-def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, first_epsilon=1.0):
+def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, first_epsilon=1.0, use_additional_knowledge=False):
     """ Compute the True Frequent Itemsets using the 'holdout-VC' method.
 
     TODO Add more details."""
@@ -85,7 +85,8 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, f
         len(candidates_items)))
     sys.stderr.flush()
 
-    if len(candidates) > 0:
+    if len(candidates) > 0 and use_additional_knowledge:
+        sys.stderr.write("Using additional knowledge\n")
         candidates_items_sorted = sorted(candidates_items)
         candidates_items_in_sets_dict = dict()
         candidates_itemset_index = 0
@@ -221,18 +222,30 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, f
         stats['epsilon_2'] = epsilon.get_eps_vc_dim(lower_delta,
                 stats['orig_size'], stats['vcdim'])
 
-        sys.stderr.write("Computing the candidates that are TFIs...")
+    elif len(candidates) > 0 and not use_additional_knowledge:
+        sys.stderr.write("Not using additional knowledge\n")
         sys.stderr.flush()
-        freq_bound = min_freq + stats['epsilon_2']
-        for itemset in eval_res:
-            if itemset in candidates and eval_res[itemset] >= min_freq:
-                trueFIs[itemset] = eval_res[itemset]
-        sys.stderr.write("done\n")
+        stats['vcdim'] = int(math.floor(math.log2(len(candidates))))
+        stats['epsilon_2'] = epsilon.get_eps_vc_dim(lower_delta,
+                stats['orig_size'], stats['vcdim'])
+
     else:
-        sys.stderr.write("Not performing optimization step as there are no candidates\n")
+        sys.stderr.write("There are no candidates\n")
         sys.stderr.flush()
         stats['vcdim'] = 0
         stats['epsilon_2'] = 0
+
+    if len(candidates) > 0:
+        sys.stderr.write("Computing the candidates that are TFIs...")
+        sys.stderr.flush()
+        freq_bound = min_freq + stats['epsilon_2']
+        eval_res_itemsets = frozenset(eval_res.keys())
+        for itemset in sorted(frozenset(candidates) & eval_res_itemsets,
+                key=lambda x : eval_res[x], reverse=True) :
+            if eval_res[itemset] >= freq_bound:
+                trueFIs[itemset] = eval_res[itemset]
+        sys.stderr.write("done\n")
+        sys.stderr.flush()
 
     return (trueFIs, stats)
 
@@ -275,9 +288,9 @@ def main():
     sys.stderr.write("exp_res={},eval_res={}\n".format(stats['exp_res'], stats['eval_res']))
     sys.stderr.write("holdout_intersection={},holdout_false_positives={},holdout_false_negatives={},holdout_jaccard={}\n".format(stats['holdout_intersection'],
         stats['holdout_false_positives'], stats['holdout_false_negatives'], stats['holdout_jaccard']))
-    sys.stderr.write("e_1={},e_2={},vcdim={}\n".format(stats['epsilon_1'],
+    sys.stderr.write("e1={},e2={},vcdim={}\n".format(stats['epsilon_1'],
         stats['epsilon_2'], stats['vcdim']))
-    sys.stderr.write("exp_res_file,eval_res_file,delta,min_freq,trueFIs,orig_size,exp_size,eval_size,exp_res,eval_res,holdout_intersection,holdout_false_positives,holdout_false_negatives,holdout_jaccard,e_1,e_2,vcdim\n")
+    sys.stderr.write("exp_res_file,eval_res_file,delta,min_freq,trueFIs,orig_size,exp_size,eval_size,exp_res,eval_res,holdout_intersection,holdout_false_positives,holdout_false_negatives,holdout_jaccard,e1,e2,vcdim\n")
     sys.stderr.write("{}\n".format(",".join((str(i) for i in
         (os.path.basename(exp_res_filename),
         os.path.basename(eval_res_filename), delta, min_freq,len(trueFIs),
