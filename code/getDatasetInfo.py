@@ -107,11 +107,20 @@ def get_ds_stats(dataset, force_compute = False):
 
 
 def main():
-    if len(sys.argv) != 2:
-        utils.error_exit("Usage: {} dataset\n".format(os.path.basename(sys.argv[0])))
+    if len(sys.argv) > 3 or len(sys.argv) < 2:
+        utils.error_exit("Usage: {} [keyword] dataset\n".format(os.path.basename(sys.argv[0])))
 
-    stats = get_ds_stats(sys.argv[1])
-    print("'{}': {},".format(os.path.basename(sys.argv[1]), stats))
+    if len(sys.argv) == 3 and sys.argv[1] == "name":
+        print(os.path.basename(sys.argv[-1]))
+    else:
+        stats = get_ds_stats(sys.argv[-1])
+        if len(sys.argv) == 2:
+            print("'{}': {},".format(os.path.basename(sys.argv[-1]), stats))
+        else:
+            if sys.argv[1] in stats:
+                print(stats[sys.argv[1]])
+            else:
+                utils.error_exit("Keyword '{}' not recognized\n".format(sys.argv[1]))
 
 
 if __name__ == '__main__':
