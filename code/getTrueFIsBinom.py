@@ -50,8 +50,8 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, pvalue_mode, use_additi
     stats['critical_value'] = math.log(delta) - stats['union_bound_factor']
     supposed_freq = (math.ceil(ds_stats['size'] * min_freq) - 1) / ds_stats['size']
     trueFIs = dict()
-    stats['removed'] = 0
-    last_accepted_freq = 0
+    last_accepted_freq = 1.0
+    last_non_accepted_freq = min_freq
     for itemset in sorted(sample_res.keys(),key=lambda x : sample_res[x], reverse=True):
         p_value = utils.pvalue(pvalue_mode, sample_res[itemset],
                 ds_stats['size'], supposed_freq)
@@ -61,21 +61,22 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, pvalue_mode, use_additi
         else:
             # Compute epsilon for the binomial
             last_non_accepted_freq = sample_res[itemset]
-            min_diff = 1e-6 # controls when to stop the binary search
-            while last_accepted_freq - last_non_accepted_freq > min_diff:
-                mid_point = (last_accepted_freq - last_non_accepted_freq) / 2
-                test_freq = last_non_accepted_freq + mid_point
-                p_value = utils.pvalue(pvalue_mode, test_freq,
-                        ds_stats['size'], supposed_freq)
-                if p_value <= stats['critical_value']:
-                    last_accepted_freq = test_freq
-                else:
-                    last_non_accepted_freq = test_freq
-
-            stats['epsilon'] = last_non_accepted_freq + ((last_accepted_freq -
-                last_non_accepted_freq) / 2) - min_freq
-            stats['removed'] = len(sample_res) - len(trueFIs)
             break
+
+    min_diff = 1e-5 # controls when to stop the binary search
+    while last_accepted_freq - last_non_accepted_freq > min_diff:
+        mid_point = (last_accepted_freq - last_non_accepted_freq) / 2
+        test_freq = last_non_accepted_freq + mid_point
+        p_value = utils.pvalue(pvalue_mode, test_freq,
+                ds_stats['size'], supposed_freq)
+        if p_value <= stats['critical_value']:
+            last_accepted_freq = test_freq
+        else:
+            last_non_accepted_freq = test_freq
+
+    stats['epsilon'] = last_non_accepted_freq + ((last_accepted_freq -
+        last_non_accepted_freq) / 2) - min_freq
+    stats['removed'] = len(sample_res) - len(trueFIs)
 
     return (trueFIs, stats)
 

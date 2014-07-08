@@ -98,8 +98,8 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mod
     stats['critical_value'] = math.log(delta) - math.log(len(exp_res_filtered_set))
 
     trueFIs = dict()
-    stats['removed'] = 0
-    last_accepted_freq = 0
+    last_accepted_freq = 1.0
+    last_non_accepted_freq = min_freq
     for itemset in sorted(intersection, key=lambda x : eval_res[x], reverse=True):
         p_value = utils.pvalue(pvalue_mode, eval_res[itemset],
                 stats['eval_size'], supposed_freq)
@@ -107,23 +107,24 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mod
             trueFIs[itemset] = eval_res[itemset]
             last_accepted_freq = eval_res[itemset]
         else:
-            # Compute epsilon for the binomial
             last_non_accepted_freq = eval_res[itemset]
-            min_diff = 1e-6 # controls when to stop the binary search
-            while last_accepted_freq - last_non_accepted_freq > min_diff:
-                mid_point = (last_accepted_freq - last_non_accepted_freq) / 2
-                test_freq = last_non_accepted_freq + mid_point
-                p_value = utils.pvalue(pvalue_mode, test_freq,
-                        ds_stats['size'], supposed_freq)
-                if p_value <= stats['critical_value']:
-                    last_accepted_freq = test_freq
-                else:
-                    last_non_accepted_freq = test_freq
-
-            stats['epsilon'] = last_non_accepted_freq + ((last_accepted_freq -
-                last_non_accepted_freq) / 2) - min_freq
-            stats['removed'] = len(intersection) - len(trueFIs)
             break
+
+    # Compute epsilon for the binomial
+    min_diff = 1e-5 # controls when to stop the binary search
+    while last_accepted_freq - last_non_accepted_freq > min_diff:
+        mid_point = (last_accepted_freq - last_non_accepted_freq) / 2
+        test_freq = last_non_accepted_freq + mid_point
+        p_value = utils.pvalue(pvalue_mode, test_freq,
+                stats['eval_size'], supposed_freq)
+        if p_value <= stats['critical_value']:
+            last_accepted_freq = test_freq
+        else:
+            last_non_accepted_freq = test_freq
+
+    stats['epsilon'] = last_non_accepted_freq + ((last_accepted_freq -
+        last_non_accepted_freq) / 2) - min_freq
+    stats['removed'] = len(intersection) - len(trueFIs)
 
     return (trueFIs, stats)
 
