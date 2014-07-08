@@ -26,20 +26,13 @@ GAP=`echo $4 | cut -d "." -f 2`
 
 DATASET=$5
 echo -n "Getting dataset stats..." >&2
-DS_STATS=`grep ${DATASET} ${SCRIPTS_BASE}/datasetsinfo.py`
-if [ "${DS_STATS:-empty}" = "empty" ]; then
-	DS_STATS=`${PYTHON3} ${SCRIPTS_BASE}/getDatasetInfo.py ${DATASET}`
-fi
-BASEDATASETNAME=`echo ${DS_STATS} | cut -d ":" -f 1 | cut -d "'" -f 2 | rev | cut -d . -f 2- |rev`
-BASE_STATS=`echo ${DS_STATS} | cut -d ":" -f 2- | rev | cut -d "," -f 2- | rev`
-SIZE_COMMAND="stats=${BASE_STATS}; print(stats['size'])"
-SIZE=`${PYTHON3} -c "${SIZE_COMMAND}"`
-
+BASEDATASETNAME=`${PYTHON3} ${SCRIPTS_BASE}/getDatasetInfo.py name ${DATASET} | rev | cut -d . -f 2- | rev`
+SIZE=`${PYTHON3} ${SCRIPTS_BASE}/getDatasetInfo.py size ${DATASET}`
 LOWER_DELTA=`echo "scale=10; d = 1 - sqrt(1 - 0.${DELTA}); print d" | bc -l | cut -d . -f 2`
 EPSILON=`${PYTHON3} ${SCRIPTS_BASE}/epsilon.py ${USE_ADDIT_KNOWL} 0.${LOWER_DELTA} ${DATASET} | tail -1 | cut -f 1 | cut -d "." -f 2`
-LOWER_SUPP=`echo "scale=scale(${EPSILON}); supp=${SIZE} * (0.${MIN_FREQ} - 0.${EPSILON} ); print supp" | bc | cut -d. -f 1`  
+LOWER_SUPP=`echo "scale=scale(${EPSILON}); supp = ${SIZE} * (0.${MIN_FREQ} - 0.${EPSILON}); print supp" | bc -l | cut -d. -f 1`  
 if [ ${LOWER_SUPP} -le 0 ]; then
-    echo "LOWER_SUPP=${LOWER_SUPP} less than 0. USE_ADDIT_KNOWL=${USE_ADDIT_KNOWL} MIN_FREQ=${MIN_FREQ} EPSILON=${EPSILON}" >&2
+    echo "LOWER_SUPP=${LOWER_SUPP} less than 0. USE_ADDIT_KNOWL=${USE_ADDIT_KNOWL} MIN_FREQ=${MIN_FREQ} EPSILON=${EPSILON} DELTA=${DELTA}" >&2
   exit 1
 fi
 echo "done" >&2
