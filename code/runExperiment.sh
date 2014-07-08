@@ -55,7 +55,7 @@ for FREQ in `echo ${FREQS}`; do
 		EPSILON=`grep "epsilon=" ${LOGS_BASE}/${RES_BASE}_mine.log | tail -1 | cut -d "," -f 3 | cut -d "=" -f 2`
 	elif [ ${ALGO} = "holdoutvc" ]; then
         sh ${SCRIPTS_BASE}/getTrueFIsHoldoutVC.sh ${USE_ADDIT_KNOWL} ${DELTA} ${FREQ} ${GAP} ${DATASET} > ${TFIS_BASE}/${RES_BASE}.res 2> ${LOGS_BASE}/${RES_BASE}_mine.log
-        EPSILON=`grep "e2=" ${LOGS_BASE}/${RES_BASE}_mine.log | tail -1 | cut -d "," -f 4 |cut -d "=" -f 2`
+        EPSILON=`grep "e2=" ${LOGS_BASE}/${RES_BASE}_mine.log | tail -1 | cut -d "," -f 2 |cut -d "=" -f 2`
     elif [ ${ALGO} = "vc" ]; then
         sh ${SCRIPTS_BASE}/getTrueFIsVC.sh ${USE_ADDIT_KNOWL} ${DELTA} ${FREQ} ${GAP} ${DATASET} > ${TFIS_BASE}/${RES_BASE}.res 2> ${LOGS_BASE}/${RES_BASE}_mine.log
         EPSILON=`grep "e2=" ${LOGS_BASE}/${RES_BASE}_mine.log | tail -1 | cut -d "," -f 4 |cut -d "=" -f 2`
