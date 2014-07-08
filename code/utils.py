@@ -188,11 +188,7 @@ def pvalue_chernoff(freq, size, supposed_freq):
     We use Equation 4.1 from Thm. 4.4 in Mitzenmacher and Upfal, 'Probability
     and Computing", Cambridge University Press, 2005.
     """
-    mu = supposed_freq * size
-    delta = (freq - supposed_freq) / supposed_freq
-    assert delta > 0
-    one_plus_delta = freq / supposed_freq
-    return mu * ( delta - ((one_plus_delta) * math.log(one_plus_delta)))
+    return size * (freq - supposed_freq - (freq * math.log(freq / supposed_freq)))
 
 
 def pvalue(mode, freq, size, supposed_freq):
