@@ -48,7 +48,6 @@ done
 
 if [ ${EVAL_RES:-empty} = "empty" ]; then
 	echo -n "must split the dataset and mine the parts..." >&2
-	RESULTS_FILE=${RESULTS_BASE}/${BASEDATASETNAME}_t${MIN_FREQ}.res
 	if [ -r ${DATASET} ]; then
 		DS=${DATASET}
 	else
@@ -60,7 +59,7 @@ if [ ${EVAL_RES:-empty} = "empty" ]; then
 	else
 		echo -n "found existing parts..." >&2
 	fi
-	SUPP=`echo "scale=scale(0.${MIN_FREQ}); supp=${SIZE} * 0.${MIN_FREQ}; print supp" | bc -l | cut -d. -f 1`
+	SUPP=`echo "scale=scale(0.${MIN_FREQ}); supp= (${SIZE} / 2.0) * 0.${MIN_FREQ}; print supp" | bc -l | cut -d. -f 1`
 	RESULTS_FILE_BASE="${BASEDATASETNAME}_t${MIN_FREQ}"
 	EVAL_RES="${RESULTS_FILE_BASE}_eval.res"
 	EXPL_RES="${RESULTS_FILE_BASE}_expl.res"

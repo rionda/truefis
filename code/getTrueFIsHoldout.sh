@@ -57,7 +57,7 @@ if [ ${EVAL_RES:-empty} = "empty" ]; then
 	if [ ! -r ${SAMPLES_BASE}/${BASEDATASETNAME}_expl.dat -o ! -r ${SAMPLES_BASE}/${BASEDATASETNAME}_eval.dat ]; then
 		${PYTHON3} ${SCRIPTS_BASE}/splitDataset.py ${SIZE} ${DS} ${SAMPLES_BASE}/${BASEDATASETNAME}_expl.dat ${SAMPLES_BASE}/${BASEDATASETNAME}_eval.dat
 	fi
-	SUPP=`echo "scale=scale(0.${MIN_FREQ}); supp=${SIZE} * 0.${MIN_FREQ}; print supp" | bc | cut -d. -f 1`
+	SUPP=`echo "scale=scale(0.${MIN_FREQ}); supp= (${SIZE} / 2.0) * 0.${MIN_FREQ}; print supp" | bc | cut -d. -f 1`
 	RESULTS_FILE_BASE="${BASEDATASETNAME}_t${MIN_FREQ}"
 	EVAL_RES="${RESULTS_FILE_BASE}_eval.res"
 	EXPL_RES="${RESULTS_FILE_BASE}_expl.res"
