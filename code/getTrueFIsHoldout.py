@@ -77,7 +77,7 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mod
     if do_filter:
         exp_res_filtered = dict()
         for itemset in exp_res:
-            if utils.pvalue(pvalue_mode, exp_res[itemset], exp_size, supposed_freq) <= delta:
+            if utils.pvalue(pvalue_mode, exp_res[itemset], stats['exp_size'], supposed_freq) <= delta:
                 exp_res_filtered[itemset] = exp_res[itemset]
     else:
         exp_res_filtered = exp_res
@@ -137,7 +137,7 @@ def main():
     except ValueError:
         utils.error_exit("{} is not a number\n".format(sys.argv[3]))
 
-    (trueFIs, stats) = get_trueFIs(exp_res_filename, eval_res_filename, delta, min_freq, pvalue_mode, do_filter)
+    (trueFIs, stats) = get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mode, do_filter)
 
     utils.print_itemsets(trueFIs, stats['orig_size'])
 
