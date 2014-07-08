@@ -26,14 +26,8 @@ GAP=`echo $4 | cut -d "." -f 2`
 
 DATASET=$5
 echo -n "Getting dataset stats..." >&2
-DS_STATS=`grep ${DATASET} ${SCRIPTS_BASE}/datasetsinfo.py`
-if [ "${DS_STATS:-empty}" = "empty" ]; then
-	DS_STATS=`${PYTHON3} ${SCRIPTS_BASE}/getDatasetInfo.py ${DATASET}`
-fi
-BASEDATASETNAME=`echo ${DS_STATS} | cut -d ":" -f 1 | cut -d "'" -f 2 | rev | cut -d . -f 2- |rev`
-BASE_STATS=`echo ${DS_STATS} | cut -d ":" -f 2- | rev | cut -d "," -f 2- | rev`
-SIZE_COMMAND="stats=${BASE_STATS}; print(stats['size'])"
-SIZE=`${PYTHON3} -c "${SIZE_COMMAND}"`
+BASEDATASETNAME=`${PYTHON3} ${SCRIPTS_BASE}/getDatasetInfo.py name ${DATASET} | rev | cut -d . -f 2- | rev`
+SIZE=`${PYTHON3} ${SCRIPTS_BASE}/getDatasetInfo.py size ${DATASET}`
 echo "done" >&2
 
 # Only split the dataset and mine the two parts if there results are not yet
