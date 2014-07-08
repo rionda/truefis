@@ -216,15 +216,21 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, f
         stats['vcdim'] = int(math.floor(math.log2(optimal_sol_upp_bound))) + 1
         if stats['vcdim'] > math.log2(len(candidates)):
             sys.stderr.write("Lowering VC-dimension to maximum value\n")
+            sys.stderr.flush()
             stats['vcdim'] = int(math.floor(math.log2(len(candidates))))
         stats['epsilon_2'] = epsilon.get_eps_vc_dim(lower_delta,
                 stats['orig_size'], stats['vcdim'])
 
+        sys.stderr.write("Computing the candidates that are TFIs...")
+        sys.stderr.flush()
         freq_bound = min_freq + stats['epsilon_2']
         for itemset in eval_res:
             if itemset in candidates and eval_res[itemset] >= min_freq:
                 trueFIs[itemset] = eval_res[itemset]
+        sys.stderr.write("done\n")
     else:
+        sys.stderr.write("Not performing optimization step as there are no candidates\n")
+        sys.stderr.flush()
         stats['vcdim'] = 0
         stats['epsilon_2'] = 0
 
