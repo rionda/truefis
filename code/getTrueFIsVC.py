@@ -346,7 +346,7 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
     #if cplex_solution[0] not in (1, 101, 102):
     #    utils.error_exit("CPLEX didn't find the optimal solution: {} {} {}\n".format(cplex_solution[0], cplex_solution[1], cplex_solution[2]))
 
-    optimal_sol_upp_bound = int(math.ceil(cplex_solution[2] / (1 - cplex_solution[3])))
+    optimal_sol_upp_bound = int(math.floor(cplex_solution[2] * (1 + cplex_solution[3])))
 
     #Compute non-empirical VC-dimension and first candidate to epsilon_2
     stats['not_emp_vc_dim'] = int(math.floor(math.log2(optimal_sol_upp_bound))) +1
@@ -398,7 +398,7 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
          #   utils.error_exit("CPLEX didn't find the optimal solution: {} {} {}\n".format(cplex_solution[0], cplex_solution[1], cplex_solution[2]))
 
         #if cplex_solution[0] == 102:
-        optimal_sol_upp_bound = int(math.ceil(cplex_solution[2] / (1 - cplex_solution[3])))
+        optimal_sol_upp_bound = int(math.floor(cplex_solution[2] * (1 + cplex_solution[3])))
         #else:
         #    optimal_sol_upp_bound = cplex_solution[0]
 
