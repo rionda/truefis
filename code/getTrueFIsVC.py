@@ -61,6 +61,7 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
     lower_bound_freq = min_freq - stats['epsilon_1'] - (1 / ds_stats['size'])
     freq_itemsets_1_dict = utils.create_results(res_filename, lower_bound_freq)
     freq_itemsets_1_set = frozenset(freq_itemsets_1_dict.keys())
+    freq_itemsets_1_sorted = sorted(freq_itemsets_1_set, key=lambda x : freq_itemsets_1_dict[x])
     freq_items_1 = set()
     for itemset in freq_itemsets_1_set:
         if len(itemset) == 1:
@@ -79,11 +80,13 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
     sys.stderr.flush()
     max_freq = 0
     base_set = dict()
-    for itemset in freq_itemsets_1_dict:
+    for itemset in freq_itemsets_1_sorted:
         if freq_itemsets_1_dict[itemset] < min_freq + stats['epsilon_1']: 
             base_set[itemset] = freq_itemsets_1_dict[itemset]
             if freq_itemsets_1_dict[itemset] > max_freq:
                 max_freq = freq_itemsets_1_dict[itemset]
+        else:
+            break
     stats['base_set'] = len(base_set)
     sys.stderr.write("done: {} itemsets\n".format(stats['base_set']))
     sys.stderr.flush()
@@ -200,6 +203,10 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
         negative_border_itemset_index += 1
     sys.stderr.write("done\n")
     sys.stderr.flush()
+    
+    capacity = freq_items_1_num - 1
+    if use_additional_knowledge and 2 * ds_stats['maxlen'] < capacity:
+        capacity = 2 * ds_stats['maxlen']
 
     vars_num = stats['negative_border'] + len(negative_border_items)
     constr_names = []
@@ -207,7 +214,7 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
     (tmpfile_handle, tmpfile_name) = tempfile.mkstemp(prefix="cplx", dir=os.environ['PWD'], text=True)
     os.close(tmpfile_handle)
     with open(tmpfile_name, 'wt') as cplex_script:
-        cplex_script.write("capacity = {}\n".format(freq_items_1_num - 1))
+        cplex_script.write("capacity = {}\n".format(capacity))
         cplex_script.write("import cplex, os, sys\n")
         cplex_script.write("from cplex.exceptions import CplexError\n")
         cplex_script.write("\n")
@@ -439,10 +446,16 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
     #sys.stderr.write("{} {} {} {}\n".format(len(maximal_itemsets), negative_border_size, vc_dim, epsilon_second))
 
     # Extract TFIs using epsilon_2
+    sys.stderr.write("Extracting TFIs using epsilon_2...")
+    sys.stderr.flush()
     trueFIs = dict()
-    for itemset in freq_itemsets_1_dict:
+    for itemset in reversed(freq_itemsets_1_sorted):
         if freq_itemsets_1_dict[itemset] >= min_freq + stats['epsilon_2']:
             trueFIs[itemset] = freq_itemsets_1_dict[itemset]
+        else:
+            break
+    sys.stderr.write("done ({} TFIS)\n".format(len(trueFIs)))
+    sys.stderr.flush()
 
     return (trueFIs, stats)
 
