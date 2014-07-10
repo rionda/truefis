@@ -79,9 +79,9 @@ def epsilon_dataset(delta, ds_stats, use_additional_knowledge=False):
         # transactions longer than twice the longest transactions available in
         # the dataset (using this quantity as bound to the VC-dimension).
         (eps_vc_dim, eps_emp_vc_dim, returned) = epsilons(delta,
-                ds_stats['size'], 2*(ds_stats['maxlen']) -1, 
-                ds_stats['dindex'], ds_stats['maxsupp'] /
-                ds_stats['size'])
+                ds_stats['size'], min(2 * (ds_stats['maxlen']) -1,
+                ds_stats['numitems'] -1), ds_stats['dindex'],
+                ds_stats['maxsupp'] / ds_stats['size'])
  
     return (eps_vc_dim, eps_emp_vc_dim, returned)
 
