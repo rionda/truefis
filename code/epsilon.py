@@ -66,7 +66,7 @@ def epsilon_dataset(delta, ds_stats, use_additional_knowledge=False):
     descriptions.
     """
     
-    if use_additional_knowledge:
+    if not use_additional_knowledge:
         # make no assumption on the generative process. VC-dimension is number
         # of items - 1.
         (eps_vc_dim, eps_emp_vc_dim, returned) = epsilons(delta,
