@@ -202,6 +202,10 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
         negative_border_itemset_index += 1
     sys.stderr.write("done\n")
     sys.stderr.flush()
+    
+    capacity = freq_items_1_num - 1
+    if use_additional_knowledge and 2 * ds_stats['maxlen'] < capacity:
+        capacity = 2 * ds_stats['maxlen']
 
     vars_num = stats['negative_border'] + len(negative_border_items)
     constr_names = []
@@ -209,7 +213,7 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
     (tmpfile_handle, tmpfile_name) = tempfile.mkstemp(prefix="cplx", dir=os.environ['PWD'], text=True)
     os.close(tmpfile_handle)
     with open(tmpfile_name, 'wt') as cplex_script:
-        cplex_script.write("capacity = {}\n".format(freq_items_1_num - 1))
+        cplex_script.write("capacity = {}\n".format(capacity))
         cplex_script.write("import cplex, os, sys\n")
         cplex_script.write("from cplex.exceptions import CplexError\n")
         cplex_script.write("\n")
