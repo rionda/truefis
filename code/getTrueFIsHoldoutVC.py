@@ -19,7 +19,8 @@ import locale, math, os.path, subprocess, sys, tempfile
 import epsilon, utils
 
 
-def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, first_epsilon=1.0, use_additional_knowledge=False):
+def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0,
+        first_epsilon=1.0, vcdim = -1):
     """ Compute the True Frequent Itemsets using the 'holdout-VC' method.
 
     TODO Add more details."""
@@ -85,7 +86,7 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, f
         len(candidates_items)))
     sys.stderr.flush()
 
-    if len(candidates) > 0 and use_additional_knowledge:
+    if len(candidates) > 0 and vcdim > -1:
         sys.stderr.write("Using additional knowledge\n")
         candidates_items_sorted = sorted(candidates_items)
         candidates_items_in_sets_dict = dict()
@@ -107,10 +108,12 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, f
         vars_num = len(candidates) + len(candidates_items)
         constr_names = []
 
+        capacity = min(len(candidates_items) - 1, vcdim)
+
         (tmpfile_handle, tmpfile_name) = tempfile.mkstemp(prefix="cplx", dir=os.environ['PWD'], text=True)
         os.close(tmpfile_handle)
         with open(tmpfile_name, 'wt') as cplex_script:
-            cplex_script.write("capacity = {}\n".format(len(candidates_items) - 1))
+            cplex_script.write("capacity = {}\n".format(capacity))
             cplex_script.write("import cplex, os, sys\n")
             cplex_script.write("from cplex.exceptions import CplexError\n")
             cplex_script.write("\n")
@@ -222,7 +225,7 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, f
         stats['epsilon_2'] = epsilon.get_eps_vc_dim(lower_delta,
                 stats['orig_size'], stats['vcdim'])
 
-    elif len(candidates) > 0 and not use_additional_knowledge:
+    elif len(candidates) > 0 and vcdim == -1:
         sys.stderr.write("Not using additional knowledge\n")
         sys.stderr.flush()
         stats['vcdim'] = int(math.floor(math.log2(len(candidates))))
@@ -252,33 +255,37 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0, f
 
 def main():
     # Verify arguments
-    if len(sys.argv) != 7: 
-        utils.error_exit("Usage: {} first_epsilon delta min_freq gap exploreres evalres\n".format(os.path.basename(sys.argv[0])))
-    exp_res_filename = sys.argv[5]
+    if len(sys.argv) != 8: 
+        utils.error_exit("Usage: {} vcdim first_epsilon delta min_freq gap exploreres evalres\n".format(os.path.basename(sys.argv[0])))
+    exp_res_filename = sys.argv[6]
     if not os.path.isfile(exp_res_filename):
         utils.error_exit("{} does not exist, or is not a file\n".format(exp_res_filename))
-    eval_res_filename = sys.argv[6]
+    eval_res_filename = sys.argv[7]
     if not os.path.isfile(eval_res_filename):
         utils.error_exit("{} does not exist, or is not a file\n".format(eval_res_filename))
-    try:
-        first_epsilon = float(sys.argv[1])
+    try: 
+        vcdim = int(sys.argv[1])
     except ValueError:
         utils.error_exit("{} is not a number\n".format(sys.argv[1]))
     try:
-        delta = float(sys.argv[2])
+        first_epsilon = float(sys.argv[2])
     except ValueError:
         utils.error_exit("{} is not a number\n".format(sys.argv[2]))
     try:
-        min_freq = float(sys.argv[3])
+        delta = float(sys.argv[3])
     except ValueError:
         utils.error_exit("{} is not a number\n".format(sys.argv[3]))
     try:
-        gap = float(sys.argv[4])
+        min_freq = float(sys.argv[4])
     except ValueError:
         utils.error_exit("{} is not a number\n".format(sys.argv[4]))
+    try:
+        gap = float(sys.argv[5])
+    except ValueError:
+        utils.error_exit("{} is not a number\n".format(sys.argv[5]))
 
     (trueFIs, stats) = get_trueFIs(exp_res_filename, eval_res_filename, min_freq,
-            delta, gap, first_epsilon)
+            delta, gap, first_epsilon, vcdim)
 
     utils.print_itemsets(trueFIs, stats['orig_size'])
 
