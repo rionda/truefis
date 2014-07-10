@@ -40,11 +40,10 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, pvalue_mode, use_additi
     sample_res = utils.create_results(res_filename, min_freq)
 
     # We work in the log-space
-    if use_additional_knowledge:
-        stats['union_bound_factor'] = utils.get_union_bound_factor(ds_stats['numitems'], 2 * \
-                ds_stats['maxlen'])
-    else:
-        stats['union_bound_factor'] = ds_stats['numitems'] * math.log(2.0)
+    stats['union_bound_factor'] = ds_stats['numitems'] * math.log(2.0)
+    if use_additional_knowledge and ds_stats['numitems'] > 2 * ds_stats['maxlen']:
+            stats['union_bound_factor'] = utils.get_union_bound_factor(ds_stats['numitems'], 2 * \
+                    ds_stats['maxlen'])
 
     # Bonferroni correction (Union bound)
     stats['critical_value'] = math.log(delta) - stats['union_bound_factor']
