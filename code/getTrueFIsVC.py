@@ -206,6 +206,8 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
     
     capacity = freq_items_1_num - 1
     if use_additional_knowledge and 2 * ds_stats['maxlen'] < capacity:
+        sys.stderr.write("Lowering capacity={} to {}\n".format(capacity, 2 * ds_stats['maxlen']))
+        sys.stderr.flush()
         capacity = 2 * ds_stats['maxlen']
 
     vars_num = stats['negative_border'] + len(negative_border_items)
@@ -299,7 +301,7 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
         sys.stderr.write("done\n")
         sys.stderr.flush()
 
-        sys.stderr.write("vars_num={} negative_border_size={} negative_border_items_num={} constr_num={} chains_index={}\n".format(vars_num, stats['negative_border'], len(negative_border_items), constr_num, chains_index))
+        sys.stderr.write("Optimization problem: capacity={} vars_num={} negative_border_size={} negative_border_items_num={} constr_num={} chains_index={}\n".format(capacity, vars_num, stats['negative_border'], len(negative_border_items), constr_num, chains_index))
         sys.stderr.flush()
 
         cplex_script.seek(last_tell) # go back one character to remove last comma ","
@@ -374,6 +376,9 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0, use_additional
         if cand_len == items_num: 
             continue
         longer_equal += lengths_dict[cand_len]
+        # No need to include tests to check whether cand_len is lower than
+        # 2*ds_stats['maxlen'] if use_additional_knowledge is True: it is
+        # always true given that cand_len <= ds_stats['maxlen']
         if cand_len >= len(negative_border_items):
             cand_len = len(negative_border_items) - 1
 
