@@ -24,9 +24,9 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, pvalue_mode, use_additi
     Bonferroni correction.
 
     The p-values for the Binomial tests are computed using the mode specified
-    by pvalue_mode, eiter 'c' for Chernoff or 'e' for exact. The parameter
-    'use_additional_knowledge' can be used to incorporate additional knowledge
-    about the data generation process.
+    by pvalue_mode: 'c' for Chernoff, 'e' for exact, 'w' for weak Chernoff. The
+    parameter 'use_additional_knowledge' can be used to incorporate additional
+    knowledge about the data generation process.
     
     Returns a pair (trueFIs, stats). 
     'trueFIs' is a dict whose keys are itemsets (frozensets) and values are
@@ -89,8 +89,8 @@ def main():
     if not os.path.isfile(res_filename):
         utils.error_exit("{} does not exist, or is not a file\n".format(res_filename))
     pvalue_mode = sys.argv[4].upper()
-    if pvalue_mode != "C" and pvalue_mode != "E":
-        utils.error_exit("p-value mode must be either 'c' or 'e'. You passed {}\n".format(pvalue_mode))
+    if pvalue_mode != "C" and pvalue_mode != "E" and pvalue_mode != "W":
+        utils.error_exit("p-value mode must be 'c', 'e', or 'w'. You passed {}\n".format(pvalue_mode))
     try:
         use_additional_knowledge = int(sys.argv[1])
     except ValueError:

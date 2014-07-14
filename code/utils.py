@@ -191,6 +191,18 @@ def pvalue_chernoff(freq, size, supposed_freq):
     return size * (freq - supposed_freq - (freq * math.log(freq / supposed_freq)))
 
 
+def pvalue_weak(freq, size, supposed_freq):
+    """ Compute p-value using Chernoff bounds.
+
+    We work in the log space, so this is the logarithm of the real p-value.
+    
+    We use Equation 4.2 from Thm. 4.4 in Mitzenmacher and Upfal, 'Probability
+    and Computing", Cambridge University Press, 2005.
+    """
+    return -1.0 * (math.log(size) + 2 * math.log(freq - supposed_freq) -
+            math.log(3.0) - math.log(supposed_freq))
+
+
 def pvalue(mode, freq, size, supposed_freq):
     """ Compute the p-value using the selected method.
     
@@ -200,6 +212,8 @@ def pvalue(mode, freq, size, supposed_freq):
         return pvalue_exact(freq, size, supposed_freq)
     elif mode == "C":
         return pvalue_chernoff(freq, size, supposed_freq)
+    elif mode == "W":
+        return pvalue_weak(freq, size, supposed_freq)
     else: # NOT REACHED
         assert False
 
