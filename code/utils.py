@@ -199,8 +199,7 @@ def pvalue_weak(freq, size, supposed_freq):
     We use Equation 4.2 from Thm. 4.4 in Mitzenmacher and Upfal, 'Probability
     and Computing", Cambridge University Press, 2005.
     """
-    return -1.0 * (math.log(size) + 2 * math.log(freq - supposed_freq) -
-            math.log(3.0) - math.log(supposed_freq))
+    return -size * math.pow(freq - supposed_freq, 2.0) / (supposed_freq * 3)
 
 
 def pvalue(mode, freq, size, supposed_freq):
