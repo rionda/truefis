@@ -5,7 +5,7 @@ The order of the tasks reflects the order in which I plan to do them.
 
 - [ ] Present new refined bound that uses information about the variance, using
 	Thm 3.3 from BucheronBL05 survey + the variance bound presented in
-	BoucheronBLXX (Concentration inequalities).  There's a mail from Matteo from
+	BoucheronBLXX (Concentration inequalities). There's a mail from Matteo from
 	July 16 that explains how to do that. We should have the proof in full
 	because 1) it is not presented anywhere; 2) looks good to reviewers; 3) can
 	generate citations ;). This goes in Sect. 3.2. Expected Needed Time: 2-3
