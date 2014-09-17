@@ -33,9 +33,9 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mod
     results from the exploratory part are filtered more.
     
     The p-values for the Binomial tests are computed using the mode specified
-    by pvalue_mode, eiter 'c' for Chernoff or 'e' for exact. The parameter
-    'use_additional_knowledge' can be used to incorporate additional knowledge
-    about the data generation process.
+    by pvalue_mode: 'c' for Chernoff, 'e' for exact, or 'w' for weak Chernoff.
+    The parameter 'use_additional_knowledge' can be used to incorporate
+    additional knowledge about the data generation process.
     
     Returns a pair (trueFIs, stats). 
     'trueFIs' is a dict whose keys are itemsets (frozensets) and values are
@@ -77,7 +77,8 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, pvalue_mod
     if do_filter:
         exp_res_filtered = dict()
         for itemset in exp_res:
-            if utils.pvalue(pvalue_mode, exp_res[itemset], stats['exp_size'], supposed_freq) <= delta:
+            if utils.pvalue(pvalue_mode, exp_res[itemset], stats['exp_size'],
+                    supposed_freq) <= math.log(delta):
                 exp_res_filtered[itemset] = exp_res[itemset]
     else:
         exp_res_filtered = exp_res
@@ -140,8 +141,8 @@ def main():
     if not os.path.isfile(eval_res_filename):
         utils.error_exit("{} does not exist, or is not a file\n".format(eval_res_filename))
     pvalue_mode = sys.argv[4].upper()
-    if pvalue_mode != "C" and pvalue_mode != "E":
-        utils.error_exit("p-value mode must be either 'c' or 'e'. You passed {}\n".format(pvalue_mode))
+    if pvalue_mode != "C" and pvalue_mode != "E" and pvalue_mode != "W":
+        utils.error_exit("p-value mode must be 'c', 'e', or 'w'. You passed {}\n".format(pvalue_mode))
     try:
         do_filter = int(sys.argv[1])
     except ValueError:

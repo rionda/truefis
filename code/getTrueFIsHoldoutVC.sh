@@ -73,9 +73,9 @@ LOWER_DELTA=`echo "scale=10; d = 1 - sqrt(1 - 0.${DELTA}); print d" | bc -l | cu
 ORIG_EPSILON=`${PYTHON3} ${SCRIPTS_BASE}/epsilon.py ${USE_ADD_KNOWL} 0.${LOWER_DELTA} ${DATASET} | tail -1 |cut -f 1`
 EPSILON=`echo "scale=scale(${ORIG_EPSILON}); ${ORIG_EPSILON} * sqrt(2)" | bc -l`
 if [ ${USE_ADD_KNOWL} = "1" ]; then
-	MAXLEN=`${PYTHON3} ${SCRIPTS_BASE}/getDatasetsInfo.py maxlen ${DATASET}`
+	MAXLEN=`${PYTHON3} ${SCRIPTS_BASE}/getDatasetInfo.py maxlen ${DATASET}`
     VCDIM=`echo "${MAXLEN} * 2" | bc`
-	NUMITEMS=`${PYTHON3} ${SCRIPTS_BASE}/getDatasetsInfo.py numitems ${DATASET}`
+	NUMITEMS=`${PYTHON3} ${SCRIPTS_BASE}/getDatasetInfo.py numitems ${DATASET}`
     MAX_VCDIM=`echo "${NUMITEMS} -1" | bc`
     if [ ${VCDIM} > ${MAX_VCDIM} ]; then
         VCDIM=${MAX_VCDIM}

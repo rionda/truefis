@@ -164,7 +164,7 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0,
             sys.stderr.write("done\n")
             sys.stderr.flush()
 
-            sys.stderr.write("vars_num={} candidates={} candidates_items_num={} constr_num={}\n".format(vars_num, len(candidates), len(candidates_items), constr_num))
+            sys.stderr.write("Optimization problem: capacity={} vars_num={} candidates={} candidates_items_num={} constr_num={}\n".format(capacity, vars_num, len(candidates), len(candidates_items), constr_num))
             sys.stderr.flush()
 
             cplex_script.write("my_rownames = {}\n".format(constr_names))
