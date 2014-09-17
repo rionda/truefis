@@ -1,4 +1,5 @@
-# Finding the True Frequent Itemsets 
+# Finding the True Frequent Itemsets using the Binomial test with the
+# Bonferroni correction. See the comments to get_trueFIs for more details.
 #
 # Copyright 2014 Matteo Riondato <matteo@cs.brown.edu> and Fabio Vandin
 # <vandinfa@imada.sdu.dk>
@@ -15,11 +16,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import math, os.path, sys
-import getDatasetInfo, utils
+import math
+import os.path
+import sys
+import getDatasetInfo
+import utils
 
 
-def get_trueFIs(ds_stats, res_filename, min_freq, delta, pvalue_mode, use_additional_knowledge=False):
+def get_trueFIs(ds_stats, res_filename, min_freq, delta, pvalue_mode,
+                use_additional_knowledge=False):
     """ Compute the True Frequent Itemsets using the Binomial test with a
     Bonferroni correction.
 
@@ -27,8 +32,8 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, pvalue_mode, use_additi
     by pvalue_mode: 'c' for Chernoff, 'e' for exact, 'w' for weak Chernoff. The
     parameter 'use_additional_knowledge' can be used to incorporate additional
     knowledge about the data generation process.
-    
-    Returns a pair (trueFIs, stats). 
+
+    Returns a pair (trueFIs, stats).
     'trueFIs' is a dict whose keys are itemsets (frozensets) and values are
     frequencies. This collection of itemsets contains only TFIs with
     probability at least 1 - delta.
@@ -41,19 +46,23 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, pvalue_mode, use_additi
 
     # We work in the log-space
     stats['union_bound_factor'] = ds_stats['numitems'] * math.log(2.0)
-    if use_additional_knowledge and ds_stats['numitems'] > 2 * ds_stats['maxlen']:
-            stats['union_bound_factor'] = utils.get_union_bound_factor(ds_stats['numitems'], 2 * \
-                    ds_stats['maxlen'])
+    if use_additional_knowledge and \
+            ds_stats['numitems'] > 2 * ds_stats['maxlen']:
+        stats['union_bound_factor'] = \
+            utils.get_union_bound_factor(ds_stats['numitems'],
+                                         2 * ds_stats['maxlen'])
 
     # Bonferroni correction (Union bound)
     stats['critical_value'] = math.log(delta) - stats['union_bound_factor']
-    supposed_freq = (math.ceil(ds_stats['size'] * min_freq) - 1) / ds_stats['size']
+    supposed_freq = (math.ceil(ds_stats['size'] * min_freq) - 1) / \
+        ds_stats['size']
     trueFIs = dict()
     last_accepted_freq = 1.0
     last_non_accepted_freq = min_freq
-    for itemset in sorted(sample_res.keys(),key=lambda x : sample_res[x], reverse=True):
+    for itemset in sorted(sample_res.keys(), key=lambda x: sample_res[x],
+                          reverse=True):
         p_value = utils.pvalue(pvalue_mode, sample_res[itemset],
-                ds_stats['size'], supposed_freq)
+                               ds_stats['size'], supposed_freq)
         if p_value <= stats['critical_value']:
             trueFIs[itemset] = sample_res[itemset]
             last_accepted_freq = sample_res[itemset]
@@ -62,19 +71,19 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, pvalue_mode, use_additi
             last_non_accepted_freq = sample_res[itemset]
             break
 
-    min_diff = 1e-5 # controls when to stop the binary search
+    min_diff = 1e-5  # controls when to stop the binary search
     while last_accepted_freq - last_non_accepted_freq > min_diff:
         mid_point = (last_accepted_freq - last_non_accepted_freq) / 2
         test_freq = last_non_accepted_freq + mid_point
         p_value = utils.pvalue(pvalue_mode, test_freq,
-                ds_stats['size'], supposed_freq)
+                               ds_stats['size'], supposed_freq)
         if p_value <= stats['critical_value']:
             last_accepted_freq = test_freq
         else:
             last_non_accepted_freq = test_freq
 
-    stats['epsilon'] = last_non_accepted_freq + ((last_accepted_freq -
-        last_non_accepted_freq) / 2) - min_freq
+    stats['epsilon'] = last_non_accepted_freq + \
+        ((last_accepted_freq - last_non_accepted_freq) / 2) - min_freq
     stats['removed'] = len(sample_res) - len(trueFIs)
 
     return (trueFIs, stats)
@@ -82,15 +91,22 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, pvalue_mode, use_additi
 
 def main():
     # Verify arguments
-    if len(sys.argv) != 7: 
-        utils.error_exit("Usage: {} use_additional_knowledge={{0|1}} delta min_freq mode={{c|e}} dataset results_filename\n".format(os.path.basename(sys.argv[0])))
+    if len(sys.argv) != 7:
+        utils.error_exit(
+            " ".join((
+                "Usage: {}".format(os.path.basename(sys.argv[0])),
+                "use_additional_knowledge={{0|1}} delta min_freq mode={{c|e}}",
+                "dataset results_filename\n")))
     dataset = sys.argv[5]
     res_filename = sys.argv[6]
     if not os.path.isfile(res_filename):
-        utils.error_exit("{} does not exist, or is not a file\n".format(res_filename))
+        utils.error_exit(
+            "{} does not exist, or is not a file\n".format(res_filename))
     pvalue_mode = sys.argv[4].upper()
     if pvalue_mode != "C" and pvalue_mode != "E" and pvalue_mode != "W":
-        utils.error_exit("p-value mode must be 'c', 'e', or 'w'. You passed {}\n".format(pvalue_mode))
+        utils.error_exit(
+            "p-value mode must be 'c', 'e', or 'w'. You passed {}\n".format(
+                pvalue_mode))
     try:
         use_additional_knowledge = int(sys.argv[1])
     except ValueError:
@@ -107,20 +123,34 @@ def main():
     ds_stats = getDatasetInfo.get_ds_stats(dataset)
 
     (trueFIs, stats) = get_trueFIs(ds_stats, res_filename, min_freq, delta,
-            pvalue_mode, use_additional_knowledge)
+                                   pvalue_mode, use_additional_knowledge)
 
     utils.print_itemsets(trueFIs, ds_stats['size'])
 
-    sys.stderr.write("res_file={},use_add_knowl={},pvalue_mode={},d={},min_freq={},trueFIs={}\n".format(os.path.basename(res_filename),
-        use_additional_knowledge, pvalue_mode, delta, min_freq, len(trueFIs)))
-    sys.stderr.write("union_bound_factor={},critical_value={},removed={},epsilon={}\n".format(stats['union_bound_factor'],stats['critical_value'],stats['removed'],stats['epsilon']))
-    sys.stderr.write("res_file,add_knowl,pvalue_mode,delta,min_freq,trueFIs,union_bound_factor,critical_value,removed,epsilon\n")
-    sys.stderr.write("{}\n".format(",".join((str(i) for i in (os.path.basename(res_filename),
-        use_additional_knowledge, pvalue_mode, delta, min_freq,len(trueFIs),
-        stats['union_bound_factor'], stats['critical_value'], stats['removed'],
-        stats['epsilon'])))))
+    sys.stderr.write(
+        ",".join(
+            ("res_file={}".format(os.path.basename(res_filename)),
+             "use_add_knowl={}".format(use_additional_knowledge),
+             "pvalue_mode={}".format(pvalue_mode), "d={}".format(delta),
+             "min_freq={}".format(min_freq),
+             "trueFIs={}\n".format(len(trueFIs)))))
+    sys.stderr.write(
+        ",".join(
+            ("union_bound_factor={}".format(stats['union_bound_factor']),
+             "critical_value={}".format(stats['critical_value']),
+             "removed={}".format(stats['removed']),
+             "epsilon={}\n".format(stats['epsilon']))))
+    sys.stderr.write(
+        ",".join(
+            ("res_file,add_knowl,pvalue_mode,delta,min_freq,trueFIs",
+             "union_bound_factor,critical_value,removed,epsilon\n")))
+    sys.stderr.write("{}\n".format(
+        ",".join(
+            (str(i) for i in (os.path.basename(res_filename),
+             use_additional_knowledge, pvalue_mode, delta, min_freq,
+             len(trueFIs), stats['union_bound_factor'],
+             stats['critical_value'], stats['removed'], stats['epsilon'])))))
 
 
 if __name__ == "__main__":
     main()
-
