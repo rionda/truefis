@@ -20,7 +20,7 @@ to a prolification of interestingness measures. In this work we are interested
 in a very specific definition of interestingness that is based on statistical
 properties of the patterns. We refer the reader to the surveys on different
 readers by~\citet[Sect.~3]{HanCXY07} and~\citet{GengH06}. %
-%While the problem of identifying the TFIs has received scant attention in the literature, a number 
+%While the problem of identifying the TFIs has received scant attention in the literature, a number
 %of approaches have been proposed to filter the FIs of \emph{spurious patterns}, i.e., patterns that are not
 %actually \emph{interesting} according to some measure of interestigness. We refer the reader to~\citep[Sect.~3]{HanCXY07}
 %and~\citep{GengH06} for surveys on different measures.
@@ -53,7 +53,7 @@ possible.
 %Moreover, the interestingness of a pattern is determined by its
 %probability according to the distribution that regulates the generation of
 %transactions (on which, again, we do not impose any limitation) and whether this
-%support is greater than a user-specified minimum threshold.  
+%support is greater than a user-specified minimum threshold.
 
 \citet{KirschMAPUV12} developed a multi-hypothesis
 testing procedure to identify the best support threshold such that the number of
@@ -75,7 +75,7 @@ involved. In our experimental evaluation we noticed that the high number of
 tests is an issue when using traditional multiple-hypothesis correction
 techniques. The methods we present do not incur in this issue because they
 consider all the itemsets together, without the need to test each of them
-singularly. 
+singularly.
 
 \citet{LallichTP06} introduce User Adjusted
 Family-Wise Error Rate (UAFWER), a flexible variant of FWER which allows a user
@@ -102,46 +102,40 @@ probability of false discoveries by %FWER while
 taking into consideration the actual number of hypotheses to be tested.
 
 \citet{Webb07} proposes the use of established statistical techniques to
-control the probability of false discoveries. 
-\iffalse
-One method is based on the Bonferroni and
-Holm correction, where the significance level is decreased proportionally to the
-number of tested hypotheses and each of them is tested separately. 
-\fi
+control the probability of false discoveries.
+%One method is based on the Bonferroni and
+%Holm correction, where the significance level is decreased proportionally to the
+%number of tested hypotheses and each of them is tested separately.
 In one of these methods (called holdout), the available data are split into two parts: one is
 used for pattern discovery, while the second is used to verify the significance
 of the discovered patterns, testing one statistical hypothesis at a time. A new
 method (layered critical values) to choose the critical values when using a
-direct adjustment technique to control the probability of false discoveries %FWER 
+direct adjustment technique to control the probability of false discoveries %FWER
 is presented by~\citet{Webb08} and works by exploiting the itemset lattice.
 %The first method we present is
-%inspired by the holdout technique, while 
+%inspired by the holdout technique, while
 The method we present instead identify a threshold frequency such that all the
 itemsets with frequency above the threshold are TFIs. There is no need to test
-each itemset separately and no need to split the dataset. 
+each itemset separately and no need to split the dataset.
 %Our method can be used when the
-%data cannot be split, as can be the case for graphs or spatial data. 
-\iffalse
-In our
-experimental evaluation we compared the statistical power of the test we propose
-with the power of the holdout method, showing that neither is uniformly better
-than the other. We tried to apply the method based on the Bonferroni/Holm
-correction, and the layered critical value approach, but the very high number of
-itemsets to take into consideration makes these methods very inefficient in
-practice, to the point of hitting the precision limit of the computing platform.
-%We refer the interested reader Section~\ref{sec:statpow} for additional details.
-\fi
+%data cannot be split, as can be the case for graphs or spatial data.
+%In our
+%experimental evaluation we compared the statistical power of the test we propose
+%with the power of the holdout method, showing that neither is uniformly better
+%than the other. We tried to apply the method based on the Bonferroni/Holm
+%correction, and the layered critical value approach, but the very high number of
+%itemsets to take into consideration makes these methods very inefficient in
+%practice, to the point of hitting the precision limit of the computing platform.
+%%We refer the interested reader Section~\ref{sec:statpow} for additional details.
 
-\iffalse
-\citet{Hanhijarvi11} presents a direct adjustment method to bound
-the FWER while taking into consideration the actual number of hypotheses to be
-tested. The dataset is resampled (using the method
-from~\citep{GionisMMT07}) in order to adjust the $p$-values in such a way that
-the FWER is within the desired bounds.  This can be done in the setting
-of~\citep{Hanhijarvi11} thanks to the limited generative model taken into
-consideration, which assumes that the items in it appear independently from
-each other in the transactions.
-\fi
+%\citet{Hanhijarvi11} presents a direct adjustment method to bound
+%the FWER while taking into consideration the actual number of hypotheses to be
+%tested. The dataset is resampled (using the method
+%from~\citep{GionisMMT07}) in order to adjust the $p$-values in such a way that
+%the FWER is within the desired bounds.  This can be done in the setting
+%of~\citep{Hanhijarvi11} thanks to the limited generative model taken into
+%consideration, which assumes that the items in it appear independently from
+%each other in the transactions.
 
 %the considered null hypothesis for each
 %itemsets is that the items in it appear independently from each other in the
@@ -156,8 +150,8 @@ each other in the transactions.
 
 \citet{LiuZW11} conduct an experimental evaluation of  direct corrections, holdout data,
 and random permutations methods to
-control the false positives. They test the methods on a very specific problem
-(association rules for binary classification). 
+control the false positives, testing the methods on a very specific problem
+(association rules for binary classification).
 
 In contrast with the methods presented in the works above,
 ours does not employ an explicit direct correction depending on the number of
@@ -167,54 +161,46 @@ It instead uses the entire available data to obtain more accurate
 results,without the need to re-sampling it to generate random datasets or to
 split the dataset in two parts, being therefore more efficient computationally.
 
-\iffalse
-\citet{JacquemontFS09} presents lower bounds to the size of the
-dataset needed to simultaneously guarantee that both the probability of Type-1
-and of Type-2 errors are within desired limits. The analysis presented only
-consider a single item, so one should apply multiple hypothesis correction in
-order to achieve the desired FWER.
-
-\iffalse
-{\bf XXX:} To me, this paper
-looks flawed because they do derive all the bounds for a single pattern and do
-not apply a union bound at the end, which seems necessary to me. They do not
-even try to argue that it is not needed, so I guess they overlooked this\ldots
-\fi
-
-\citet{TeytaudL01} suggest the use of VC-dimension to bound the risk of
-accepting spurious rules extracted from the database. Although referring to them as
-``association rules'', the rules they focus on involve ranges over domains and
-conjuctions of Boolean formulas to express subsets of interest. This is
-different than the transactional market basket analysis setting in our work.
-\fi
-
-\iffalse
-the phase of assessment of the
-significance of the frequent itemsets cannot replace the role played by the minimum support
-threshold $\theta$, that is to reflect the level of domain significance, and is to be used
-in concert with statistical significance to filter uninteresting patterns that
-arise from different sources. Therefore being able to rigorously identify frequent patterns in $\prob$ 
-is crucial in order to obtain high quality patterns.
-\fi
-
-\iffalse
-{\bf XXX:} Honestly, this paper is terrible. Nothing is explained, definitions
-are sloppy or absent, a bound to a VC-dimension of something is thrown in there
-without explaination\ldots \emph{Your paper is bad and you should feel bad!}
-\fi
+%\citet{JacquemontFS09} presents lower bounds to the size of the
+%dataset needed to simultaneously guarantee that both the probability of Type-1
+%and of Type-2 errors are within desired limits. The analysis presented only
+%consider a single item, so one should apply multiple hypothesis correction in
+%order to achieve the desired FWER.
+%
+%{\bf XXX:} To me, this paper
+%looks flawed because they do derive all the bounds for a single pattern and do
+%not apply a union bound at the end, which seems necessary to me. They do not
+%even try to argue that it is not needed, so I guess they overlooked this\ldots
+%
+%\citet{TeytaudL01} suggest the use of VC-dimension to bound the risk of
+%accepting spurious rules extracted from the database. Although referring to them as
+%``association rules'', the rules they focus on involve ranges over domains and
+%conjunctions of Boolean formulas to express subsets of interest. This is
+%different than the transactional market basket analysis setting in our work.
+%
+%the phase of assessment of the
+%significance of the frequent itemsets cannot replace the role played by the minimum support
+%threshold $\theta$, that is to reflect the level of domain significance, and is to be used
+%in concert with statistical significance to filter uninteresting patterns that
+%arise from different sources. Therefore being able to rigorously identify frequent patterns in $\prob$
+%is crucial in order to obtain high quality patterns.
+%
+%{\bf XXX:} Honestly, this paper is terrible. Nothing is explained, definitions
+%are sloppy or absent, a bound to a VC-dimension of something is thrown in there
+%without explaination\ldots \emph{Your paper is bad and you should feel bad!}
 
 %Silverstein et al.~\cite{SilversteinBM98} introduced the idea of using a
 %statistical significance test (namely the $\chi^2$ test) to measure the
 %dependence between items in an itemsets, and only output association rules
 %with independent sides. As pointed out by~\cite{MegiddoS98}
 %and~\cite{DuMouchelP01}, the method presented in~\cite{SilversteinBM98} is
-%flawed as there is no correction for the testing of multiple hypotheses. 
+%flawed as there is no correction for the testing of multiple hypotheses.
 %
 %A number of works suggest measures of significance for an itemset that are
 %based on the comparison of its support in the dataset and its expected support
 %in a random
-%dataset~\cite{SrikantA96,DuMouchelP01,JaroszewiczSS09,GionisMMT07}. 
-%XXX say more. 
+%dataset~\cite{SrikantA96,DuMouchelP01,JaroszewiczSS09,GionisMMT07}.
+%XXX say more.
 %
 %Megiddo and Srikant~\cite{MegiddoS98} present a method to discover significant
 %patterns that is based on the repetition of tests on random datasets sampled
@@ -274,14 +260,14 @@ without explaination\ldots \emph{Your paper is bad and you should feel bad!}
 
 \subsection{The Vapnik-Chervonenkis dimension}\label{sec:prevworkvc}
 The {\em Vapnik-Chervonenkis dimension} was first introduced in a seminal
-article~\citep{VapnikC71} on the convergence of probability distributions, but it
-was only with the work of~\citet{HausslerW86} and~\citet{BlumerEHW89} that it
+article~\citep{VapnikC71} on the convergence of empirical averages to their
+expectations, but it was only with the work of~\citet{HausslerW86} and~\citet{BlumerEHW89} that it
 was applied to the field of learning. \citet{BoucheronBL05} present a good survey
 of the field with many recent advances. Since then, VC-dimension has encountered
 enormous success and application in the fields of computational
 geometry~\citep{Chazelle00,Matousek02} and machine
 learning~\citep{AnthonyB99,DevroyeGL96}. Other applications include
-database management and graph algorithms. 
+database management and graph algorithms.
 In the former, it was used in the
 context of constraint databases to compute good approximations of aggregate
 operators~\citep{BenediktL02}. VC-dimension-related
