@@ -11,7 +11,14 @@ set on $2^\Itm$} containing the support sets of the itemsets in $\mathcal{C}$:
 \[\range(\mathcal{C})=\{T(A) ~:~ A\in\mathcal{C}\}\enspace.\]
 \end{definition}
 
-The following Theoerem presents an upper bound to the empirical VC-dimension of
+\begin{fact}\label{fact:maxfreq}
+	Given this definition and a dataset $\Ds$, the maximum
+	from~\eqref{eq:evceapprox} is attained for the item $a\in\Itm$ with the
+	highest frequency in $\Ds$, and the value of $|r\cap S|$ is exactly
+	$f_\Ds(\{a\})|\Ds|$.
+\end{fact}
+
+The following Theorem presents an upper bound to the empirical VC-dimension of
 $\range(\mathcal{C})$ on a dataset $\Ds$.
 
 \begin{theorem}\label{lem:evcdimupbound}
@@ -20,9 +27,9 @@ $\range(\mathcal{C})$ on a dataset $\Ds$.
   transactions $\tau_1,\dotsc,\tau_d\in \Ds$ such that the set
   $\{\tau_1,\dotsc,\tau_d\}$ is an \emph{antichain}\footnote{An antichain is a
   collection of sets such no one of them is a subset of another.}, and each $\tau_i$, $1\le i\le d$,
-  contains at least $2^{d-1}$ itemsets from $\mathcal{C}$. 
+  contains at least $2^{d-1}$ itemsets from $\mathcal{C}$.
   %\begin{enumerate*}
-  %  \item 
+  %  \item
   %    The set $\{\tau_1,\dotsc,\tau_d\}$ is an antichain, and
   %    %For any pair of transactions $(\tau_i,\tau_j)$, $i\neq j$, we have
   %    %$\tau_i\not\subseteq\tau_j$ and $\tau_j\not\subseteq\tau_i$, and
@@ -65,13 +72,12 @@ $\range(\mathcal{C})$ on a dataset $\Ds$.
   maximum integer for which there are at least $d$ transactions containing at
   least $2^{d-1}$ itemsets from $\mathcal{C}$. Hence $\mathcal{L}$ cannot be shattered and
   the thesis follows.
-  \qed
 \end{proof}
 \fi
 
 \subsection{Computing the VC-Dimension}\label{sec:computvc}
 The na\"ive computation of $d$  according to the definition in Thm.~\ref{lem:evcdimupbound}
-requires to scan the transactions one by one, 
+requires to scan the transactions one by one,
 compute the number of itemsets from $\mathcal{C}$ appearing in each
 transaction, and make sure to consider only itemsets constituting antichains. Given the very large
 number of transactions in typical dataset and the fact that the number of
@@ -80,10 +86,10 @@ computationally too expensive. An upper bound to $d$ (and therefore to
 $\EVC(\range(\mathcal{C}),\Ds)$) can be computed by solving a
 \emph{Set-Union Knapsack Problem} (SUKP)~\citep{GoldschmidtNY94} associated to
 $\mathcal{C}$.
-%where the elements to be put in the knapsack are organized into sets, which have a profit associated to them. The objective is to maximize 
+%where the elements to be put in the knapsack are organized into sets, which have a profit associated to them. The objective is to maximize
 %the number of sets for which all the elements in those
 %sets were put in the knapsack
-%the profit, while satisfying the capacity constraint. 
+%the profit, while satisfying the capacity constraint.
 
 \begin{definition}[\citep{GoldschmidtNY94}]\label{def:sukp}
   Let $U=\{a_1,\dotsc,a_\ell\}$ be a set of elements and let
@@ -106,7 +112,7 @@ $\mathcal{C}$, $\mathcal{S}=\mathcal{C}$, the profits and the weights are all
 unitary, and the capacity constraint is an integer $\ell$. We call this
 optimization problem the \emph{SUKP associated to $\mathcal{C}$ with capacity
 $\ell$}.
-It is easy to see %It should be evident 
+It is easy to see %It should be evident
 that the optimal profit of this SUKP is the maximum number
 of itemsets from $\mathcal{C}$ that a transaction of length $\ell$ can contain.  %could fit into a transaction of length %$\ell$.
 In order to show how to use this fact to compute an upper bound to
@@ -122,7 +128,7 @@ for no two $\tau'$, $\tau''$ of them we have either $\tau'\subseteq\tau''$ or
 $\tau''\subseteq\tau'$. Let now $q_i$ be the optimal profit of the SUKP associated to
 $\mathcal{C}$ with capacity $L_i$, and let $b_i=\lfloor \log_2q_i\rfloor +1$.
 The sequences $(\ell_i)_1^w$ and a sequence $(L_i^*)^w$ of upper bounds to
-$(L_i)_1^w$ can be computed efficiently with a scan of the dataset. 
+$(L_i)_1^w$ can be computed efficiently with a scan of the dataset.
 The following lemma uses these sequences to show how to obtain an upper bound to
 the empirical VC-dimension of $\mathcal{C}$ on $\Ds$.
 
@@ -139,7 +145,6 @@ the empirical VC-dimension of $\mathcal{C}$ on $\Ds$.
   decreasing order, given that the sequence $q_1,q_2,\dotsc,q_w$ is. Then $b_j$
   satisfies the conditions of Lemma~\ref{lem:evcdimupbound}. Hence
   $\EVC(\mathcal{C},\Ds)\le b_j$.
-  \qed
 \end{proof}
 \fi
 
@@ -163,9 +168,9 @@ which can not be approximated within a factor of $2^{O(\log n)^\delta}$ for any
 $\delta>0$ unless $3STA \in
 DTIME(2^{n^{3/4+\varepsilon}})$~\citep{HajiaghayiJKLMRSV06}. A greedy algorithm
 by~\citet{Arulselvan14} allows a constant factor approximation if each
-items only appear in a constant fraction of itemsets of $\mathcal{C}$. 
+items only appear in a constant fraction of itemsets of $\mathcal{C}$.
 %It is not clear whether our case falls into
-%one of these restrictions but we found that 
+%one of these restrictions but we found that
 For our case, it is actually \emph{not necessary to compute the optimal
 solution} to the SUKP: any upper bound solution for which we can prove that
 there is no power of two between that solution and the optimal solution would
@@ -174,7 +179,7 @@ substantially speeding up the computation. This property can be specified in
 currently available optimization problem solvers (e.g., CPLEX), which can then can compute the
 bound to the (empirical) VC-dimension very fast even for very large instances
 with thousands of items and hundred of thousands of itemsets in $\mathcal{C}$,
-making this approach practical. 
+making this approach practical.
 
 \paragraph{Refinements.} It is possible to make some refinements to our
 computation of the \emph{empirical} VC-dimension of a collection $\mathcal{C}$ of
@@ -193,11 +198,11 @@ computing the (non-empirical) VC-dimension.
 
 \paragraph{The range set of all itemsets.}
 The range set associated to $2^\Itm$
-is particularly interesting for us. It is possible  %It is easy 
+is particularly interesting for us. It is possible  %It is easy
 to compute bounds to $\VC(\range(2^\Itm))$ and
 $\EVC(\range(2^\Itm), \Ds)$ without having to solve a SUKP.
 %\citet{RiondatoU12} gave an upper bound to the empirical VC-dimension of
-%$\range(2^\Itm)$ on $\Ds$. 
+%$\range(2^\Itm)$ on $\Ds$.
 %Before presenting the bound, we need to introduce a
 %characteristic quantity of the set of transactions $\Ds$ called the \emph{d-index} and
 %denoted as $\mathsf{d}(\Ds)$.
@@ -207,7 +212,7 @@ $\EVC(\range(2^\Itm), \Ds)$ without having to solve a SUKP.
   Let $\Ds$ be a dataset built on a
   ground set $\Itm$. The
   \emph{d-index} $\mathsf{d}(\Ds)$ of $\Ds$ is the maximum integer $d$ such that
-  $\Ds$ contains at least $d$ transactions of length at least $d$ %such that 
+  $\Ds$ contains at least $d$ transactions of length at least $d$ %such that
   %no one of them is a subset of another, that is, they form an antichain
   that form an antichain. %
   %for any two of these transactions $\tau',\tau''$ we have neither $\tau'\subseteq
