@@ -68,5 +68,8 @@ echo "done" >&2
 
 # Compute the True FIs
 echo "Getting TFIs..." >&2
+if [ ${DO_FILTER} = 1 ]; then
+    DO_FILTER=`${PYTHON3} ${SCRIPTS_BASE}/getDatasetInfo.py numitems ${DATASET}`
+fi
 ${PYTHON3} ${SCRIPTS_BASE}/getTrueFIsHoldout.py ${DO_FILTER} 0.${DELTA} 0.${MIN_FREQ} ${MODE} ${RESULTS_BASE}/${EXPL_RES} ${RESULTS_BASE}/${EVAL_RES}
 
