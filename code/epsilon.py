@@ -1,4 +1,4 @@
-# Finding the True Frequent Itemsets 
+# Finding the True Frequent Itemsets
 #
 # Copyright 2014 Matteo Riondato <matteo@cs.brown.edu> and Fabio Vandin
 # <vandinfa@imada.sdu.dk>
@@ -65,7 +65,7 @@ def epsilon_dataset(delta, ds_stats, use_additional_knowledge=False):
     depending whether to use additional knowledge or not. See below for type
     descriptions.
     """
-    
+
     if not use_additional_knowledge:
         # make no assumption on the generative process. VC-dimension is number
         # of items - 1.
@@ -73,7 +73,7 @@ def epsilon_dataset(delta, ds_stats, use_additional_knowledge=False):
                 ds_stats['size'], ds_stats['numitems'] -1,
                 ds_stats['dindex'], ds_stats['maxsupp'] /
                 ds_stats['size'])
-    else: 
+    else:
         # incorporate available information about the unknown probability
         # distribution, more precisely assuming that it cannot generate
         # transactions longer than twice the longest transactions available in
@@ -82,7 +82,7 @@ def epsilon_dataset(delta, ds_stats, use_additional_knowledge=False):
                 ds_stats['size'], min(2 * (ds_stats['maxlen']) -1,
                 ds_stats['numitems'] -1), ds_stats['dindex'],
                 ds_stats['maxsupp'] / ds_stats['size'])
- 
+
     return (eps_vc_dim, eps_emp_vc_dim, returned)
 
 
