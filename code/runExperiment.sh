@@ -20,14 +20,14 @@
 . ./conf.sh
 
 if [ $# -ne 2 ]; then
-	echo "USAGE: $0 {binom|holdout|holdoutvc|vc} var_file" >&2
+	echo "USAGE: $0 {binom|holdout|holdoutvc|holdoutvcbinom|vc} var_file" >&2
 	exit 1
 fi
 
 ALGO=$1
 
-if [ ${ALGO} != "binom" -a ${ALGO} != "holdout" -a ${ALGO} != "holdoutvc" -a ${ALGO} != "vc" ]; then
-    echo "Algorithm '${ALGO}' not recognized. Must be binom, holdout, holdoutvc, or vc" >&2
+if [ ${ALGO} != "binom" -a ${ALGO} != "holdout" -a ${ALGO} != "holdoutvc" -a ${ALGO} != "holdoutvcbinom" -a ${ALGO} != "vc" ]; then
+    echo "Algorithm '${ALGO}' not recognized. Must be binom, holdout, holdoutvc, holdoutvcbinom, or vc" >&2
 	exit 1
 fi
 
@@ -56,6 +56,10 @@ for FREQ in `echo ${FREQS}`; do
 	elif [ ${ALGO} = "holdoutvc" ]; then
         sh ${SCRIPTS_BASE}/getTrueFIsHoldoutVC.sh ${USE_ADDIT_KNOWL} ${DELTA} ${FREQ} ${GAP} ${DATASET} > ${TFIS_BASE}/${RES_BASE}.res 2> ${LOGS_BASE}/${RES_BASE}_mine.log
         EPSILON=`grep "e2=" ${LOGS_BASE}/${RES_BASE}_mine.log | tail -1 | cut -d "," -f 2 |cut -d "=" -f 2`
+    elif [ ${ALGO} = "holdoutvcbinom" ]; then
+        sh ${SCRIPTS_BASE}/getTrueFIsHoldoutVCBinom.sh ${USE_ADDIT_KNOWL} ${DELTA} ${FREQ} ${MODE} ${DATASET} > ${TFIS_BASE}/${RES_BASE}.res 2> ${LOGS_BASE}/${RES_BASE}_mine.log
+        EPSILON=`grep "epsilon=" ${LOGS_BASE}/${RES_BASE}_mine.log | tail -1 | cut -d "," -f 3 |cut -d "=" -f 2`
+
     elif [ ${ALGO} = "vc" ]; then
         sh ${SCRIPTS_BASE}/getTrueFIsVC.sh ${USE_ADDIT_KNOWL} ${DELTA} ${FREQ} ${GAP} ${DATASET} > ${TFIS_BASE}/${RES_BASE}.res 2> ${LOGS_BASE}/${RES_BASE}_mine.log
         EPSILON=`grep "e2=" ${LOGS_BASE}/${RES_BASE}_mine.log | tail -1 | cut -d "," -f 4 |cut -d "=" -f 2`
