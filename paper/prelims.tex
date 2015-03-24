@@ -116,12 +116,12 @@ Fig.~\ref{fig:rectangles}.
   \label{fig:rectangles}
 \end{figure}
 
-The main application of (empirical) VC-dimension in statistics and learning
-theory is in computing the number of samples needed to approximate the
-probabilities associated to the ranges through their empirical averages.
-Formally, let $X_1^k=(X_1,\dotsc,X_k)$ be a collection of independent
-identically distributed random variables taking values in $D$, sampled
-according to some distribution $\nu$ on the elements of $D$.
+Given a probability distribution $\nu$ on the elements of $D$, the main
+application of (empirical) VC-dimension in statistics and learning theory is in
+computing the number of samples needed to approximate the probabilities
+associated to the ranges through their empirical averages.  Formally, let
+$X_1^k=(X_1,\dotsc,X_k)$ be a collection of independent identically distributed
+random variables taking values in $D$, sampled according to $\nu$.
 For a set $A\subseteq D$, let $\nu(A)$ be the probability that a sample from
 $\nu$ belongs to the set $A$, and let
 \[
@@ -138,9 +138,9 @@ $\nu_{X_1^k}(A)$ is the \emph{empirical average} of $\nu(A)$ on $X_1^k$.
   \sup_{A\in\range}|\nu(A)-\nu_S(A)|\le\varepsilon\enspace.\]
 \end{definition}
 
-An $\varepsilon$-approximation can be constructed by sampling points of
-the domain according to the distribution $\nu$, provided an upper bound to the
-VC-dimension of $\range$ or to its empirical VC-dimension is known:
+An $\varepsilon$-approximation can be constructed by sampling a sufficient
+number of points of $D$ according to the distribution $\nu$, provided an upper
+bound to the VC-dimension of $\range$ or to its empirical VC-dimension is known:
 
 \begin{theorem}[Thm.~2.12~\citep{HarPS11}%, see also~\citep{LiLS01}
 ]\label{thm:eapprox}
@@ -148,7 +148,7 @@ VC-dimension of $\range$ or to its empirical VC-dimension is known:
   $D$ with $\VC(\range)\le d$, and let $\nu$ be a distribution on $D$. Given
   $\delta\in(0,1)$ and a positive integer $\ell$, let
   \begin{equation}\label{eq:vceapprox}
-    \varepsilon = \sqrt{\frac{c}{\ell}\left(d + \log\frac{1}{\delta}\right)}
+    \varepsilon = \sqrt{\frac{c}{\ell}\left(d + \ln\frac{1}{\delta}\right)}
   \end{equation}
   where $c$ is an universal positive constant. Then, a bag of $\ell$
   elements of $D$ sampled \emph{independently} according to $\nu$ is an
@@ -168,11 +168,15 @@ available~\citep{BoucheronBL05}.
   Given $\delta\in(0,1)$, let
   \begin{equation}\label{eq:evceapprox}
     \varepsilon =
-    2\sqrt{\frac{2d\log(\ell+1)}{\ell}}+\sqrt{\frac{2\log\frac{2}{\delta}}{\ell}}.
+	2\sqrt{\frac{2d\log_2\frac{e\ell}{d}}{\ell}}+\sqrt{\frac{2\ln\frac{4}{\delta}}{\ell}}.
   \end{equation}
    Then, $X_1^\ell$ is a $\varepsilon$-approximation for $(\range,\nu)$
    with probability at least $1-\delta$.
- \end{theorem}
+\end{theorem}
+
+
+
+
 
 %\subsection{Statistical hypothesis testing}\label{sec:stat_tests}
 %We develope our methods to identify the True Frequent Itemsets within the
