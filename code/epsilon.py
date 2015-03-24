@@ -41,7 +41,7 @@ def get_eps_emp_vc_dim(delta, ds_size, emp_vc_dim, max_freq=1.0):
     VC-dimension, given a 'sample' of size ds_size, where the maximum frequency
     of an item is max_freq, and a confidence parameter delta."""
     return get_eps_shattercoeff_bound(delta, ds_size, emp_vc_dim *
-            math.log(ds_size + 1), max_freq)
+            math.log(math.e * ds_size / emp_vc_dim), max_freq)
 
 
 def epsilons(delta, ds_size, vc_dim, emp_vc_dim, max_freq=1.0):
