@@ -36,7 +36,7 @@ bound to the size of the projection $P_\range(S)$, provided an upper bound to
 the (empirical) VC-dimension is known. It allows us to use bounds to the
 (empirical) VC-dimension in Massart's lemma.
 
-\begin{lemma}[Sauer-Shelah Lemma, Lemma 6.10~\citep{ShalevSBD14}]\label{lem:sauer}
+\begin{lemma}[Sauer-Shelah lemma, Lemma 6.10~\citep{ShalevSBD14}]\label{lem:sauer}
 	Let $\range$ be a range set on a domain $D$, and let $\VC(\range)\le d$.
 	Then, for any finite $S\subseteq D$ of size $|S|=\ell$, we have that
 	\[
@@ -48,9 +48,18 @@ the (empirical) VC-dimension is known. It allows us to use bounds to the
 	an upper bound $d_S$ to $\EVC(\range,S)$.
 \end{lemma}
 
-Theorem.~\ref{thm:eapproxempir} follows from Massart's Lemma, the Sauer-Shelah
-lemma and the following result, which is at the core of statistical learning
-theory.
+The following fact is trivial from the definition of projection.
+\begin{fact}\label{fact:shatterbound}
+	Let $\range$ be a range set on a domain $D$, and $S$ be a finite subset of
+	$D$. Then,
+	\[
+		|P_\range(S)|\le |\range|\enspace.
+	\]
+\end{fact}
+
+Theorem~\ref{thm:eapproxempir} follows by combining Massart's lemma, the
+Sauer-Shelah lemma, Fact~\ref{fact:shatterbound}, and the following
+result, which is at the core of statistical learning theory.
 
 \begin{theorem}[Thm.~3.3~\citep{BoucheronBL05}]
 	Let $S$ be a bag of $\ell$ elements from $D$, sampled independently

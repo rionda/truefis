@@ -175,7 +175,8 @@ The constant $c$ is at most $0.5$~\citep{LofflerP09}.
 %\end{theorem}
 
 The following theorem bounds the maximum deviation $\varepsilon$ in terms of
-the empirical VC-dimension. We present its proof in the Appendix.
+the empirical VC-dimension and of other sample-dependent quantities. We present
+its proof in the Appendix.
 
 \begin{theorem}\label{thm:eapproxempir}
 	Let $\range$ be a range set on a domain $D$ and let $\nu$ be a distribution
@@ -184,7 +185,7 @@ the empirical VC-dimension. We present its proof in the Appendix.
 	$\delta\in(0,1)$, let
 	\begin{equation}\label{eq:evceapprox}
 		\varepsilon = 2\max_{r\in\range}|r\cap
-		S|\frac{\sqrt{2d\ln\frac{en}{d}}}{\ell} +
+		S|\frac{\sqrt{2\min\left\{|\range|,d\ln\frac{en}{d}\right\}}}{\ell} +
 		\sqrt{\frac{2\ln\frac{4}{\delta}}{\ell}}\enspace.
 	\end{equation}
 	Then $S$ is a $\varepsilon$-approximation for $(\range,\nu)$ with
