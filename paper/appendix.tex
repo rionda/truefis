@@ -1,84 +1,63 @@
-%\appendix
-%\section{Appendix}
-%We now present the proof of Thm.~\ref{thm:eapproxempir}, which is based on
-%Lemma~\ref{lem:massartvar}, a variant of Massart's Lemma. Before we start, we
-%need to introduce some additional settings and terminology.
-%
-%As in Sect.~\ref{sec:prelvcdim}, let $D$ be a domain and $\range$ be a
-%collection of subsets from $D$. Let $S=\{t_1,\dotsc,t_\ell\}$ be a bag of $\ell$
-%elements from $D$. For each $t_i$, $1\le i\le \ell$, let $\sigma_i$ be a
-%Rademacher random variable, i.e., a random variable taking value $-1$ or $1$,
-%each with probability $1/2$. The random variables $\sigma_i$ are independent.
-%For any $r\in\range$, the quantity
-%\[
-%	R_S(r)=\frac{1}{\ell}\sum_{i=1}^\ell \sigma_i\mathds{1}_r(t_i)
-%\]
-%is known as the \emph{sample Rademacher average} of $r$ in the set $S$. The
-%\emph{conditional Rademacher average} is the quantity
-%\[
-%	\mathsf{R}_S=\mathbb{E}_\sigma\left[\sup_{r\in\range}R_S(r)\right],
-%\]
-%where $\mathbb{E}_\sigma$ denotes the expectation taken only w.r.t.~the random
-%variables $\sigma_i$, $1\le i\le\ell$ (i.e., conditionally on the sample).
-%
-%Massart's Lemma gives a bound to $\mathsf{R}_S$ and is usually presented as follows.
-%\begin{lemma}[Thm.~3.3~\citep{BoucheronBL05}]\label{lem:massart}
-%	Let $S$ be a finite subset of $D$ of size $|S|=\ell$. Then
-%	\[
-%		\mathsf{R}_S\le\max_{r\in\range}|r\cap S|\frac{\sqrt{2\ln
-%		|P_\range(S)|}}{\ell},
-%	\]
-%	where $P_\range(S)$ is the projection of $\range$ on $S$, i.e., the set
-%	$\{S\cap r ~:~ r\in\range\}$.
-%\end{lemma}
-%
-%The proof of Massart's Lemma uses Hoeffding's inequality for bounding the
-%deviation of a bounded zero-mean random variable.
-%
-%\begin{lemma}[Hoeffding's Inequality]\label{lem:hoeffding}
-%	Let $X$ be a random variable with $\mathbb{E}[X]=0$, $a\le X\le b$. Then for
-%	any $s>0$,
-%	\[
-%		\mathbb{E}[e^{sX}]\le e^{s^2(b-a)^2/8}\enspace.
-%	\]
-%\end{lemma}
-%
-%Hoeffding's inequality ignores any information about the variance of the random
-%variable, but it can be replaced with the following
-%(see~\citep[pp.~210--211]{BoucheronLB04}).
-%
-%\begin{lemma}\label{lem:hoeffdingvar}
-%	Let $X$ be a random variable with $\mathbb{E}[X]=0$ and $|X|\le 1$. Then,
-%	for any $s>0$,
-%	\[
-%		\mathbb{E}[e^{sX}]\le\exp((e^s-s-1)\mathbb{E}[X^2])) =
-%		\exp((e^s-s-1)\mathrm{Var}(X))\enspace.
-%	\]
-%\end{lemma}
-%
-%We can now prove the following variant of the Massart's Lemma:
-%\begin{lemma}\label{lem:massartvar}
-%	BLA
-%\end{lemma}
-%\begin{proof}
-%	Using Lemma~\ref{lem:hoeffdingvar} we have
-%	\[
-%		\mathbb{E}\left[\exp\left(s\frac{1}{\ell}\sum_{i=1}^\ell\sigma_i\mathds{1}_r(t_i)\right)\right] =
-%		\prod_{i=1}^\ell\mathbb{E}\left[\exp\left(s\frac{1}{\ell}\sigma_i\mathds{1}_r(t_i)\right)\right] \le
-%		\prod_{i=1}^\ell\exp\left((e^s-s-1)\mathrm{Var}\left(\frac{1}{\ell}\mathds{1}_r(t_i)\right)\right)
-%	\]
-%\end{proof}
-%
-%Theorem~\ref{thm:eapproxempir} follows from Lemma~\ref{lem:massartvar} combined
-%with the following theorem, which is a cardinal result of statistical learning
-%theory.
-%
-%\begin{theorem}[Thm.~3.3~\citep{BoucheronBL05}]
-%	Let $S$ be a bag of $\ell$ elements from $D$, sampled independently
-%	according to the distribution $\nu$.  Then, with probability at least
-%	$1-\delta$,
-%	\[
-%		\sup_{r\in\range}|\nu(r)-\nu_S(r)|\le 2 \mathsf{R}_S
-%		+\sqrt{\frac{2\ln\frac{2}{\delta}}{\ell}}\enspace.
-%	\]
-%\end{theorem}
+\appendix
+\section{Appendix}
+We now present the proof of Thm.~\ref{thm:eapproxempir}. Before we start, we
+need to introduce some additional settings and terminology.
+
+As in Sect.~\ref{sec:prelvcdim}, let $D$ be a domain and $\range$ be a
+collection of subsets from $D$. Let $S=\{t_1,\dotsc,t_\ell\}$ be a bag of $\ell$
+elements from $D$. For each $t_i$, $1\le i\le \ell$, let $\sigma_i$ be a
+Rademacher random variable, i.e., a random variable taking value $-1$ or $1$,
+each with probability $1/2$. The random variables $\sigma_i$ are independent.
+For any $r\in\range$, the quantity
+\[
+	R_S(r)=\frac{1}{\ell}\sum_{i=1}^\ell \sigma_i\mathds{1}_r(t_i)
+\]
+is known as the \emph{sample Rademacher average} of $r$ in the set $S$. The
+\emph{conditional Rademacher average} is the quantity
+\[
+	\mathsf{R}_S=\mathbb{E}_\sigma\left[\sup_{r\in\range}R_S(r)\right],
+\]
+where $\mathbb{E}_\sigma$ denotes the expectation taken only w.r.t.~the random
+variables $\sigma_i$, $1\le i\le\ell$ (i.e., conditionally on the sample).
+
+Massart's lemma gives a bound to $\mathsf{R}_S$ and is usually presented as follows.
+\begin{lemma}[Massart's lemma, Thm.~3.3~\citep{BoucheronBL05}]\label{lem:massart}
+	Let $S$ be a finite subset of $D$ of size $|S|=\ell$. Then
+	\[
+		\mathsf{R}_S\le\max_{r\in\range}|r\cap S|\frac{\sqrt{2\ln
+		|P_\range(S)|}}{\ell},
+	\]
+	where $P_\range(S)$ is the projection of $\range$ on $S$, i.e., the set
+	$\{S\cap r ~:~ r\in\range\}$.
+\end{lemma}
+
+The Sauer-Shelah lemma, a celebrated result in combinatorics, gives an upper
+bound to the size of the projection $P_\range(S)$, provided an upper bound to
+the (empirical) VC-dimension is known. It allows us to use bounds to the
+(empirical) VC-dimension in Massart's lemma.
+
+\begin{lemma}[Sauer-Shelah Lemma, Lemma 6.10~\citep{ShalevSBD14}]\label{lem:sauer}
+	Let $\range$ be a range set on a domain $D$, and let $\VC(\range)\le d$.
+	Then, for any finite $S\subseteq D$ of size $|S|=\ell$, we have that
+	\[
+		|P_\range(S)|\le \sum_{i=0}^d\binom{\ell}{i}\enspace.
+	\]
+	In particular, if $\ell\ge d+1$, then $|P_\range(S)|\le (e\ell/d)^d$.
+
+	The result also holds if the upper bound $d$ to $\VC(\range)$ is replaced with
+	an upper bound $d_S$ to $\EVC(\range,S)$.
+\end{lemma}
+
+Theorem.~\ref{thm:eapproxempir} follows from Massart's Lemma, the Sauer-Shelah
+lemma and the following result, which is at the core of statistical learning
+theory.
+
+\begin{theorem}[Thm.~3.3~\citep{BoucheronBL05}]
+	Let $S$ be a bag of $\ell$ elements from $D$, sampled independently
+	according to the distribution $\nu$.  Then, with probability at least
+	$1-\delta$,
+	\[
+		\sup_{r\in\range}|\nu(r)-\nu_S(r)|\le 2 \mathsf{R}_S
+		+\sqrt{\frac{2\ln\frac{2}{\delta}}{\ell}}\enspace.
+	\]
+\end{theorem}

@@ -157,21 +157,38 @@ bound to the VC-dimension of $\range$ or to its empirical VC-dimension is known:
 \end{theorem}
 The constant $c$ is at most $0.5$~\citep{LofflerP09}.
 
-A similar result holds when an upper bound to the empirical VC-Dimension is
-available~\citep{BoucheronBL05}.
-\begin{theorem}[Sect.~3~\citep{BoucheronBL05}]\label{thm:eapproxempir}
-  Let $\range$ be a range set on a domain
-  $D$, and let $\nu$ be a distribution on $D$. Let
-  $X_1^\ell=(X_1,\dotsc,X_\ell)$ be a collection of elements from $D$ sampled
-  independently according to $\nu$. Let $d$ be an integer such that
-  $\EVC(\range,X_1^\ell)\le d$.
-  Given $\delta\in(0,1)$, let
-  \begin{equation}\label{eq:evceapprox}
-    \varepsilon =
-	2\sqrt{\frac{2d\log_2\frac{e\ell}{d}}{\ell}}+\sqrt{\frac{2\ln\frac{4}{\delta}}{\ell}}.
-  \end{equation}
-   Then, $X_1^\ell$ is a $\varepsilon$-approximation for $(\range,\nu)$
-   with probability at least $1-\delta$.
+%A similar result holds when an upper bound to the empirical VC-Dimension is
+%available~\citep{BoucheronBL05}.
+%\begin{theorem}[Sect.~3~\citep{BoucheronBL05}]\label{thm:eapproxempir}
+%  Let $\range$ be a range set on a domain
+%  $D$, and let $\nu$ be a distribution on $D$. Let
+%  $X_1^\ell=(X_1,\dotsc,X_\ell)$ be a collection of elements from $D$ sampled
+%  independently according to $\nu$. Let $d$ be an integer such that
+%  $\EVC(\range,X_1^\ell)\le d$.
+%  Given $\delta\in(0,1)$, let
+%  \begin{equation}\label{eq:evceapprox}
+%    \varepsilon =
+%	2\sqrt{\frac{2d\log_2\frac{e\ell}{d}}{\ell}}+\sqrt{\frac{2\ln\frac{4}{\delta}}{\ell}}.
+%  \end{equation}
+%   Then, $X_1^\ell$ is a $\varepsilon$-approximation for $(\range,\nu)$
+%   with probability at least $1-\delta$.
+%\end{theorem}
+
+The following theorem bounds the maximum deviation $\varepsilon$ in terms of
+the empirical VC-dimension. We present its proof in the Appendix.
+
+\begin{theorem}\label{thm:eapproxempir}
+	Let $\range$ be a range set on a domain $D$ and let $\nu$ be a distribution
+	on $D$. Let $S$ be a collection of $\ell$ elements from $D$ sampled
+	independently according to $\nu$, and let $\EVC(\range,S)\le d$. Given
+	$\delta\in(0,1)$, let
+	\[
+		\varepsilon = 2\max_{r\in\range}|r\cap
+		S|\frac{\sqrt{2d\ln\frac{en}{d}}}{\ell} +
+		\sqrt{\frac{2\ln\frac{4}{\delta}}{\ell}}\enspace.
+	\]
+	Then $S$ is a $\varepsilon$-approximation for $(\range,\nu)$ with
+	probability at least $1-\delta$.
 \end{theorem}
 
 %\subsection{Statistical hypothesis testing}\label{sec:stat_tests}
