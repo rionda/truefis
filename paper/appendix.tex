@@ -20,11 +20,11 @@ is known as the \emph{sample Rademacher average} of $r$ in the set $S$. The
 where $\mathbb{E}_\sigma$ denotes the expectation taken only w.r.t.~the random
 variables $\sigma_i$, $1\le i\le\ell$ (i.e., conditionally on the sample).
 
-Massart's lemma gives a bound to $\mathsf{R}_S$ and is usually presented as follows.
+Massart's lemma gives a bound to $\mathsf{R}_S$.
 \begin{lemma}[Massart's lemma, Thm.~3.3~\citep{BoucheronBL05}]\label{lem:massart}
 	Let $S$ be a finite subset of $D$ of size $|S|=\ell$. Then
 	\[
-		\mathsf{R}_S\le\max_{r\in\range}|r\cap S|\frac{\sqrt{2\ln
+		\mathsf{R}_S\le\max_{r\in\range}\sqrt{|r\cap S|}\frac{\sqrt{2\ln
 		|P_\range(S)|}}{\ell},
 	\]
 	where $P_\range(S)$ is the projection of $\range$ on $S$, i.e., the set
@@ -35,7 +35,6 @@ The Sauer-Shelah lemma, a celebrated result in combinatorics, gives an upper
 bound to the size of the projection $P_\range(S)$, provided an upper bound to
 the (empirical) VC-dimension is known. It allows us to use bounds to the
 (empirical) VC-dimension in Massart's lemma.
-
 \begin{lemma}[Sauer-Shelah lemma, Lemma 6.10~\citep{ShalevSBD14}]\label{lem:sauer}
 	Let $\range$ be a range set on a domain $D$, and let $\VC(\range)\le d$.
 	Then, for any finite $S\subseteq D$ of size $|S|=\ell$, we have that

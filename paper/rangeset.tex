@@ -8,14 +8,23 @@ to develop our algorithm in later sections.
 Given a collection $\mathcal{C}$ of itemsets built on a ground set $\Itm$, the
 \emph{range set $\range(\mathcal{C})$ associated to $\mathcal{C}$ is a range
 set on $2^\Itm$} containing the support sets of the itemsets in $\mathcal{C}$:
-\[\range(\mathcal{C})=\{T(A) ~:~ A\in\mathcal{C}\}\enspace.\]
+\[
+	\range(\mathcal{C})=\{T(A) ~:~ A\in\mathcal{C}\}\enspace.
+\]
 \end{definition}
 
 \begin{fact}\label{fact:maxfreq}
 	Given this definition and a dataset $\Ds$, the maximum
 	from~\eqref{eq:evceapprox} is attained for the item $a\in\Itm$ with the
-	highest frequency in $\Ds$, and the value of $|r\cap S|$ is exactly
-	$f_\Ds(\{a\})|\Ds|$.
+	highest frequency in $\Ds$, and the value of $\sqrt{|r\cap S|}$ is exactly
+	$\sqrt{f_\Ds(\{a\})|\Ds|}$. Hence we can rewrite~\eqref{eq:evceapprox} as
+	\begin{equation}\label{eq:evceapproxitemsets}
+		\varepsilon =
+		2\sqrt{\frac{\max_{a\in\Itm}f_\Ds(\{a\})2\min\left\{\ln|\mathcal{C}|,d\ln\frac{en}{d}\right\}}{|\Ds|}} +
+		\sqrt{\frac{2\ln\frac{4}{\delta}}{\ell}},
+	\end{equation}
+	where $\mathcal{C}$ is as in Def.~\ref{def:rangeset}, and $d$ is an
+	upper bound to $EVC(\range(\mathcal{C}),\Ds)$.
 \end{fact}
 
 The following Theorem presents an upper bound to the empirical VC-dimension of
