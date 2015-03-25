@@ -92,13 +92,13 @@
 %%& & & \multicolumn{4}{c}{Reported TFIs(\%)} \\
 %%\cmidrule(l){4-7}
 %%& & & \multicolumn{2}{c}{Split dataset} & \multicolumn{2}{c}{Full dataset} \\
-%%\cmidrule(l){4-5} 
-%%\cmidrule(l){6-7} 
+%%\cmidrule(l){4-5}
+%%\cmidrule(l){6-7}
 %%Dataset & $\theta$ & TFIs & Holdout & Method 1 & Bonferroni & Method 2\\
 %Dataset & $\theta$ & TFIs & Avg FPs & Times FPs & Avg FNs & Times FNs & Bonferonni
 %& Method 1 \\
 %\midrule
-%\multirow{6}{*}{\texttt{accidents}} & 
+%\multirow{6}{*}{\texttt{accidents}} &
 %0.8 & 149 & 0.0 & 0 & 0.0 & 0 & 83.893 & \bf 95.974 \\
 %& 0.7 & 529 & 0.1 & 2 & 0.7 & 7 & 92.439&\bf 98.488\\
 %& 0.6 & 2074 & 1.75 & 14 & 0.5 & 7& 96.625&\bf 99.132 \\
@@ -116,7 +116,7 @@
 %%& 0.25&	346525& 98.165& \bf 98.382& \\
 %%& 0.2& 	889883& 97.995& \bf 98.057& \\
 %\midrule
-%\multirow{4}{*}{\texttt{BMS-POS}} & 
+%\multirow{4}{*}{\texttt{BMS-POS}} &
 %0.05 & 59 & 0.0 & 0 & 0.3 & 6 & 84.746&\bf 93.220\\
 %& 0.03 & 134 & 0.05 & 1 & 0.0 & 0 & 88.060&\bf 99.254\\
 %& 0.02 & 308 & 0.85 & 14 & 0.2 & 3 & 84.740&\bf 95.455\\
@@ -128,7 +128,7 @@
 %%& 0.0075& 1896&\bf 96.097& 82.331& & \\
 %%%& 0.005&  4240&\bf 94.410& 72.004& & \\
 %\midrule
-%\multirow{2}{*}{\texttt{chess}} & 
+%\multirow{2}{*}{\texttt{chess}} &
 %0.8 & 8227 & 0.0 & 0 & 7.45 & 17& 96.475&\bf 99.198\\
 %& 0.75 & 20993 & 0.0 & 0 & 68.25 & 20 & 95.756&\bf 98.418\\
 %%0.8& 8227& 97.265&\bf 98.918& 96.475&\bf 99.198\\
@@ -138,14 +138,14 @@
 %%& 0.5&	1272932& 97.352&\bf 98.293& \\
 %\midrule
 %%\multirow{3}{*}{\texttt{connect}} & 0.9& 27127& 93.217&\bf 97.213& 89.369&\bf 97.921\\
-%\texttt{connect} & 
+%\texttt{connect} &
 %0.9 & 27127 & 12.8 & 10 & 28.6 & 16 & 89.369 & \bf 97.921\\
 %%0.9& 27127& 93.217&\bf 97.213& 89.369&\bf 97.921\\
 %%& 0.875 & 65959& 94.481& \bf 96.040& \\
 %%& 0.85&	142127& 94.242&\bf 96.882& \\
 %%& 0.8&	533975& 95.047&\bf 97.464& \\
 %\midrule
-%\multirow{2}{*}{\texttt{kosarak}} & 
+%\multirow{2}{*}{\texttt{kosarak}} &
 %0.04 & 42 & 0.0 & 0 & 0.0 & 0 & 73.810&\bf 95.238\\
 %& 0.035 & 50 & 0.0 & 0 & 0.0 & 0 & 72.000&\bf 98.000\\
 %%0.04& 42&\bf 97.620&\bf 97.620& 73.810&\bf 95.238\\
@@ -157,7 +157,7 @@
 %%& 0.01&	  383&\bf 96.606& 86.945& \\
 %%& 0.005& 1618&\bf 96.415& 74.351& \\
 %\midrule
-%\multirow{3}{*}{\texttt{pumsb\textsuperscript{*}}} & 
+%\multirow{3}{*}{\texttt{pumsb\textsuperscript{*}}} &
 %0.55 & 305 & 0.0 & 0 & 0.6 & 3 & 80.984&\bf 95.401\\
 %& 0.5 & 679 & 0.0 & 0 & 0.0 & 0 & 92.931&\bf 99.853 \\
 %& 0.49 & 804 & 9.25 & 13 & 0.75 & 5 & 86.692&\bf 98.756\\
@@ -169,7 +169,7 @@
 %%& 0.35&	116787& 96.435&\bf  96.972& \\
 %%& 0.3& 	432698& 96.567&\bf  97.326& \\
 %\midrule
-%\multirow{3}{*}{\texttt{retail}} & 
+%\multirow{3}{*}{\texttt{retail}} &
 %0.03 & 32 & 0.0 & 0 & 0.0 & 0 & 62.500&\bf  100\\
 %& 0.025 & 38 & 0.0 & 0 & 0.0 & 0 & 84.211&\bf 97.368\\
 %& 0.02 & 55 & 0.0 & 0 & 0.0 & 0 & 72.340&\bf 95.745\\
@@ -190,48 +190,48 @@
 
 \section{Experimental evaluation}\label{sec:experiments}
 We conducted an extensive evaluation to assess the performances of the algorithm
-we propose. In particular, we used it %our algorithm 
+we propose. In particular, we used it %our algorithm
 to compute values $\hat\theta$
 for a number of frequencies $\theta$ on different datasets, and compared the
 collection of FIs w.r.t.~$\hat\theta$ with the collection of TFIs, measuring
-the number of false positives %discoveries 
+the number of false positives %discoveries
 and the fraction of TFIs that were found.
 
 %practical applicability and
 %the statistical power of the methods we propose. In the following sections we
-%describe the methodology and present the results. 
+%describe the methodology and present the results.
 %Due to space limitations,
 %only a portion of our experimental results are reported here. The full report,
 %including evaluations of the computational efficiency of the methods is
 %available in the full version of the paper~\citep{RiondatoV13}.
 
 
-%\paragraph*{Implementation.}\label{sec:implementation}
 \paragraph*{Implementation.}
 We implemented the algorithm in Python 3.3. %, except for the FIs
 %mining algorithm and the optimization problem solver, as the methods are
-%agnostic to these choices. 
+%agnostic to these choices.
 To mine the FIs, we used the C implementation by Grahne
 and Zhu~\citep{GrahneZ03}. %(written in C) available from the FIMI'03 implementation repository\footnote{\url{http://fimi.ua.ac.be/src/}}.
 Our solver of choice for the SUKPs was IBM\textsuperscript{\textregistered}
 ILOG\textsuperscript{\textregistered} CPLEX\textsuperscript{\textregistered}
-Optimization Studio 12.3. %, called through the Python 2.7 API. 
-We run the experiments on a number of machines with x86-64 processors running
-GNU/Linux 3.2.0.
+Optimization Studio 12.3, called through the Python 2.7 API.
+Our implementation is available
+from~\url{http://cs.brown.edu/~matteo/truefis.tar.bz2}. We run the experiments
+on a number of machines with x86-64 processors running GNU/Linux 3.2.0.
 
 \paragraph*{Datasets generation.}\label{sec:dsgen}
 We evaluated the algorithm using pseudo-artificial datasets generated by taking the datasets from the FIMI'04
 repository\footnote{\url{http://fimi.ua.ac.be/data/}} as the \emph{ground truth} for the true frequencies
 $\tfreq$ of the itemsets. We considered the following datasets:
-\texttt{accidents}, %~\citep{GeurtsWBV03}, 
+\texttt{accidents}, %~\citep{GeurtsWBV03},
 \texttt{BMS-POS}, \texttt{chess},
 \texttt{connect}, \texttt{kosarak}, \texttt{pumsb\textsuperscript{*}}, and
-\texttt{retail}. %~\citep{BrijsSVW99}. 
+\texttt{retail}. %~\citep{BrijsSVW99}.
 These datasets differ in size, number of
 items, and, more importantly for our case, distribution of the frequencies of the
 itemsets~\citep{GoethalsZ04}. We
 created a dataset by \emph{sampling 20 million transactions uniformly at random} from a FIMI
-repository dataset. In this way the 
+repository dataset. In this way the
 the true frequency of an itemset is its frequency in the
 original FIMI dataset. Given that our method to find the TFIs is
 distribution-free, this is a valid procedure to establish a ground truth. We used
@@ -243,7 +243,7 @@ $\FI(\Ds,\Itm,\theta)$.}
 %\paragraph*{Existence of false positives and false negatives}
 In the first set of experiments we evaluated the performances, in terms of
 inclusion of false positives and false negatives in the output, of mining the
-dataset at frequency $\theta$. Table~\ref{table:fp} reports  
+dataset at frequency $\theta$. Table~\ref{table:fp} reports
 the fraction of times (over 20 datasets from the same
 ground truth) that the set $\FI(\Ds,\Itm,\theta)$ contained false positives
 (FP) and was missing TFIs (false negatives (FN)). In most cases, especially when there are
@@ -350,13 +350,13 @@ $\FI(\Ds,\Itm,\hat\theta)$. %, i.e., itemsets with true frequency lower than the
 To this end, we used a wide range of values for the minimum true frequency
 threshold $\theta$ (see Table~\ref{table:power}) and fixed $\delta=0.1$. We
 repeated each experiment on 20 different enlarged datasets generated from the
-same original FIMI dataset. %distribution, for each original distribution. 
-In all the \emph{hundreds} of runs of our algorithms, %the returned collection of itemsets 
+same original FIMI dataset. %distribution, for each original distribution.
+In all the \emph{hundreds} of runs of our algorithms, %the returned collection of itemsets
 $\FI(\Ds,\Itm,\hat\theta)$ \emph{never} contained \emph{any false
 positive}, i.e., \emph{always contained only TFIs}. In other words, the
-\emph{precision} of the output was 1.0 in all our experiments. Not %This means that not 
+\emph{precision} of the output was 1.0 in all our experiments. Not %This means that not
 only our
-method can give a frequency threshold to extract only TFIs, but %that 
+method can give a frequency threshold to extract only TFIs, but %that
 it is more
 \emph{conservative}, in terms of including false positives, than what the
 theoretical analysis guarantees. %is guaranteed by the theoretical analysis.%, since
@@ -370,7 +370,7 @@ theoretical analysis guarantees. %is guaranteed by the theoretical analysis.%, s
 \paragraph*{Inclusion of TFIs (Recall).}
 %The power of a statistical test is the probability that the test will reject the
 %null hypothesis when the null hypothesis is false. In the case of TFIs, this
-%corresponds to the probability of including a TFI in the output collection. 
+%corresponds to the probability of including a TFI in the output collection.
 %It
 %is often difficult to
 %analytically quantify the statistical power of a test, especially
@@ -386,7 +386,7 @@ for the minimum true frequency threshold $\theta$ (see Table~\ref{table:power}).
 For each frequency threshold, we repeated the experiment on 20 different
 datasets sampled from the same original FIMI dataset, %on different datasets,
 %generated as described in Sect.~\ref{sec:dsgen}
-and found very small variance in the results.  %In order to evaluate the performances of our algorithm, 
+and found very small variance in the results.  %In order to evaluate the performances of our algorithm,
 We compared the fraction of TFIs that our algorithm included in output with that
 included by the ``Chernoff and Union bounds'' (CU) method we presented in
 Introduction. We compared two variants of the algorithms: one
@@ -395,19 +395,19 @@ and another (``additional info'') which assumes that the process will not
 generate any transaction longer than twice the longest transaction found in the
 original FIMI dataset. Both algorithms can be easily modified to include this
 information. In Table~\ref{table:power} we report the average fraction of TFIs
-contained in $\FI(\Ds,\Itm,\hat\theta)$. 
+contained in $\FI(\Ds,\Itm,\hat\theta)$.
 %\textcolor{Red}{We also report the
 %values of $\varepsilon_2$ used to compute $\hat\theta=\theta+\varepsilon_2$ in
-%our method (see Sect.~\ref{sec:main})}. 
+%our method (see Sect.~\ref{sec:main})}.
 We can see that the amount of TFIs
 found by our algorithm is always very high: only a \emph{minimal}
-fraction (often less than $3\%$) %number 
+fraction (often less than $3\%$) %number
 of TFIs do not appear in the output. This is explained by the fact that the
 value $\varepsilon_2$ computed in our method (see Sect.~\ref{sec:main}) is
 always smaller than $10^{-4}$. Moreover our solution
 \emph{uniformly outperforms} the CU method, often by a huge margin, since
  our algorithm does not have to take into account all
-possible itemsets when computing $\hat\theta$. % 
+possible itemsets when computing $\hat\theta$. %
 %The fraction of reported TFIs was always very high (Table~\ref{table:power})
 %In the two rightmost columns of Table~\ref{table:power} we can see the results
 %for two variants of our algorithm: in the ``Vanilla'' variant, we assume no
@@ -416,17 +416,17 @@ possible itemsets when computing $\hat\theta$. %
 %transactions longer than twice the longest transaction in the original dataset.
 %We can see that the recall of our method is very high in general in both cases,
 %but the inclusion of additional knowledge improves the practical usefulness of
-%our algorithm and, in some cases, allows to achieve higher recall. 
+%our algorithm and, in some cases, allows to achieve higher recall.
 Only partial results are reported for the ``vanilla'' variant because of the
 very high number of items in the considered datasets: the mining of the
 dataset is performed at frequency threshold $\theta-\varepsilon_1$  and if there
 are many items, then the value of $\varepsilon_1$ becomes very high because the
 bound to the VC-dimension of $\range(2^\Itm)$ is $|\Itm|-1$, and as a
 consequence we have $\theta-\varepsilon_1\le 0$. %which drives the value of
-%$\varepsilon_1$ very high, and limits the applicability of our method. 
+%$\varepsilon_1$ very high, and limits the applicability of our method.
 We stress, though, that assuming no knowledge about the distribution $\prob$ is not realistic, and
 usually additional information, especially regarding the length of the
-transactions, is available and can and should be used. The use of 
+transactions, is available and can and should be used. The use of
 additional information gives flexibility to our method and improves its
 practicality. Moreover, in some cases, it allows to find an even larger fraction
 of the TFIs.
@@ -513,10 +513,10 @@ of the TFIs.
 \label{table:power}
 \end{table}
 
-%We also wanted to compare the performances of our algorithm %methods 
+%We also wanted to compare the performances of our algorithm %methods
 %with that of a baseline method to control false positives. %established techniques to identify TFI's.
 %can control the probability of Type-1
-%errors. 
+%errors.
 %To
 %this end we adapted the holdout technique proposed by~\citet{Webb07} to the TFIs
 %problem and compared its power with that of Method 1.
@@ -528,10 +528,10 @@ of the TFIs.
 %itemsets w.r.t.~$\theta$ are extracted from the exploratory part. Then,
 %each of the null hypotheses of these itemsets is tested using a Binomial test on
 %the frequency of the itemsets in the evaluation dataset, with critical value
-%$\delta/k$, where $k$ is the number of patterns found in the first step. 
+%$\delta/k$, where $k$ is the number of patterns found in the first step.
 %We implemented the holdout method using the Bonferroni
 %correction and compared the power of this method with that of our statistical
-%test. 
+%test.
 %To evaluate the power of Method 2, which does not need to split the
 %dataset, we compared its results with the power of a method that uses the
 %In Bonferroni correction over all possible itemsets to test, with a Binomial test,
@@ -541,7 +541,7 @@ of the TFIs.
 %The average (over 20 runs) fraction of TFI's reported by the two methods are
 %presented in Table~\ref{table:power}, in the three rightmost columns.
 %holdout technique are presented in Table~\ref{table:power}, where we reported
-%the average over 20 runs for each experiment. 
+%the average over 20 runs for each experiment.
 %We highlighted in bold the
 %best result for each experiment and each of the two setting (split or full
 %dataset).
@@ -570,12 +570,12 @@ of the TFIs.
 %itemsets. Given that in common applications the number of frequent itemsets of
 %interest is large, we believe that in real scenarios Method 1 can be more
 %effective in extracting the True Frequent Itemsets while rigorously controlling
-%the probability of false discoveries. 
+%the probability of false discoveries.
 %One can see that our algorithm performs much better than the %For the full dataset case, we can see
-%that Method 2 performs much better than the 
+%that Method 2 performs much better than the
 %CU (Chernoff+Union bounds) method in all cases, thanks to the fact that it does
 %not need to take into consideration all possible itemsets when computing the
-%threshold $\hat\theta$. %when computing the acceptance region, all possible hypotheses. 
+%threshold $\hat\theta$. %when computing the acceptance region, all possible hypotheses.
 %One can also compare Method 1 and Method 2 to each other, given that Method 2 can be used in cases where Method 1
 %can. Method 2 manages to achieve higher statistical power than Method 1 in
 %almost all cases, but we must stress that this is at the expense of a longer
@@ -588,7 +588,7 @@ of the TFIs.
 %SUKPs. Various optimizations and shortcuts can be implemented to substantially
 %speed up our methods (see also the discussion in Sect.~\ref{sec:range}). Due
 %to space restrictions, we defer the presentation of the runtime evaluation to
-%the full version of the paper. 
+%the full version of the paper.
 
 %\paragraph*{Estimation of the True Frequency}\label{sec:freqest}
 %\XXX I'd put this only if we actually have the space. \MR
