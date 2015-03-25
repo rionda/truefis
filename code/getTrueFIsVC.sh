@@ -45,7 +45,7 @@ for RES in `ls ${RESULTS_BASE}/${BASEDATASETNAME}_t*.res 2> /dev/null || echo ""
 	# Floating point comparison
 	DIFFERENCE=`echo 0.${MIN_FREQ} - 0.${FREQ} | bc | cut -d "." -f 1`
 	if [ ${DIFFERENCE:-empty} != "-" ]; then
-		echo -n "found results for freq=${FREQ}..." >&2
+		echo -n "found results for freq=${FREQ} (${RES})..." >&2
 		RESULTS_FILE=${RES}
 		break
 	fi
