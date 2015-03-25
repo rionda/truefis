@@ -1,9 +1,9 @@
-The intuition behind the method is the following. 
+The intuition behind the method is the following.
 Let $\mathcal{B}$ be
 the \emph{negative border} of $\TFI(\prob,\Itm,\theta)$, that is the set of itemsets
 not in $\TFI(\prob,\Itm,\theta)$ but such that all their proper subsets are in
 $\TFI(\prob,\Itm,\theta)$. If we can find an $\varepsilon$ such that $\Ds$ is an
-$\varepsilon$-approximation to $(\range(\mathcal{B}),\pi)$ then 
+$\varepsilon$-approximation to $(\range(\mathcal{B}),\pi)$ then
 we have that any itemset
 $A\in\mathcal{B}$ has a frequency $f_\Ds(A)$ in $\Ds$ less than
 $\hat{\theta}=\theta+\varepsilon$, given that it must be $\tfreq(A)<\theta$. By the
@@ -13,15 +13,28 @@ frequency in $\Ds$ greater or equal to $\hat{\theta}=\theta+\varepsilon$ are
 those with true frequency at least $\theta$. In the following paragraphs we show
 how to compute $\varepsilon$.
 
+We now describe our algorithm more formally. The pseudocode of our method is
+presented in Alg.~\ref{alg:vcfull}.
+
+{\bf PER FABIO: } Fammi sapere se secondo te, nella descrizione che segue,
+dovremmo mettere delle references alle righe dello pseudocodice corrispondenti,
+per rendere piu' chiaro il tutto.
+
 Let $\delta_1$ and $\delta_2$ be such that $(1-\delta_1)(1-\delta_2)\ge
 1-\delta$. Let $\range(2^\Itm)$ be the range space of all itemsets.
-We use Corol.~\ref{thm:vcdimubfirst} (resp.~Thm.~\ref{thm:empvcdimubfirst}) to
-compute an upper bound $d'$ to $\VC(\range(2^\Itm))$ (resp.~$d''$ to
-$\EVC(\range(2^\Itm),\Ds)$). Then we can use $d'$ in Thm.~\ref{thm:eapprox} (resp.~$d''$ in
-Thm.~\ref{thm:eapproxempir}) to compute an $\varepsilon_1'$ (resp.~an
-$\varepsilon_1''$) such that $\Ds$ is, with probability at
-least $1-\delta_1$, an $\varepsilon_1'$-approximation
-(resp.~$\varepsilon_1''$-approximation) to $(\range(2^\Itm),\prob)$.
+We use Corol.~\ref{thm:vcdimubfirst} to
+compute an upper bound $d'$ to $\VC(\range(2^\Itm))$. Then we can use $d'$ in
+Thm.~\ref{thm:eapprox} to compute an $\varepsilon_1'$ such that $\Ds$ is, with
+probability at least $1-\delta_1$, an $\varepsilon_1'$-approximation to
+$(\range(2^\Itm),\prob)$.
+
+Similarly, we use Thm.~\ref{thm:empvcdimubfirst} to compute an upper bound $d''$ to
+$\EVC(\range(2^\Itm),\Ds)$). Then we can use the highest frequency of an item in the
+dataset, the bound $d''$, and $2^{|\Itm|}$ in Thm.~\ref{thm:eapproxempir} (actually
+using~\eqref{eq:evceapproxitemsets}) to compute an $\varepsilon_1''$ such that
+$\Ds$ is, with probability at least $1-\delta_1$, an
+$\varepsilon_1''$-approximation to $(\range(2^\Itm),\prob)$.
+
 \begin{fact}
 Let
 $\varepsilon_1=\min\{\varepsilon_1',\varepsilon_1''\}$. With probability at
@@ -30,12 +43,12 @@ $(\range(2^\Itm),\prob)$.
 \end{fact}
 
 We want to find an upper bound the (empirical) VC-dimension of
-$\range(\mathcal{B})$. To this end, we use the fact that the negative border of a
-collection of itemsets is a \emph{maximal
-antichain} on $2^\Itm$, that is, a collection of sets from $2^\Itm$ such that
-for no two of them, one of them is included in the other and such that is not a
-proper subset of any other antichain. Let now $\mathcal{W}$ be the \emph{negative
-border} of $\mathcal{C}_1=\FI(\Ds,\Itm,\theta-\varepsilon_1)$, 
+$\range(\mathcal{B})$. To this end, we use the fact that the negative border of
+a collection of itemsets is a \emph{maximal antichain} on $2^\Itm$, that is, a
+collection of sets from $2^\Itm$ such that for no two of them, one of them is
+included in the other and such that is not a proper subset of any other
+antichain. Let now $\mathcal{W}$ be the \emph{negative border} of
+$\mathcal{C}_1=\FI(\Ds,\Itm,\theta-\varepsilon_1)$,
 $\mathcal{G}=\{A\subseteq\Itm ~:~ \theta-\varepsilon_1\le
 f_\Ds(A)<\theta+\varepsilon_1\}$, and $\mathcal{F}=\mathcal{G}\cup\mathcal{W}$.
 
@@ -52,26 +65,34 @@ f_\Ds(A)<\theta+\varepsilon_1\}$, and $\mathcal{F}=\mathcal{G}\cup\mathcal{W}$.
 \end{lemma}
 
 \begin{proof}
-  Given 
-  that $\Ds$ is an $\varepsilon_1$-approximation to $(\range(2^\Itm),\prob)$, then
-  $\TFI(\prob,\Itm,\theta)\subseteq\mathcal{G}\cup\mathcal{C}_1$. 
-  From this and the definition of negative border and of $\mathcal{F}$, we have
-  that $\mathcal{B}\subseteq\mathcal{F}$. Since $\mathcal{B}$ is a maximal
-  antichain, then $\mathcal{B}\in\mathcal{Y}$. Hence the thesis.
-  \qed
+  Given that $\Ds$ is an $\varepsilon_1$-approximation to
+  $(\range(2^\Itm),\prob)$, then
+  $\TFI(\prob,\Itm,\theta)\subseteq\mathcal{G}\cup\mathcal{C}_1$.  From this and
+  the definition of negative border and of $\mathcal{F}$, we have that
+  $\mathcal{B}\subseteq\mathcal{F}$. Since $\mathcal{B}$ is a maximal antichain,
+  then $\mathcal{B}\in\mathcal{Y}$. Hence the thesis.
 \end{proof}
 
-
 In order to compute upper bounds to $\VC(\range(\mathcal{B}))$ and
-$\EVC(\range(\mathcal{B}),\Ds)$ we can solve slightly modified SUKPs 
-associated to $\mathcal{F}$ with the additional constraint that the
+$\EVC(\range(\mathcal{B}),\Ds)$ we can solve slightly modified SUKPs
+associated to $\mathcal{F}$ with the \emph{additional constraint} that the
 optimal solution, which is a collection of itemsets, \emph{must be a maximal
-antichain}. Lemma~\ref{lem:sukpevc} still holds even for the solutions of these
-modified SUKPs. Using these bounds in Thms.~\ref{thm:eapprox}
-and~\ref{thm:eapproxempir}, we compute an $\varepsilon_2$ such that, with
-probability at least $1-\delta_2$, $\Ds$ is an $\varepsilon_2$-approximation to
-$(\range(\mathcal{B}),\prob)$. Let $\hat{\theta}=\theta+\varepsilon_2$. The
-following Theorem shows that $\hat{\theta}$ has the desired properties.
+antichain}. Note in particular, that the size of the solution to the modified
+SUKP associated to $\mathcal{F}$ that we use to compute an upper bound to
+$\VC(\range(\mathcal{B}))$ is an upper bound to the size of $\mathcal{B}$.
+Indeed the returned solution is the largest maximal antichain that can be built
+using sets in $\mathcal{F}$, so its size is an upper bound to $|\mathcal{B}|$.
+We can therefore use this quantity in~\eqref{eq:evceapproxitemsets}.
+
+{\bf PER FABIO:} Fammi sapere se l'osservazione qui sopra sulla taglia di
+$\mathcal{B}$ si capisce (e se ti convince che sia vera \ldots)
+
+Lemma~\ref{lem:sukpevc} still holds even for the solutions of these modified
+SUKPs. Using these bounds in Thms.~\ref{thm:eapprox} and~\ref{thm:eapproxempir},
+we compute an $\varepsilon_2$ such that, with probability at least $1-\delta_2$,
+$\Ds$ is an $\varepsilon_2$-approximation to $(\range(\mathcal{B}),\prob)$. Let
+$\hat{\theta}=\theta+\varepsilon_2$. The following Theorem shows that
+$\hat{\theta}$ has the desired properties.
 
 \begin{theorem}\label{lem:vcfull}
 With probability at least $1-\delta$, $\FI(\Ds,\Itm,\hat\theta)$ contains no false positives:
@@ -81,38 +102,92 @@ With probability at least $1-\delta$, $\FI(\Ds,\Itm,\hat\theta)$ contains no fal
 \begin{proof}
   Consider the two events $\mathsf{E}_1$=``$\Ds$ is an
   $\varepsilon_1$-approximation for $(\range(2^\Itm),\prob)$'' and
-  $\mathsf{E}_2$=``$\Ds$ is an
-  $\varepsilon_2$-approximation for $(\range(\mathcal{B}),\prob)$''. From
-  the above discussion and the definition of $\delta_1$ and $\delta_2$ it
-  follows that the event $\mathsf{E}=\mathsf{E}_1\cap\mathsf{E}_1$ occurs with
-  probability at least $1-\delta$. Suppose from now on that indeed $\mathsf{E}$
-  occurs.
+  $\mathsf{E}_2$=``$\Ds$ is an $\varepsilon_2$-approximation for
+  $(\range(\mathcal{B}),\prob)$''. From the above discussion and the definition
+  of $\delta_1$ and $\delta_2$ it follows that the event
+  $\mathsf{E}=\mathsf{E}_1\cap\mathsf{E}_1$ occurs with probability at least
+  $1-\delta$. Suppose from now on that indeed $\mathsf{E}$ occurs.
 
-  Since $\mathsf{E}_1$ occurs, then Lemma~\ref{lem:antichains}
-  holds, and the bounds we compute by solving the modified SUKP problems are
-  indeed bounds to $\VC(\range(\mathcal{B}))$ and
-  $\EVC(\range(\mathcal{B},\Ds))$. %Then the computation of $\varepsilon_2$ is valid. 
-  Since $\mathsf{E}_2$ also occurs, then for any $A\in\mathcal{B}$ we
-  have $|\tfreq(A)-f_\Ds(A)|\le\varepsilon_2$, but given that $\tfreq(A)<\theta$
+  Since $\mathsf{E}_1$ occurs, then Lemma~\ref{lem:antichains} holds, and the
+  bounds we compute by solving the modified SUKP problems are indeed bounds to
+  $\VC(\range(\mathcal{B}))$ and $\EVC(\range(\mathcal{B},\Ds))$. %Then the computation of $\varepsilon_2$ is valid.
+  Since $\mathsf{E}_2$ also occurs, then for any $A\in\mathcal{B}$ we have
+  $|\tfreq(A)-f_\Ds(A)|\le\varepsilon_2$, but given that $\tfreq(A)<\theta$
   because the elements of $\mathcal{B}$ are not TFIs, then we have
-  $f_\Ds(A)<\theta+\varepsilon_2$. Because of the antimonotonicity property
-  of the frequency and the definition of $\mathcal{B}$, this holds for any
-  itemset that is not in $\TFI(\prob,\Itm,\theta)$. Hence, the only itemsets that can have a
-  frequency in $\Ds$ at least $\hat{\theta}=\theta+\varepsilon_2$ are the TFIs, so
-  $\FI(\Ds,\Itm,\hat{\theta})\subseteq\TFI(\prob,\Itm,\theta)$, which concludes
-  our proof.
-  \qed
+  $f_\Ds(A)<\theta+\varepsilon_2$. Because of the antimonotonicity property of
+  the frequency and the definition of $\mathcal{B}$, this holds for any itemset
+  that is not in $\TFI(\prob,\Itm,\theta)$. Hence, the only itemsets that can
+  have a frequency in $\Ds$ at least $\hat{\theta}=\theta+\varepsilon_2$ are the
+  TFIs, so $\FI(\Ds,\Itm,\hat{\theta})\subseteq\TFI(\prob,\Itm,\theta)$, which
+  concludes our proof.
 \end{proof}
 
+\begin{algorithm}[htbp]
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \SetKwComment{Comment}{\quad// }{}
+  \SetKwFunction{SolveAntichainSUKP}{solveAntichainSUKP}
+   \DontPrintSemicolon
+   \Input{Dataset $\Ds$, freq.~threshold $\theta\in(0,1)$, confidence
+   $\delta\in(0,1)$}
+  \Output{Freq.~threshold $\hat{\theta}$
+  s.~t.~$\FI(\Ds,\Itm,\hat{\theta})$ contains only TFIs with prob.~at least
+  $1-\delta$.}
+  $\delta_1,\delta_2\leftarrow 1-\sqrt{1-\delta}$ \Comment{$\delta_1$ and $\delta_2$ do not need to have the same value}
+  $d_1'\leftarrow$ upper bound to $\VC(\range(2^\Itm))$ \Comment{e.g., $|\Itm|-1$}
+  $\varepsilon_1' \leftarrow \sqrt{\frac{c}{|\Ds|}\left(d_1' + \ln\frac{1}{\delta_1}\right)}$\;
+  $d_1''\leftarrow$ upper bound to $\EVC(\range(2^\Itm),\Ds)$ \Comment{i.e., d-index of
+  $\Ds$~\citep{RiondatoU12}}
+  %$\varepsilon_1'' \leftarrow
+  %2\sqrt{\frac{2d_1''\log(|\Ds|+1)}{|\Ds|}}+\sqrt{\frac{2\ln\frac{2}{\delta_1}}{|\Ds|}}$\;
+  $\varepsilon_1'' \leftarrow
+  2\sqrt{\frac{\max_{a\in\Itm}f_\Ds(\{a\})2\min\left\{\ln2^{|\Itm|},d_1''\ln\left(\frac{e|\Ds|}{d}\right)\right\}}{|\Ds|}}+\sqrt{\frac{2\ln\frac{4}{\delta_1}}{|\Ds|}}$\;
+  $\varepsilon_1\leftarrow\min\{\varepsilon_1',\varepsilon_1''\}$\;
+  $\mathcal{C}_1=\FI(\Ds,\Itm,\theta-\varepsilon_1)$\;
+  $\mathcal{G}=\{A\subseteq\Itm ~:~ \theta-\varepsilon_1\le
+f_\Ds(A)<\theta+\varepsilon_1\}$\;
+  $\mathcal{W}\leftarrow$ negative border of $\mathcal{C}_1$\;
+  $\mathcal{F}=\mathcal{G}\cup\mathcal{W}$\;
+  $U\leftarrow\{a\in\Itm : \exists A\in\mathcal{F} \mbox{ s.t. } a\in A\}$\;
+  $b_2'\leftarrow$ \SolveAntichainSUKP{$U,\mathcal{F},|U|$}\;
+  $d_2'\leftarrow\lfloor\log_2b_2'\rfloor+1$\;
+  $\varepsilon_2' \leftarrow \sqrt{\frac{c}{|\Ds|}\left(d_2' + \ln\frac{2}{\delta_2}\right)}$\;
+  $\ell_1,\dotsc,\ell_w\leftarrow$ transaction lengths of $\Ds$ \Comment{see
+  Sect.~\ref{sec:computvc}}
+  $L_1,\dotsc,L_w\leftarrow$ the maximum number of
+transactions in $\Ds$ that have length at least $\ell_i$, $1\le i\le w$, and
+such that for no two $\tau'$, $\tau''$ of them we have either
+$\tau'\subseteq\tau''$ or $\tau''\subseteq\tau'$\;
+  $i\leftarrow 0$\;
+  \While{True}
+  {
+  $b_2''\leftarrow$ \SolveAntichainSUKP{$U,\mathcal{F},\ell_i$}\;
+  $d_2''\leftarrow\lfloor\log_2b_2''\rfloor+1$\;
+  \uIf{$d_2''< L_i$}
+  {
+  break\;
+  }\Else{
+  $i\leftarrow i+1$\;
+  }
+  }
+  %$\varepsilon_2'' \leftarrow
+  %2\sqrt{\frac{2d_2''\log(|\Ds|+1)}{|\Ds|}}+\sqrt{\frac{2\ln\frac{2}{\delta_2}}{|\Ds|}}$\;
+  $\varepsilon_2'' \leftarrow
+  2\sqrt{\frac{\max_{A\in\mathcal{F}}f_\Ds(A)2\min\left\{\ln
+	b_2',d_2''\ln\left(\frac{e|\Ds|}{2}\right)\right\}}{|\Ds|}}+\sqrt{\frac{2\ln\frac{4}{\delta_2}}{|\Ds|}}$\;
+  $\varepsilon_2\leftarrow\min\{\varepsilon_2',\varepsilon_2''\}$\;
+  \Return{$\theta+\varepsilon_2$}
+  \caption{Compute freq.~threshold $\hat{\theta}$
+  s.~t.~$\FI(\Ds,\Itm,\hat{\theta})$ contains only TFIs with prob.~at least
+  $1-\delta$.}
+  \label{alg:vcfull}
+\end{algorithm}
 
-The pseudocode of our method is presented in Alg.~\ref{alg:vcfull}.
-
-
-\paragraph{Exploiting additional knowledge about $\prob$.} 
+\paragraph{Exploiting additional knowledge about $\prob$.}
 Our algorithm is completely \emph{distribution-free}, i.e., it does not require
 any assumption about the unknown distribution $\prob$. On the other hand, when
 information about $\prob$ is available, our method can exploit it to achieve
-better performances in terms of running time, practicality, and accuracy. 
+better performances in terms of running time, practicality, and accuracy.
 For example, in most applications $\prob$ will not generate any transaction
 longer than some known upper bound $\ell\ll|\Itm|$. Consider for example an
 online marketplace like Amazon: it is extremely unlikely (if not humanly
@@ -133,4 +208,3 @@ smaller $\varepsilon$, and a smaller $\hat\theta$, which allows to produce more
 TFIs in the output collection. In the experimental evaluation, we show the
 positive impact of including additional information may on the performances of
 our algorithm.
-

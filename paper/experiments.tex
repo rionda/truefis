@@ -1,86 +1,3 @@
-\begin{table}[htbp]
-  \centering
-  \small
-  \begin{tabular}{llrrr}
-\toprule
-Dataset & Freq.~$\theta$ & TFIs & Times FPs & Times FNs\\
-\midrule
-\texttt{accidents} & 0.2 & 889883 & 100\% & 100\% \\
-%& 0.8 & 149 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
-% & 0.7 & 529 & 1 & 0 & 0.1 & 2 & 4 & 0 & 0.7 & 7 \\
-% & 0.6 & 2074 & 7 & 0 & 1.75 & 14 & 4 & 0 & 0.5 & 7 \\
-% & 0.5 & 8057 & 20 & 0 & 8.05 & 19 & 8 & 0 & 3.65 & 17 \\
-% & 0.45 & 16123 & 28 & 1 & 10.1 & 20 & 14 & 1 & 6.35 & 20 \\
-% & 0.4 & 32528 & 70 & 4 & 26.55 & 20 & 46 & 2 & 16.55 & 20 \\
-% & 0.35 & 68222 & 160 & 14 & 59.85 & 20 & 94 & 9 & 39.0 & 20 \\
-% & 0.3 & 149545 & 313 & 16 & 132.4 & 20 & 180 & 10 & 79.15 & 20 \\
-% & 0.25 & 346525 & 761 & 73 & 319.75 & 20 & 378 & 33 & 189.3 & 20 \\
-% & 0.2 & 889883 & 1988 & 184 & 837.5 & 20 & 961 & 81 & 470.55 & 20 \\
-% & 0.15 & 2676381 & 6370 & 0 & 2194.6 & 16 & 1786945 & 364 & 358398.9 & 20 \\
-\midrule
-\texttt{BMS-POS} & 0.005 & 4240 & 100\% & 100\% \\
-%\multirow{6}{*}{\texttt{BMS-POS}} & 0.05 & 59 & 0 & 0 & 0.0 & 0 & 1 & 0 & 0.3 & 6 \\
-% & 0.03 & 134 & 1 & 0 & 0.05 & 1 & 0 & 0 & 0.0 & 0 \\
-% & 0.02 & 308 & 2 & 0 & 0.85 & 14 & 2 & 0 & 0.2 & 3 \\
-% & 0.01 & 1099 & 4 & 1 & 1.45 & 20 & 6 & 3 & 3.85 & 20 \\
-% & 0.0075 & 1896 & 10 & 2 & 4.85 & 20 & 13 & 4 & 7.7 & 20 \\
-% & 0.005 & 4240 & 16 & 3 & 8.85 & 20 & 31 & 11 & 20.95 & 20 \\
-\midrule
-\texttt{chess} & 0.6 & 254944 & 100\% & 100\% \\
-%\multirow{4}{*}{\texttt{chess}} %& 0.95 & 77 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
-% %& 0.9 & 622 & 1 & 0 & 0.05 & 1 & 0 & 0 & 0.0 & 0 \\
-% & 0.8 & 8227 & 0 & 0 & 0.0 & 0 & 23 & 0 & 7.45 & 17 \\
-% & 0.75 & 20993 & 0 & 0 & 0.0 & 0 & 131 & 12 & 68.25 & 40 \\
-% & 0.65 & 111239 & 192 & 9 & 72.4 & 20 & 181 & 0 & 16.55 & 15 \\
-% & 0.6 & 254944 & 193 & 1 & 45.5 & 20 & 875 & 1 & 155.1 & 20 \\
-% & 0.5 & 1272932 & 80 & 0 & 13.1 & 9 & 4767 & 1481 & 2815.0 & 18 \\
-\midrule
-\texttt{connect} & 0.85 & 142127 & 100\% & 100\% \\
-%\multirow{3}{*}{\texttt{connect}} %& 0.975 & 327 & 0 & 0 & 0.0 & 0 & 2 & 0 & 0.8 & 8 \\
-% %& 0.95 & 2201 & 12 & 0 & 2.5 & 11 & 8 & 0 & 2.8 & 10 \\
-% & 0.9 & 27127 & 64 & 0 & 12.8 & 10 & 96 & 0 & 28.6 & 16 \\
-% & 0.875 & 65959 & 240 & 0 & 63.6 & 18 & 208 & 0 & 62.4 & 19 \\
-%& 0.85 & 142127 & 384 & 16 & 145.6 & 20 & 328 & 32 & 182.0 & 20 \\
-\midrule
-\texttt{kosarak} & 0.015 & 189 & 45\% & 55\% \\
-%\multirow{6}{*}{\texttt{kosarak}} & 0.04 & 42 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
-% & 0.035 & 50 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
-% & 0.03 & 65 & 1 & 0 & 0.3 & 6 & 0 & 0 & 0.0 & 0 \\
-% & 0.025 & 82 & 1 & 0 & 0.05 & 1 & 0 & 0 & 0.0 & 0 \\
-% & 0.02 & 121 & 1 & 0 & 0.4 & 8 & 0 & 0 & 0.0 & 0 \\
-% & 0.015 & 189 & 1 & 0 & 0.45 & 9 & 1 & 0 & 0.55 & 11 \\
-% & 0.0075 & 676 & 4 & 0 & 1.45 & 16 & 5 & 0 & 1.8 & 19 \\
-% & 0.005 & 1618 & 6 & 1 & 2.75 & 20 & 8 & 0 & 3.75 & 19 \\
-% & 0.002 & 1619 & 5 & 0 & 2.0 & 18 & 8 & 0 & 4.0 & 19 \\
-% & 0.0015 & 1619 & 5 & 0 & 2.0 & 18 & 8 & 0 & 4.0 & 19 \\
-% & 0.001 & 1619 & 5 & 0 & 2.0 & 18 & 8 & 0 & 4.0 & 19 \\
-\midrule
-\texttt{pumsb*} & 0.45 & 1913 & 5\% & 80\% \\
-%\multirow{5}{*}{\texttt{pumsb*}} & 0.55 & 305 & 0 & 0 & 0.0 & 0 & 4 & 0 & 0.6 & 3 \\
-% & 0.5 & 679 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
-% & 0.49 & 804 & 23 & 0 & 9.25 & 13 & 5 & 0 & 0.75 & 5 \\
-% & 0.475 & 1050 & 0 & 0 & 0.0 & 0 & 1 & 0 & 0.28 & 6 \\
-% & 0.45 & 1913 & 96 & 0 & 4.8 & 1 & 25 & 0 & 13.7 & 16 \\
-% & 0.4 & 27354 & 59 & 0 & 16.9 & 9 & 18 & 0 & 3.6 & 8 \\
-% & 0.35 & 116787 & 377 & 1 & 161.05 & 20 & 424 & 40 & 136.45 & 20 \\
-% & 0.32 & 239691 & 615 & 1 & 136.0 & 20 & 381 & 104 & 169.2 & 20 \\
-% & 0.3 & 432698 & 1081 & 1 & 320.85 & 20 & 2377 & 219 & 1190.05 & 20 \\
-\midrule
-\texttt{retail} & 0.0075 & 277 & 10\% & 20\% \\
-%\multirow{6}{*}{\texttt{retail}} & 0.03 & 32 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
-% & 0.025 & 38 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
-% & 0.0225 & 46 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
-% & 0.02 & 55 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
-%% & 0.015 & 84 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
-% & 0.01 & 159 & 1 & 0 & 0.05 & 1 & 1 & 0 & 0.2 & 4 \\
-% & 0.0075 & 277 & 2 & 0 & 0.5 & 9 & 2 & 0 & 0.25 & 4 \\
-\bottomrule
-\end{tabular}
-\caption{Fractions of times that $\FI(\Ds,\Itm,\theta)$ contained false positives
-and missed TFIs (false negatives) over 20 datasets from the same ground truth.}
-\label{table:fp}
-\end{table}
-
 \iffalse
 \begin{table*}[htbp]
   \centering
@@ -166,87 +83,6 @@ and missed TFIs (false negatives) over 20 datasets from the same ground truth.}
 \label{table:power}
 \end{table*}
 \fi % iffalse
-\begin{table}[htbp]
-  \small
-  \centering
-  \begin{tabular}{llrcccc}
-    \toprule
-    & & & \multicolumn{4}{c}{Reported TFIs (Average Fraction)} \\
-    \cmidrule(l){4-7}
-    & & & \multicolumn{2}{c}{``Vanilla'' (no info)} &
-    \multicolumn{2}{c}{Additional Info}\\
-    \cmidrule(l){4-5} \cmidrule(l){6-7}
-    Dataset & Freq.~$\theta$ & TFIs & CU Method & This Work & CU Method & This Work\\
-\midrule
-\multirow{8}{*}{\texttt{accidents}} & 0.8 & 149 & 0.838& \bf 0.981
-& 0.853& \bf 0.981\\
- & 0.7 & 529 & 0.925& \bf 0.985& 0.935& \bf 0.985\\
- & 0.6 & 2074 & 0.967& \bf 0.992& 0.973& \bf 0.992\\
- & 0.5 & 8057 & 0.946& \bf 0.991& 0.955& \bf 0.991\\
- & 0.45 & 16123 & 0.948& \bf 0.992& 0.955& \bf 0.992\\
- & 0.4 & 32528 & 0.949& 0.991& 0.957& \bf 0.992\\
- %& 0.35 & 68222 & 0.951297235 &  & 0.957897013 & 0.990999238 \\
- & 0.3 & 149545 & & & 0.957& \bf 0.989\\
- %& 0.25 & 346525 & 0.952457687 &  & 0.958788688 & 0.989381718 \\
- & 0.2 & 889883 & &  & 0.957& \bf 0.987\\
-\midrule
-\multirow{6}{*}{\texttt{BMS-POS}} & 0.05 & 59 & 0.845& \bf 0.938&
-0.851& \bf 0.938\\
- & 0.03 & 134 & 0.879& \bf 0.992& 0.895& \bf 0.992\\
- & 0.02 & 308 & 0.847& \bf 0.956& 0.876& \bf 0.956\\
- & 0.01 & 1099 & 0.813& 0.868& 0.833& \bf 0.872\\
- & 0.0075 & 1896 & &  & 0.826& \bf 0.854\\
- & 0.005 & 4240 & &  & 0.762& \bf 0.775\\
-\midrule
-\multirow{5}{*}{\texttt{chess}} & 0.8 & 8227 & 0.964& \bf 0.991&
-0.964& \bf 0.991\\
- & 0.775 & 13264 & 0.957 & \bf 0.990 & 0.957 & \bf 0.990 \\
- & 0.75 & 20993 & 0.957& \bf 0.983& 0.957& \bf 0.983\\
- %& 0.7 & 48731 & 0.970328949 &  & 0.970328949 & 0.993779114 \\
- & 0.65 & 111239 & &  & 0.972& \bf 0.991\\
- & 0.6 & 254944 & &  & 0.970& \bf 0.989\\
-\midrule
-\multirow{5}{*}{\texttt{connect}} & 0.95 & 2201 & 0.802& \bf 0.951&
-0.802& \bf 0.951\\
- & 0.925 & 9015 & 0.881& \bf 0.975& 0.881& \bf 0.975 \\
- & 0.9 & 27127 & 0.893& \bf 0.978& 0.893& \bf 0.978\\
- & 0.875 & 65959 & &  & 0.899& \bf 0.974\\
- & 0.85 & 142127 & &  & 0.918& \bf 0.974\\
-\midrule
-\multirow{4}{*}{\texttt{kosarak}} & 0.04 & 42 & 0.738& \bf 0.939&
-0.809& \bf 0.939\\
- & 0.035 & 50 & 0.720& \bf 0.980& 0.780& \bf 0.980\\
-% & 0.03 & 65 & 0.646153846 &  & 0.738461538 & 0.923076923 \\
- & 0.025 & 82 & &  & 0.682& \bf0.963\\
- & 0.02 & 121 & &  & 0.650& \bf 0.975\\
- & 0.015 & 189 & &  & 0.641& \bf 0.933\\
-\midrule
-\multirow{5}{*}{\texttt{pumsb*}} & 0.55 & 305 & 0.791& \bf 0.926&
-0.859& \bf 0.926\\
- & 0.5 & 679 & 0.929& \bf 0.998& 0.957& \bf 0.998\\
- & 0.49 & 804 & 0.858& \bf 0.984& 0.907& \bf 0.984\\
- & 0.475 & 1050 & &  & 0.942& \bf 0.996\\
- & 0.45 & 1913 & &  & 0.861& \bf 0.976\\
-\midrule
-\multirow{5}{*}{\texttt{retail}} & 0.03 & 32 & 0.625& \bf 1.00&
-0.906& \bf 1.00\\
- & 0.025 & 38 & 0.842& \bf 0.973& 0.972& \bf 0.973\\
- & 0.0225 & 46 & 0.739& 0.934& 0.869& \bf 0.935\\
- & 0.02 & 55 & &  & 0.882& \bf 0.945\\
- & 0.01 & 159 & &  & 0.902& \bf 0.931\\
- & 0.0075 & 277 & &  & 0.811& \bf 0.843\\
- \bottomrule
- \end{tabular}
-  \caption{Recall. Average fraction (over 20 runs) of reported TFIs
-  in the output of an algorithm using Chernoff and Union bound and of the one
-  presented in this work. For each algorithm we present two versions, one
-  (Vanilla) which uses no information about the generative process, and one
-  (Add.~Info) in which we assume the knowlegde that the process will not
-  generate any transaction longer than twice the size of the longest transaction
-  in the original FIMI dataset. In bold, the best result (highest reported
-  fraction).}
-\label{table:power}
-\end{table}
 %\begin{table*}[tb]
 %\centering
 %\begin{tabular}{llrcccccc}
@@ -351,59 +187,6 @@ and missed TFIs (false negatives) over 20 datasets from the same ground truth.}
 %\label{table:power}
 %\end{table*}
 
-\begin{algorithm}[htb]
-  \SetKwInOut{Input}{Input}
-  \SetKwInOut{Output}{Output}
-  \SetKwComment{Comment}{\quad// }{}
-  \SetKwFunction{SolveAntichainSUKP}{solveAntichainSUKP}
-   \DontPrintSemicolon
-   \Input{Dataset $\Ds$, freq.~threshold $\theta\in(0,1)$, confidence
-   $\delta\in(0,1)$}
-  \Output{Freq.~threshold $\hat{\theta}$
-  s.~t.~$\FI(\Ds,\Itm,\hat{\theta})$ contains only TFIs with prob.~at least
-  $1-\delta$.}
-  $\delta_1,\delta_2\leftarrow 1-\sqrt{1-\delta}$ \Comment{$\delta_1$ and $\delta_2$ do not need to have the same value}
-  $d_1'\leftarrow$ upper bound to $\VC(\range(2^\Itm))$ (e.g., $|\Itm|-1$)\;
-  $\varepsilon_1' \leftarrow \sqrt{\frac{c}{|\Ds|}\left(d_1' + \log\frac{1}{\delta_1}\right)}$\; 
-  $d_1''\leftarrow$ upper bound to $\EVC(\range(2^\Itm),\Ds)$ \Comment{i.e., d-index of
-  $\Ds$~\citep{RiondatoU12}}
-  $\varepsilon_1'' \leftarrow 2\sqrt{\frac{2d_1''\log(|\Ds|+1)}{|\Ds|}}+\sqrt{\frac{2\log\frac{2}{\delta}}{|\Ds|}}$\;
-  $\varepsilon_1\leftarrow\min\{\varepsilon_1',\varepsilon_1''\}$\;
-  $\mathcal{C}_1=\FI(\Ds,\Itm,\theta-\varepsilon_1)$\;
-  $\mathcal{G}=\{A\subseteq\Itm ~:~ \theta-\varepsilon_1\le
-f_\Ds(A)<\theta+\varepsilon_1\}$\;
-  $\mathcal{W}\leftarrow$ negative border of $\mathcal{C}_1$\;
-  $\mathcal{F}=\mathcal{G}\cup\mathcal{W}$\;
-  $U\leftarrow\{a\in\Itm : \exists A\in\mathcal{F} \mbox{ s.t. } a\in A\}$\;
-  $b_2'\leftarrow$ \SolveAntichainSUKP{$U,\mathcal{F},|U|$}\;
-  $d_2'\leftarrow\lfloor\log_2b_2'\rfloor+1$\;
-  $\varepsilon_2' \leftarrow \sqrt{\frac{c}{|\Ds|}\left(d_2' + \log\frac{2}{\delta_2}\right)}$\; 
-  $\ell_1,\dotsc,\ell_w\leftarrow$ transaction lengths of $\Ds$ \Comment{see
-  Sect.~\ref{sec:computvc}}
-  $L_1,\dotsc,L_w\leftarrow$ the maximum number of
-transactions in $\Ds$ that have length at least $\ell_i$, $1\le i\le w$, and
-such that for no two $\tau'$, $\tau''$ of them we have either
-$\tau'\subseteq\tau''$ or $\tau''\subseteq\tau'$\;
-  $i\leftarrow 0$\;
-  \While{True}
-  {
-  $b_2''\leftarrow$ \SolveAntichainSUKP{$U,\mathcal{F},\ell_i$}\;
-  $d_2''\leftarrow\lfloor\log_2b_2''\rfloor+1$\;
-  \uIf{$d_2''< L_i$}
-  {
-  break\;
-  }\Else{
-  $i\leftarrow i+1$\;
-  }
-  }
-  $\varepsilon_2'' \leftarrow 2\sqrt{\frac{2d_2''\log(|\Ds|+1)}{|\Ds|}}+\sqrt{\frac{2\log\frac{2}{\delta}}{|\Ds|}}$\;
-  $\varepsilon_2\leftarrow\min\{\varepsilon_2',\varepsilon_2''\}$\;
-  \Return{$\theta+\varepsilon_2$}
-  \caption{Compute freq.~threshold $\hat{\theta}$
-  s.~t.~$\FI(\Ds,\Itm,\hat{\theta})$ contains only TFIs with prob.~at least
-  $1-\delta$.}
-  \label{alg:vcfull}
-\end{algorithm}
 
 \section{Experimental evaluation}\label{sec:experiments}
 We conducted an extensive evaluation to assess the performances of the algorithm
@@ -471,6 +254,90 @@ only contains TFIs. On the other hand,
 the fact that some TFIs have frequency in the dataset \emph{smaller} than
 $\theta$ (false negatives) points out how one can not aim to extract all and
 only the TFIs by using a fixed threshold approach (as the one we present).
+
+\begin{table}[htbp]
+  \centering
+  \small
+  \begin{tabular}{llrrr}
+\toprule
+Dataset & Freq.~$\theta$ & TFIs & Times FPs & Times FNs\\
+\midrule
+\texttt{accidents} & 0.2 & 889883 & 100\% & 100\% \\
+%& 0.8 & 149 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% & 0.7 & 529 & 1 & 0 & 0.1 & 2 & 4 & 0 & 0.7 & 7 \\
+% & 0.6 & 2074 & 7 & 0 & 1.75 & 14 & 4 & 0 & 0.5 & 7 \\
+% & 0.5 & 8057 & 20 & 0 & 8.05 & 19 & 8 & 0 & 3.65 & 17 \\
+% & 0.45 & 16123 & 28 & 1 & 10.1 & 20 & 14 & 1 & 6.35 & 20 \\
+% & 0.4 & 32528 & 70 & 4 & 26.55 & 20 & 46 & 2 & 16.55 & 20 \\
+% & 0.35 & 68222 & 160 & 14 & 59.85 & 20 & 94 & 9 & 39.0 & 20 \\
+% & 0.3 & 149545 & 313 & 16 & 132.4 & 20 & 180 & 10 & 79.15 & 20 \\
+% & 0.25 & 346525 & 761 & 73 & 319.75 & 20 & 378 & 33 & 189.3 & 20 \\
+% & 0.2 & 889883 & 1988 & 184 & 837.5 & 20 & 961 & 81 & 470.55 & 20 \\
+% & 0.15 & 2676381 & 6370 & 0 & 2194.6 & 16 & 1786945 & 364 & 358398.9 & 20 \\
+\midrule
+\texttt{BMS-POS} & 0.005 & 4240 & 100\% & 100\% \\
+%\multirow{6}{*}{\texttt{BMS-POS}} & 0.05 & 59 & 0 & 0 & 0.0 & 0 & 1 & 0 & 0.3 & 6 \\
+% & 0.03 & 134 & 1 & 0 & 0.05 & 1 & 0 & 0 & 0.0 & 0 \\
+% & 0.02 & 308 & 2 & 0 & 0.85 & 14 & 2 & 0 & 0.2 & 3 \\
+% & 0.01 & 1099 & 4 & 1 & 1.45 & 20 & 6 & 3 & 3.85 & 20 \\
+% & 0.0075 & 1896 & 10 & 2 & 4.85 & 20 & 13 & 4 & 7.7 & 20 \\
+% & 0.005 & 4240 & 16 & 3 & 8.85 & 20 & 31 & 11 & 20.95 & 20 \\
+\midrule
+\texttt{chess} & 0.6 & 254944 & 100\% & 100\% \\
+%\multirow{4}{*}{\texttt{chess}} %& 0.95 & 77 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% %& 0.9 & 622 & 1 & 0 & 0.05 & 1 & 0 & 0 & 0.0 & 0 \\
+% & 0.8 & 8227 & 0 & 0 & 0.0 & 0 & 23 & 0 & 7.45 & 17 \\
+% & 0.75 & 20993 & 0 & 0 & 0.0 & 0 & 131 & 12 & 68.25 & 40 \\
+% & 0.65 & 111239 & 192 & 9 & 72.4 & 20 & 181 & 0 & 16.55 & 15 \\
+% & 0.6 & 254944 & 193 & 1 & 45.5 & 20 & 875 & 1 & 155.1 & 20 \\
+% & 0.5 & 1272932 & 80 & 0 & 13.1 & 9 & 4767 & 1481 & 2815.0 & 18 \\
+\midrule
+\texttt{connect} & 0.85 & 142127 & 100\% & 100\% \\
+%\multirow{3}{*}{\texttt{connect}} %& 0.975 & 327 & 0 & 0 & 0.0 & 0 & 2 & 0 & 0.8 & 8 \\
+% %& 0.95 & 2201 & 12 & 0 & 2.5 & 11 & 8 & 0 & 2.8 & 10 \\
+% & 0.9 & 27127 & 64 & 0 & 12.8 & 10 & 96 & 0 & 28.6 & 16 \\
+% & 0.875 & 65959 & 240 & 0 & 63.6 & 18 & 208 & 0 & 62.4 & 19 \\
+%& 0.85 & 142127 & 384 & 16 & 145.6 & 20 & 328 & 32 & 182.0 & 20 \\
+\midrule
+\texttt{kosarak} & 0.015 & 189 & 45\% & 55\% \\
+%\multirow{6}{*}{\texttt{kosarak}} & 0.04 & 42 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% & 0.035 & 50 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% & 0.03 & 65 & 1 & 0 & 0.3 & 6 & 0 & 0 & 0.0 & 0 \\
+% & 0.025 & 82 & 1 & 0 & 0.05 & 1 & 0 & 0 & 0.0 & 0 \\
+% & 0.02 & 121 & 1 & 0 & 0.4 & 8 & 0 & 0 & 0.0 & 0 \\
+% & 0.015 & 189 & 1 & 0 & 0.45 & 9 & 1 & 0 & 0.55 & 11 \\
+% & 0.0075 & 676 & 4 & 0 & 1.45 & 16 & 5 & 0 & 1.8 & 19 \\
+% & 0.005 & 1618 & 6 & 1 & 2.75 & 20 & 8 & 0 & 3.75 & 19 \\
+% & 0.002 & 1619 & 5 & 0 & 2.0 & 18 & 8 & 0 & 4.0 & 19 \\
+% & 0.0015 & 1619 & 5 & 0 & 2.0 & 18 & 8 & 0 & 4.0 & 19 \\
+% & 0.001 & 1619 & 5 & 0 & 2.0 & 18 & 8 & 0 & 4.0 & 19 \\
+\midrule
+\texttt{pumsb*} & 0.45 & 1913 & 5\% & 80\% \\
+%\multirow{5}{*}{\texttt{pumsb*}} & 0.55 & 305 & 0 & 0 & 0.0 & 0 & 4 & 0 & 0.6 & 3 \\
+% & 0.5 & 679 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% & 0.49 & 804 & 23 & 0 & 9.25 & 13 & 5 & 0 & 0.75 & 5 \\
+% & 0.475 & 1050 & 0 & 0 & 0.0 & 0 & 1 & 0 & 0.28 & 6 \\
+% & 0.45 & 1913 & 96 & 0 & 4.8 & 1 & 25 & 0 & 13.7 & 16 \\
+% & 0.4 & 27354 & 59 & 0 & 16.9 & 9 & 18 & 0 & 3.6 & 8 \\
+% & 0.35 & 116787 & 377 & 1 & 161.05 & 20 & 424 & 40 & 136.45 & 20 \\
+% & 0.32 & 239691 & 615 & 1 & 136.0 & 20 & 381 & 104 & 169.2 & 20 \\
+% & 0.3 & 432698 & 1081 & 1 & 320.85 & 20 & 2377 & 219 & 1190.05 & 20 \\
+\midrule
+\texttt{retail} & 0.0075 & 277 & 10\% & 20\% \\
+%\multirow{6}{*}{\texttt{retail}} & 0.03 & 32 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% & 0.025 & 38 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% & 0.0225 & 46 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% & 0.02 & 55 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+%% & 0.015 & 84 & 0 & 0 & 0.0 & 0 & 0 & 0 & 0.0 & 0 \\
+% & 0.01 & 159 & 1 & 0 & 0.05 & 1 & 1 & 0 & 0.2 & 4 \\
+% & 0.0075 & 277 & 2 & 0 & 0.5 & 9 & 2 & 0 & 0.25 & 4 \\
+\bottomrule
+\end{tabular}
+\caption{Fractions of times that $\FI(\Ds,\Itm,\theta)$ contained false positives
+and missed TFIs (false negatives) over 20 datasets from the same ground truth.}
+\label{table:fp}
+\end{table}
+
 
 \paragraph*{Control of the false positives (Precision).}\label{sec:fwer}
 %We evaluated the capability of our methods to control the FWER by first creating
@@ -563,6 +430,88 @@ transactions, is available and can and should be used. The use of
 additional information gives flexibility to our method and improves its
 practicality. Moreover, in some cases, it allows to find an even larger fraction
 of the TFIs.
+
+\begin{table}[htbp]
+  \small
+  \centering
+  \begin{tabular}{llrcccc}
+    \toprule
+    & & & \multicolumn{4}{c}{Reported TFIs (Average Fraction)} \\
+    \cmidrule(l){4-7}
+    & & & \multicolumn{2}{c}{``Vanilla'' (no info)} &
+    \multicolumn{2}{c}{Additional Info}\\
+    \cmidrule(l){4-5} \cmidrule(l){6-7}
+    Dataset & Freq.~$\theta$ & TFIs & CU Method & This Work & CU Method & This Work\\
+\midrule
+\multirow{8}{*}{\texttt{accidents}} & 0.8 & 149 & 0.838& \bf 0.981
+& 0.853& \bf 0.981\\
+ & 0.7 & 529 & 0.925& \bf 0.985& 0.935& \bf 0.985\\
+ & 0.6 & 2074 & 0.967& \bf 0.992& 0.973& \bf 0.992\\
+ & 0.5 & 8057 & 0.946& \bf 0.991& 0.955& \bf 0.991\\
+ & 0.45 & 16123 & 0.948& \bf 0.992& 0.955& \bf 0.992\\
+ & 0.4 & 32528 & 0.949& 0.991& 0.957& \bf 0.992\\
+ %& 0.35 & 68222 & 0.951297235 &  & 0.957897013 & 0.990999238 \\
+ & 0.3 & 149545 & & & 0.957& \bf 0.989\\
+ %& 0.25 & 346525 & 0.952457687 &  & 0.958788688 & 0.989381718 \\
+ & 0.2 & 889883 & &  & 0.957& \bf 0.987\\
+\midrule
+\multirow{6}{*}{\texttt{BMS-POS}} & 0.05 & 59 & 0.845& \bf 0.938&
+0.851& \bf 0.938\\
+ & 0.03 & 134 & 0.879& \bf 0.992& 0.895& \bf 0.992\\
+ & 0.02 & 308 & 0.847& \bf 0.956& 0.876& \bf 0.956\\
+ & 0.01 & 1099 & 0.813& 0.868& 0.833& \bf 0.872\\
+ & 0.0075 & 1896 & &  & 0.826& \bf 0.854\\
+ & 0.005 & 4240 & &  & 0.762& \bf 0.775\\
+\midrule
+\multirow{5}{*}{\texttt{chess}} & 0.8 & 8227 & 0.964& \bf 0.991&
+0.964& \bf 0.991\\
+ & 0.775 & 13264 & 0.957 & \bf 0.990 & 0.957 & \bf 0.990 \\
+ & 0.75 & 20993 & 0.957& \bf 0.983& 0.957& \bf 0.983\\
+ %& 0.7 & 48731 & 0.970328949 &  & 0.970328949 & 0.993779114 \\
+ & 0.65 & 111239 & &  & 0.972& \bf 0.991\\
+ & 0.6 & 254944 & &  & 0.970& \bf 0.989\\
+\midrule
+\multirow{5}{*}{\texttt{connect}} & 0.95 & 2201 & 0.802& \bf 0.951&
+0.802& \bf 0.951\\
+ & 0.925 & 9015 & 0.881& \bf 0.975& 0.881& \bf 0.975 \\
+ & 0.9 & 27127 & 0.893& \bf 0.978& 0.893& \bf 0.978\\
+ & 0.875 & 65959 & &  & 0.899& \bf 0.974\\
+ & 0.85 & 142127 & &  & 0.918& \bf 0.974\\
+\midrule
+\multirow{4}{*}{\texttt{kosarak}} & 0.04 & 42 & 0.738& \bf 0.939&
+0.809& \bf 0.939\\
+ & 0.035 & 50 & 0.720& \bf 0.980& 0.780& \bf 0.980\\
+% & 0.03 & 65 & 0.646153846 &  & 0.738461538 & 0.923076923 \\
+ & 0.025 & 82 & &  & 0.682& \bf0.963\\
+ & 0.02 & 121 & &  & 0.650& \bf 0.975\\
+ & 0.015 & 189 & &  & 0.641& \bf 0.933\\
+\midrule
+\multirow{5}{*}{\texttt{pumsb*}} & 0.55 & 305 & 0.791& \bf 0.926&
+0.859& \bf 0.926\\
+ & 0.5 & 679 & 0.929& \bf 0.998& 0.957& \bf 0.998\\
+ & 0.49 & 804 & 0.858& \bf 0.984& 0.907& \bf 0.984\\
+ & 0.475 & 1050 & &  & 0.942& \bf 0.996\\
+ & 0.45 & 1913 & &  & 0.861& \bf 0.976\\
+\midrule
+\multirow{5}{*}{\texttt{retail}} & 0.03 & 32 & 0.625& \bf 1.00&
+0.906& \bf 1.00\\
+ & 0.025 & 38 & 0.842& \bf 0.973& 0.972& \bf 0.973\\
+ & 0.0225 & 46 & 0.739& 0.934& 0.869& \bf 0.935\\
+ & 0.02 & 55 & &  & 0.882& \bf 0.945\\
+ & 0.01 & 159 & &  & 0.902& \bf 0.931\\
+ & 0.0075 & 277 & &  & 0.811& \bf 0.843\\
+ \bottomrule
+ \end{tabular}
+  \caption{Recall. Average fraction (over 20 runs) of reported TFIs
+  in the output of an algorithm using Chernoff and Union bound and of the one
+  presented in this work. For each algorithm we present two versions, one
+  (Vanilla) which uses no information about the generative process, and one
+  (Add.~Info) in which we assume the knowlegde that the process will not
+  generate any transaction longer than twice the size of the longest transaction
+  in the original FIMI dataset. In bold, the best result (highest reported
+  fraction).}
+\label{table:power}
+\end{table}
 
 %We also wanted to compare the performances of our algorithm %methods 
 %with that of a baseline method to control false positives. %established techniques to identify TFI's.
