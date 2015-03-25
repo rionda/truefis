@@ -15,12 +15,12 @@ set on $2^\Itm$} containing the support sets of the itemsets in $\mathcal{C}$:
 
 \begin{fact}\label{fact:maxfreq}
 	Given this definition and a dataset $\Ds$, the maximum
-	from~\eqref{eq:evceapprox} is attained for the item $a\in\Itm$ with the
+	from~\eqref{eq:evceapprox} is attained for the itemset $A\in\mathcal{C}$ with the
 	highest frequency in $\Ds$, and the value of $\sqrt{|r\cap S|}$ is exactly
-	$\sqrt{f_\Ds(\{a\})|\Ds|}$. Hence we can rewrite~\eqref{eq:evceapprox} as
+	$\sqrt{f_\Ds(A)|\Ds|}$. Hence we can rewrite~\eqref{eq:evceapprox} as
 	\begin{equation}\label{eq:evceapproxitemsets}
 		\varepsilon =
-		2\sqrt{\frac{\max_{a\in\Itm}f_\Ds(\{a\})2\min\left\{\ln|\mathcal{C}|,d\ln\frac{en}{d}\right\}}{|\Ds|}} +
+		2\sqrt{\frac{\max_{A\in\mathcal{C}}f_\Ds(A)2\min\left\{\ln|\mathcal{C}|,d\ln\frac{en}{d}\right\}}{|\Ds|}} +
 		\sqrt{\frac{2\ln\frac{4}{\delta}}{\ell}},
 	\end{equation}
 	where $\mathcal{C}$ is as in Def.~\ref{def:rangeset}, and $d$ is an
