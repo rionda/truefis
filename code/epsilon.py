@@ -36,31 +36,28 @@ def get_eps_shattercoeff_bound(delta, ds_size, bound, max_freq=1.0):
             math.sqrt((2 * math.log(4 / delta)) / ds_size)
 
 
-def get_eps_emp_vc_dim(delta, ds_size, emp_vc_dim, max_freq=1.0):
-    """Return the epsilon computed using emp_vc_dim as bound to the *empirical*
-    VC-dimension, given a 'sample' of size ds_size, where the maximum frequency
-    of an item is max_freq, and a confidence parameter delta."""
-    return get_eps_shattercoeff_bound(delta, ds_size, emp_vc_dim *
-            math.log(math.e * ds_size / emp_vc_dim), max_freq)
-
-
 def epsilons(delta, ds_size, vc_dim, emp_vc_dim, max_freq=1.0):
-    """Return a tuple containing the epsilon w.r.t. the VC-dimension, the
-    epsilon w.r.t. the empirical VC-dimension, and a string that points out
+    """Return a tuple containing the epsilon using the VC-dimension, the
+    epsilon using a bound to shatter coefficient (which uses the bound to the
+    empirical VC-dimension, and information on the size of the set of ranges
+    that are implicitly passed using the vc_dim), and a string that points out
     which one is the smallest (or 'equal' if they are equal)."""
     eps_vc_dim = get_eps_vc_dim(delta, ds_size, vc_dim)
-    eps_emp_vc_dim = get_eps_emp_vc_dim(delta, ds_size, emp_vc_dim, max_freq)
+    bound = min(((vc_dim + 1) * math.log(2), emp_vc_dim * math.log(math.e * ds_size /
+        emp_vc_dim)))
+    eps_shatter = getp_eps_shatter_coeff(delta, ds_size, bound, max_freq)
 
-    if eps_vc_dim < eps_emp_vc_dim:
+    if eps_vc_dim < eps_shatter:
         returned = "vc_dim"
-    elif eps_vc_dim > eps_emp_vc_dim:
-        returned = "emp_vc_dim"
+    elif eps_vc_dim > eps_shatter:
+        returned = "shatter"
     else:
         returned = "equal"
-    return (eps_vc_dim, eps_emp_vc_dim, returned)
+    return (eps_vc_dim, eps_shatter, returned)
 
 
-def epsilon_dataset(delta, ds_stats, use_additional_knowledge=False):
+def epsilon_dataset(delta, ds_stats, use_additional_knowledge=False,
+        max_freq=1.0):
     """ Call epsilons() filling in the appropriate values for the parameters
     depending whether to use additional knowledge or not. See below for type
     descriptions.
@@ -69,21 +66,21 @@ def epsilon_dataset(delta, ds_stats, use_additional_knowledge=False):
     if not use_additional_knowledge:
         # make no assumption on the generative process. VC-dimension is number
         # of items - 1.
-        (eps_vc_dim, eps_emp_vc_dim, returned) = epsilons(delta,
+        (eps_vc_dim, eps_shatter, returned) = epsilons(delta,
                 ds_stats['size'], ds_stats['numitems'] -1,
                 ds_stats['dindex'], ds_stats['maxsupp'] /
-                ds_stats['size'])
+                ds_stats['size'], max_freq)
     else:
         # incorporate available information about the unknown probability
         # distribution, more precisely assuming that it cannot generate
         # transactions longer than twice the longest transactions available in
         # the dataset (using this quantity as bound to the VC-dimension).
-        (eps_vc_dim, eps_emp_vc_dim, returned) = epsilons(delta,
+        (eps_vc_dim, eps_shatter, returned) = epsilons(delta,
                 ds_stats['size'], min(2 * (ds_stats['maxlen']) -1,
                 ds_stats['numitems'] -1), ds_stats['dindex'],
-                ds_stats['maxsupp'] / ds_stats['size'])
+                ds_stats['maxsupp'] / ds_stats['size'], max_freq)
 
-    return (eps_vc_dim, eps_emp_vc_dim, returned)
+    return (eps_vc_dim, eps_shatter, returned)
 
 
 def main():

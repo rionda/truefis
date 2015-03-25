@@ -54,14 +54,37 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0,
     # probabilities, but there isn't really much point in it.
     lower_delta = 1.0 - math.sqrt(1 - delta)
 
+    # Compute the maximum frequency of an itemset in the dataset
+    with open(res_filename, 'rt') as FILE:
+        size_line = FILE.readline()
+        try:
+            size_str = size_line.split("(")[1].split(")")[0]
+        except IndexError:
+            error_exit("Cannot compute size of the dataset: '{}' is not in the recognized format\n".format(size_line))
+        try:
+            size = int(size_str)
+        except ValueError:
+            error_exit("Cannot compute size of the dataset: '{}' is not a number\n".format(size_line.split("(")[1].split(")")[0]))
+        max_freq_line = FILE.readline()
+        if line.find("(") > -1:
+            tokens = line.split("(")
+            itemset = frozenset(map(int, tokens[0].split()))
+            try:
+                support = int(tokens[1][:-2])
+            except ValueError:
+                error_exit("Cannot compute the maximum frequency: '{}' is not a number\n".format(tokens[1][:-2]))
+            max_freq = support / size
+        else:
+            error_exit("Cannot compute the maximum frequency: '{}' is not in the recognized format\n".format(max_freq_line))
+
     # Compute the first epsilon using results from the paper (Riondato and
     # Upfal 2014)
     # Incorporate or not 'previous knowledge' about generative process in
     # computation of the VC-dimension, depending on the option passed on the
     # command line
-    (eps_vc_dim, eps_emp_vc_dim, returned) = epsilon.epsilon_dataset(
-        lower_delta, ds_stats, use_additional_knowledge)
-    stats['epsilon_1'] = min(eps_vc_dim, eps_emp_vc_dim)
+    (eps_vc_dim, eps_shatter, returned) = epsilon.epsilon_dataset(
+        lower_delta, ds_stats, use_additional_knowledge, max_freq)
+    stats['epsilon_1'] = min(eps_vc_dim, eps_shatter)
 
     items = ds_stats['items']
     items_num = len(items)
@@ -69,7 +92,7 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0,
     lengths = sorted(lengths_dict.keys(), reverse=True)
 
     # Extract the first (and largest) set of itemsets with frequency at least
-    # min-freq - stats['epsilon_1']
+    # min_freq - stats['epsilon_1']
     lower_bound_freq = min_freq - stats['epsilon_1'] - (1 / ds_stats['size'])
     freq_itemsets_1_dict = utils.create_results(res_filename, lower_bound_freq)
     freq_itemsets_1_set = frozenset(freq_itemsets_1_dict.keys())
@@ -89,23 +112,25 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0,
     constr_end_str = "], val = vals)"
 
     # Compute the "base set" (terrible name), that is the set of
-    # itemsets with frequency < min_freq + epsilon_1
+    # itemsets with frequency < min_freq + epsilon_1 (but greater than min_freq
+    # - stats['epsilon_1']. In the paper we call it \mathcal{G}.
     sys.stderr.write("Creating base set...")
     sys.stderr.flush()
-    max_freq = 0
     base_set = dict()
+    # We use the maximum frequency in the base set to compute the epislon
+    max_freq_base_set = 0
     for itemset in freq_itemsets_1_sorted:
         if freq_itemsets_1_dict[itemset] < min_freq + stats['epsilon_1']:
             base_set[itemset] = freq_itemsets_1_dict[itemset]
-            if freq_itemsets_1_dict[itemset] > max_freq:
-                max_freq = freq_itemsets_1_dict[itemset]
+            if freq_itemsets_1_dict[itemset] > max_freq_base_set:
+                max_freq_base_set = freq_itemsets_1_dict[itemset]
         else:
             break
     stats['base_set'] = len(base_set)
     sys.stderr.write("done: {} itemsets\n".format(stats['base_set']))
     sys.stderr.flush()
 
-    # Compute Closed Itemsets
+    # Compute Closed Itemsets. We need them to compute the maximal.
     sys.stderr.write("Computing closed itemsets...")
     sys.stderr.flush()
     closed_itemsets = utils.get_closed_itemsets(base_set)
@@ -463,6 +488,7 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0,
     #    utils.error_exit("CPLEX didn't find the optimal solution: {} {}
     #    {}\n".format(cplex_solution[0], cplex_solution[1], cplex_solution[2]))
 
+    # This is also an upper bound to the size of the true negative border
     optimal_sol_upp_bound = int(
         math.floor(cplex_solution[2] * (1 + cplex_solution[3])))
 
@@ -538,13 +564,13 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0,
         #   cplex_solution[2]))
 
         # if cplex_solution[0] == 102:
-        optimal_sol_upp_bound = int(
+        optimal_sol_upp_bound_emp = int(
             math.floor(cplex_solution[2] * (1 + cplex_solution[3])))
         # else:
-        #    optimal_sol_upp_bound = cplex_solution[0]
+        #    optimal_sol_upp_bound_emp = cplex_solution[0]
 
         stats['emp_vc_dim'] = int(
-            math.floor(math.log2(optimal_sol_upp_bound))) + 1
+            math.floor(math.log2(optimal_sol_upp_bound_emp))) + 1
         if stats['emp_vc_dim'] > math.log2(len(negative_border)):
             sys.stderr.write("Lowering VC-dimension to maximum value\n")
             stats['emp_vc_dim'] = int(
@@ -555,7 +581,7 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0,
                 ("cand_len={}".format(cand_len),
                  "longer_equal={}".format(longer_equal),
                  "emp_vc_dim={}".format(stats['emp_vc_dim']),
-                 "optimal_sol_upp_bound={}\n".format(optimal_sol_upp_bound))))
+                 "optimal_sol_upp_bound_emp={}\n".format(optimal_sol_upp_bound_emp))))
         sys.stderr.flush()
 
         # If stopping condition is satisfied, exit.
@@ -565,30 +591,31 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0,
     # vc_dim_cand3))
     os.remove(tmpfile_name)
 
+    # Compute the bound to the shatter coefficient, which we use to compute
+    # epsilon
+    bound = min((math.log(optimal_sol_upp_bound), stats['emp_vc_dim'] *
+        math.log(math.e * ds_stats['size'] / stats['emp_vc_dim'])))
+
+    # The following assert is to check that we are better than another bound to
+    # the shatter coefficient which used the number of closed itemsets in the
+    # base set and the size of the negative border of the base set.
+    # Intuitively, the assert should not fail. =)
+    assert(optimal_sol_upp_bound <= original_negative_border_len +
+            closed_itemsets_len)
+
     # Compute second candidate to epsilon_2
-    emp_epsilon_2 = epsilon.get_eps_emp_vc_dim(
-        lower_delta, ds_stats['size'], stats['emp_vc_dim'], max_freq)
+    emp_epsilon_2 = epsilon.get_eps_shattercoeff_bound(lower_delta,
+    ds_stats['size'], bound, max_freq_base_set)
     sys.stderr.write(
-        "cand_len={} opt_sol_upp_bound={} emp_vc_dim={} emp_e2={}\n".format(
-            cand_len, optimal_sol_upp_bound, stats['emp_vc_dim'],
-            emp_epsilon_2))
+        "cand_len={} opt_sol_upp_bound_emp={} emp_vc_dim={} bound={} max_freq_base_set={} emp_e2={}\n".format(
+            cand_len, optimal_sol_upp_bound_emp, stats['emp_vc_dim'], bound,
+            max_freq_base_set, emp_epsilon_2))
     sys.stderr.flush()
 
-    # Compute third candidate to epsilon_2. It uses the number of closed
-    # itemsets in the base set and the size of the negative border of the base
-    # set
-    shatter_epsilon_2 = epsilon.get_eps_shattercoeff_bound(
-        lower_delta, ds_stats['size'],
-        math.log(original_negative_border_len + closed_itemsets_len), max_freq)
-
-    sys.stderr.write("not_emp_e2={}, emp_e2={}, shatter_e2={}\n".format(
-        not_emp_epsilon_2, emp_epsilon_2, shatter_epsilon_2))
+    sys.stderr.write("not_emp_e2={}, emp_e2={}\n".format(
+        not_emp_epsilon_2, emp_epsilon_2))
     sys.stderr.flush()
-    stats['epsilon_2'] = min(emp_epsilon_2, not_emp_epsilon_2,
-                             shatter_epsilon_2)
-
-    # sys.stderr.write("{} {} {} {}\n".format(len(maximal_itemsets),
-    # negative_border_size, vc_dim, epsilon_second))
+    stats['epsilon_2'] = min(emp_epsilon_2, not_emp_epsilon_2)
 
     # Extract TFIs using epsilon_2
     sys.stderr.write("Extracting TFIs using epsilon_2...")
