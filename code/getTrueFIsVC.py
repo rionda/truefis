@@ -66,8 +66,8 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0,
         except ValueError:
             error_exit("Cannot compute size of the dataset: '{}' is not a number\n".format(size_line.split("(")[1].split(")")[0]))
         max_freq_line = FILE.readline()
-        if line.find("(") > -1:
-            tokens = line.split("(")
+        if max_freq_line.find("(") > -1:
+            tokens = max_freq_line.split("(")
             itemset = frozenset(map(int, tokens[0].split()))
             try:
                 support = int(tokens[1][:-2])
@@ -595,6 +595,10 @@ def get_trueFIs(ds_stats, res_filename, min_freq, delta, gap=0.0,
     # epsilon
     bound = min((math.log(optimal_sol_upp_bound), stats['emp_vc_dim'] *
         math.log(math.e * ds_stats['size'] / stats['emp_vc_dim'])))
+    sys.stderr.write("bound to shatter coeff: log_of_range_size={}, log_using_vc_dim={}\n".format(
+        math.log(optimal_sol_upp_bound),
+        stats['emp_vc_dim'] * math.log(math.e * ds_stats['size'] / stats['emp_vc_dim'])))
+    sys.stderr.flush()
 
     # The following assert is to check that we are better than another bound to
     # the shatter coefficient which used the number of closed itemsets in the

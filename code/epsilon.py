@@ -45,7 +45,7 @@ def epsilons(delta, ds_size, vc_dim, emp_vc_dim, max_freq=1.0):
     eps_vc_dim = get_eps_vc_dim(delta, ds_size, vc_dim)
     bound = min(((vc_dim + 1) * math.log(2), emp_vc_dim * math.log(math.e * ds_size /
         emp_vc_dim)))
-    eps_shatter = getp_eps_shatter_coeff(delta, ds_size, bound, max_freq)
+    eps_shatter = get_eps_shattercoeff_bound(delta, ds_size, bound, max_freq)
 
     if eps_vc_dim < eps_shatter:
         returned = "vc_dim"
@@ -69,7 +69,7 @@ def epsilon_dataset(delta, ds_stats, use_additional_knowledge=False,
         (eps_vc_dim, eps_shatter, returned) = epsilons(delta,
                 ds_stats['size'], ds_stats['numitems'] -1,
                 ds_stats['dindex'], ds_stats['maxsupp'] /
-                ds_stats['size'], max_freq)
+                ds_stats['size'])
     else:
         # incorporate available information about the unknown probability
         # distribution, more precisely assuming that it cannot generate
@@ -78,7 +78,7 @@ def epsilon_dataset(delta, ds_stats, use_additional_knowledge=False,
         (eps_vc_dim, eps_shatter, returned) = epsilons(delta,
                 ds_stats['size'], min(2 * (ds_stats['maxlen']) -1,
                 ds_stats['numitems'] -1), ds_stats['dindex'],
-                ds_stats['maxsupp'] / ds_stats['size'], max_freq)
+                ds_stats['maxsupp'] / ds_stats['size'])
 
     return (eps_vc_dim, eps_shatter, returned)
 
