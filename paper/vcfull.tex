@@ -77,20 +77,25 @@ In order to compute upper bounds to $\VC(\range(\mathcal{B}))$ and
 $\EVC(\range(\mathcal{B}),\Ds)$ we can solve slightly modified SUKPs
 associated to $\mathcal{F}$ with the \emph{additional constraint} that the
 optimal solution, which is a collection of itemsets, \emph{must be a maximal
-antichain}. Note in particular, that the size of the solution to the modified
-SUKP associated to $\mathcal{F}$ that we use to compute an upper bound to
-$\VC(\range(\mathcal{B}))$ is an upper bound to the size of $\mathcal{B}$.
-Indeed the returned solution is the largest maximal antichain that can be built
-using sets in $\mathcal{F}$, so its size is an upper bound to $|\mathcal{B}|$.
-We can therefore use this quantity in~\eqref{eq:evceapproxitemsets}.
+antichain}. In particular, to compute an upper bound to
+$\VC(\range(\mathcal{B}))$, we can solve a SUKPs with this additional constraint
+and capacity equal to $|U|$, with $U=\{a\in\Itm ~:~ \exists A\in\mathcal{F}
+\mbox{ s.t. } a\in A\}$. Note that the size of the solution to this SUKP is an
+upper bound to the size of $\mathcal{B}$. Indeed the returned solution is the
+largest maximal antichain that can be built using sets in $\mathcal{F}$, so its
+size is an upper bound to $|\mathcal{B}|$. We can therefore use this quantity
+in~\eqref{eq:evceapproxitemsets}.
 
 {\bf PER FABIO:} Fammi sapere se l'osservazione qui sopra sulla taglia di
 $\mathcal{B}$ si capisce (e se ti convince che sia vera \ldots)
 
-Lemma~\ref{lem:sukpevc} still holds even for the solutions of these modified
-SUKPs. Using these bounds in Thms.~\ref{thm:eapprox} and~\ref{thm:eapproxempir},
-we compute an $\varepsilon_2$ such that, with probability at least $1-\delta_2$,
-$\Ds$ is an $\varepsilon_2$-approximation to $(\range(\mathcal{B}),\prob)$. Let
+To compute bounds to $\EVC(\range(\mathcal{B},\Ds)$ we can solve modified SUKPs
+with the additional antichain constraint and the transaction lengths in $\Ds$ as
+capacities, as described in Sect.~\ref{sec:computvc}. Lemma~\ref{lem:sukpevc}
+still holds even for the solutions of these modified SUKPs. Using these bounds
+in Thms.~\ref{thm:eapprox} and~\ref{thm:eapproxempir}, we compute an
+$\varepsilon_2$ such that, with probability at least $1-\delta_2$, $\Ds$ is an
+$\varepsilon_2$-approximation to $(\range(\mathcal{B}),\prob)$. Let
 $\hat{\theta}=\theta+\varepsilon_2$. The following Theorem shows that
 $\hat{\theta}$ has the desired properties.
 
