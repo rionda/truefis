@@ -1,52 +1,52 @@
-\subsection{Method 1: a split-dataset approach}\label{sec:holdout}
-%\XXX: need better title. \MR
-%\FV{What about ``a partition-based approach''?}
+\subsection{An holdout approach}\label{sec:holdout}
 
-We now present and analyze our first method for identifying TFIs, which draws
-inspiration from the holdout technique presented by~\citet{Webb07}. This test
-requires that the dataset $\Ds$ could be randomly split into two
-parts, not necessarily of the same size: an \emph{exploratory} part
-$\Ds_\mathrm{e}$ and an \emph{evaluation} part $\Ds_\mathrm{v}$. 
-%The method does not require the sizes $|\Ds_\mathrm{e}|$ and $|\Ds_\mathrm{v}|$ to be the same.
-The method works in two phases: we first use the exploratory part
-$\Ds_\mathrm{e}$ to identify a small set $\mathcal{G}$ of candidate TFIs which will be used to
-compute the acceptance region, then we test these same itemsets using their
-frequencies in the evaluation part $\Ds_\mathrm{v}$ as test statistics.
+We now present and analyze a second method, called \ALGHOLDOUT, for
+mining the TFIs. \ALGHOLDOUT draws inspiration from the holdout technique
+presented by~\citet{Webb07}, and requires that the dataset $\Ds$ can be
+randomly split into two parts that do not need to be of the same size, but
+it \emph{must} be possible to see them as two independent collections of
+i.i.d.~samples from the generating distribution $\pi$: an \emph{exploratory}
+part $\Ds_\mathrm{e}$ and an \emph{evaluation} part $\Ds_\mathrm{v}$.
+\ALGHOLDOUT works in two phases: we first use the exploratory part
+$\Ds_\mathrm{e}$ to identify a small set $\mathcal{G}$ of candidate TFIs, and
+then we decide which of the candidates to include in the output using their
+frequencies in the evaluation part $\Ds_\mathrm{v}$.
 
-Let $\delta_\mathrm{e}$ and $\delta_\mathrm{v}$ be such that
-$(1-\delta_\mathrm{e})(1-\delta_\mathrm{v})\ge(1-\delta)$. Let $\range(2^\Itm)$
-be the range space of all itemsets.
-We use Corol.~\ref{thm:vcdimubfirst} (resp.~Thm.~\ref{thm:empvcdimubfirst}) to
-compute an upper bound $d'$ to $\VC(\range(2^\Itm))$ (resp.~ $d''$ to
-$\EVC(\range(2^\Itm),\Ds_\mathrm{e})$). Then, given that $\Ds_\mathrm{e}$ is
-still a collection of i.i.d.~samples from the generative distribution $\prob$,
-we can use $d'$ in Thm.~\ref{thm:eapprox} (resp.~$d''$ in
+\paragraph{First phase.} Let $\delta_\mathrm{e}$ and $\delta_\mathrm{v}$ be such
+that $(1-\delta_\mathrm{e})(1-\delta_\mathrm{v})\ge(1-\delta)$. Let
+$\range(2^\Itm)$ be the range space of all itemsets. We can compute an upper
+bound $d'$ to $\VC(\range(2^\Itm))$ and an upper bound $d''$ to
+$\EVC(\range(2^\Itm),\Ds_\mathrm{e})$, using respectively
+Corol.~\ref{thm:vcdimubfirst} and Thm.~\ref{thm:empvcdimubfirst}). Then, given
+that $\Ds_\mathrm{e}$ is a collection of i.i.d.~samples from the generative
+distribution $\prob$, we can use $d'$ in Thm.~\ref{thm:eapprox} (resp.~$d''$ in
 Thm~\ref{thm:eapproxempir}) to compute an $\varepsilon_\mathrm{e}'$ (resp.~an
 $\varepsilon_\mathrm{e}''$) such that $\Ds_\mathrm{e}$ is, with probability at
 least $1-\delta_1$, an $\varepsilon_\mathrm{e}'$-approximation
 (resp.~$\varepsilon_\mathrm{e}''$-approximation) to $(\range(2^\Itm),\prob)$.
 Then, if we let
 $\varepsilon_\mathrm{e}=\min\{\varepsilon_\mathrm{e}',\varepsilon_\mathrm{e}''\}$,
-$\Ds_\mathrm{e}$ is, with probability at least $1-\delta_1$, an
-$\varepsilon_\mathrm{e}$-approximation to $(\range(2^\Itm),\prob)$.
-
-In the first phase of the set we compute the collections of itemsets
-$\mathcal{C}_\mathrm{e}=\{X\subseteq\Itm ~:~
-f_{\Ds_\mathrm{e}}(X)\ge\theta+\varepsilon_\mathrm{e}\}$
-and $\mathcal{G}=\{X\subseteq\Itm ~:~ \theta\le
+we have that $\Ds_\mathrm{e}$ is, with probability at least $1-\delta_1$, an
+$\varepsilon_\mathrm{e}$-approximation to $(\range(2^\Itm),\prob)$. These steps
+are exactly the same as the first steps of \ALG, which operated on the
+\emph{whole} dataset, not just on one part like \ALGHOLDOUT. We then compute the
+collections of itemsets $\mathcal{C}_\mathrm{e}=\{X\subseteq\Itm ~:~
+f_{\Ds_\mathrm{e}}(X)\ge\theta+\varepsilon_\mathrm{e}\}$ and
+$\mathcal{G}=\{X\subseteq\Itm ~:~ \theta\le
 f_{\Ds_\mathrm{e}}(X)<\theta+\varepsilon_\mathrm{e}\}$. To obtain these sets, we
 extract the set $\FI(\Ds_\mathrm{e},\Itm,\theta)$ and partition it appropriately
 into $\mathcal{C}_\mathrm{e}$ and $\mathcal{G}$.
-In the second phase, we compute a value $\varepsilon_\mathrm{v}$ such that, with
-probability at least $1-\delta_2$, the evaluation dataset $\Ds_\mathrm{v}$ is an
-$\varepsilon_\mathrm{v}$-approximation to $(\range(\mathcal{G}),\prob)$. In
-order to obtain $\varepsilon_\mathrm{v}$ through 
+
+\paragraph{Second phase.} In the second phase, we compute a value
+$\varepsilon_\mathrm{v}$ such that, with probability at least $1-\delta_2$, the
+evaluation dataset $\Ds_\mathrm{v}$ is an $\varepsilon_\mathrm{v}$-approximation
+to $(\range(\mathcal{G}),\prob)$. In
+order to obtain $\varepsilon_\mathrm{v}$ through
 Thms.~\ref{thm:eapprox} and~\ref{thm:eapproxempir}, we need to compute upper
 bounds to $\VC(\range(\mathcal{G}))$ and
-$\EVC(\range(\mathcal{G}),\Ds_\mathrm{v})$. We solve SUKPs assocociated to
-$\mathcal{G}$ and obtain such bounds, as stated in Corol.~\ref{lem:sukpvc} and
-Lemma~\ref{lem:sukpevc} respectively. As in the
-first phase, we use these bounds and Thm.~\ref{thm:eapprox}
+$\EVC(\range(\mathcal{G}),\Ds_\mathrm{v})$. We solve SUKPs associated to
+$\mathcal{G}$ and obtain such bounds, as stated in Lemma~\ref{lem:sukpevc}
+respectively. We then use these bounds and Thm.~\ref{thm:eapprox}
 (resp.~Thm.~\ref{thm:eapproxempir}) to compute a
 $\varepsilon_\mathrm{v}'$ (resp.~ $\varepsilon_\mathrm{v}''$) such that
 $\Ds_\mathrm{v}$ is, with probability at least $1-\delta_2$, an
@@ -59,22 +59,21 @@ we compute the set
 \mathcal{C}_\mathrm{v}=\{X\subseteq\Itm ~:~ X\in\mathcal{G} \mbox{ and }
 f_{\Ds_\mathrm{v}}(X)\ge\theta+\varepsilon''\}=\mathcal{G}\cap\FI(\Ds_\mathrm{v},\Itm,\theta+\varepsilon_\mathrm{v}).\]
 The method returns the collection of itemsets $\mathcal{C}_\mathrm{e}\cup\mathcal{C}_\mathrm{v}$.
-%The correctness of this test, i.e., 
-The proof that $\Pr(\exists
-A\in\mathcal{C}_\mathrm{e}\cup\mathcal{C}_\mathrm{v} \mbox{ s.t. }
-\tfreq(A)<\theta)\le\delta$ comes from the definition of $\varepsilon_\mathrm{e}$ and
-$\varepsilon_\mathrm{v}$ through Thms.~\ref{thm:eapprox}
-and~\ref{thm:eapproxempir} (proof in the full version
-of the paper~\citep{RiondatoV13}).
-%Using Thm. \FV{which ones?}, we prove that the probability that $\mathcal{C}_\mathrm{e}\cup\mathcal{C}_\mathrm{v}$ contains any itemset not in TFI's
-%is bounded by $\delta$.
+%The proof that $\Pr(\exists
+%A\in\mathcal{C}_\mathrm{e}\cup\mathcal{C}_\mathrm{v} \mbox{ s.t. }
+%\tfreq(A)<\theta)\le\delta$ comes from the definition of $\varepsilon_\mathrm{e}$ and
+%$\varepsilon_\mathrm{v}$ through Thms.~\ref{thm:eapprox}
+%and~\ref{thm:eapproxempir}
 
-%\XXX: pseudocode? \MR
-
-\begin{lemma}
-  The FWER of Method 1 is at most $\delta$.
-\end{lemma}
-\ifarxiv
+\begin{theorem}
+	With probability at least $1-\delta$,
+	$\mathcal{C}_\mathrm{e}\cup\mathcal{C}_\mathrm{v}$ contains no false
+	positives:
+	\[
+		\Pr(\exists A\in\mathcal{C}_\mathrm{e}\cup\mathcal{C}_\mathrm{v} \mbox{
+		s.t. } \tfreq(A)<\theta)\le\delta\enspace.
+	\]
+\end{theorem}
 \begin{proof}
   Consider the two events $\mathsf{E}_\mathrm{e}$=``$\Ds_\mathrm{e}$ is an
   $\varepsilon_\mathrm{e}$-approximation for $(\range(2^\Itm),\prob)$'' and
@@ -98,15 +97,16 @@ of the paper~\citep{RiondatoV13}).
   In particular this means that an  itemset $A\in\mathcal{G}$ can have
   $f_{Ds_\mathrm{v}}(A)\ge\theta+\varepsilon_\mathrm{v}$ \emph{only} if
   $\tfreq(A)\ge\theta$, that is \emph{only} if $A\in\TFI(\prob,\Itm,\theta)$.
-  Hence, $\mathcal{C}_\mathrm{v}\subseteq TFI(\prob,\Itm,\theta)$. 
+  Hence, $\mathcal{C}_\mathrm{v}\subseteq TFI(\prob,\Itm,\theta)$.
 
   We can then conclude that if the event $\mathsf{E}$ occurs, we have
   $\mathcal{C}_\mathrm{e}\cup \mathcal{C}_\mathrm{v}\subseteq TFI(\prob,\Itm,\theta)$.
   Since $\mathsf{E}$ occurs with probability at least $1-\delta$, this equals to
-  say that 
+  say that
   \[
   \Pr(\exists A\in \mathcal{T}_\mathrm{e}\cup
   \mathcal{T}_\mathrm{v} ~:~ \tfreq(A)<\theta)\le\delta\enspace.\]
-  \qed
 \end{proof}
-\fi
+
+{\bf MATTEO:} Pseudocodice, menzione dell'algoritmo in giro per il paper,
+risultati sperimentali, etc.
