@@ -109,7 +109,7 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0,
         len(candidates), len(candidates_items)))
     sys.stderr.flush()
 
-    if len(candidates) > 0 and vcdim > -1:
+    if len(candidates) > 0 and vcdim > -1 and len(candidates_items) - 1 > vcdim:
         sys.stderr.write("Using additional knowledge\n")
         candidates_items_sorted = sorted(candidates_items)
         candidates_items_in_sets_dict = dict()
@@ -133,7 +133,7 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0,
         vars_num = len(candidates) + len(candidates_items)
         constr_names = []
 
-        capacity = min(len(candidates_items) - 1, vcdim)
+        capacity = vcdim
 
         (tmpfile_handle, tmpfile_name) = tempfile.mkstemp(
             prefix="cplx", dir=os.environ['PWD'], text=True)
@@ -313,21 +313,124 @@ def get_trueFIs(exp_res_filename, eval_res_filename, min_freq, delta, gap=0.0,
             sys.stderr.write("Lowering VC-dimension to maximum value\n")
             sys.stderr.flush()
             stats['vcdim'] = int(math.floor(math.log2(len(candidates))))
-        stats['epsilon_2'] = epsilon.get_eps_vc_dim(
+        stats['epsilon_2_vc'] = epsilon.get_eps_vc_dim(
             lower_delta, stats['orig_size'], stats['vcdim'])
-
+    elif len(candidates) > 0 and vcdim > -1 and len(candidates_items) - 1 <= vcdim:
+        sys.stderr.write("Additional knowledge is useless\n")
+        sys.stderr.flush()
+        stats['vcdim'] = int(math.floor(math.log2(len(candidates))))
+        stats['epsilon_2_vc'] = epsilon.get_eps_vc_dim(
+            lower_delta, stats['orig_size'], stats['vcdim'])
     elif len(candidates) > 0 and vcdim == -1:
         sys.stderr.write("Not using additional knowledge\n")
         sys.stderr.flush()
         stats['vcdim'] = int(math.floor(math.log2(len(candidates))))
-        stats['epsilon_2'] = epsilon.get_eps_vc_dim(
+        stats['epsilon_2_vc'] = epsilon.get_eps_vc_dim(
             lower_delta, stats['orig_size'], stats['vcdim'])
-
     else:
         sys.stderr.write("There are no candidates\n")
         sys.stderr.flush()
         stats['vcdim'] = 0
-        stats['epsilon_2'] = 0
+        stats['epsilon_2_vc'] = 0
+
+    # Loop to compute empirical VC-dimension using lengths distribution
+    capacity_str_len = len(str(capacity))
+    longer_equal = 0
+    lengths_dict = ds_stats['lengths']
+    lengths = sorted(lengths_dict.keys(), reverse=True)
+    start_len_idx = 0
+    while start_len_idx < len(lengths):
+        if lengths[start_len_idx] > len(candidates_items) - 1:
+            longer_equal += lengths_dict[start_len_idx]
+            start_len_idx += 1
+        else:
+            break
+    for i in range(start_len_idx, len(lengths)):
+        cand_len = lengths[i]
+        longer_equal += lengths_dict[cand_len]
+        # Modify the script to use the new capacity.
+        with open(tmpfile_name, 'r+t') as cplex_script:
+            cplex_script.seek(0)
+            cplex_script.write("capacity = {}\n".format(
+                str(cand_len).ljust(capacity_str_len)))
+        # Run the script, solve optimization problem, extract solution
+        my_environ = os.environ
+        if "ILOG_LICENSE_FILE" not in my_environ:
+            my_environ["ILOG_LICENSE_FILE"] = \
+                "/local/projects/cplex/ilm/site.access.ilm"
+        try:
+            cplex_output_binary_str = subprocess.check_output(
+                ["python2.6", tmpfile_name], env=my_environ,
+                cwd=os.environ["PWD"])
+        except subprocess.CalledProcessError as err:
+            os.remove(tmpfile_name)
+            utils.error_exit("CPLEX exited with error code {}: {}\n".format(
+                err.returncode, err.output))
+        # finally:
+        #    os.remove(tmpfile_name)
+
+        cplex_output = cplex_output_binary_str.decode(
+            locale.getpreferredencoding())
+        cplex_output_lines = cplex_output.split("\n")
+        cplex_solution_line = cplex_output_lines[
+            -1 if len(cplex_output_lines[-1]) > 0 else -2]
+        try:
+            cplex_solution = eval(cplex_solution_line)
+        except Exception:
+            utils.error_exit(
+                "Error evaluating the CPLEX solution line: {}\n".format(
+                    cplex_solution_line))
+
+        sys.stderr.write("{}\n".format(cplex_solution))
+        # if cplex_solution[0] not in (1, 101, 102):
+        #   utils.error_exit("CPLEX didn't find the optimal solution: {} {}
+        #   {}\n".format(cplex_solution[0], cplex_solution[1],
+        #   cplex_solution[2]))
+
+        # if cplex_solution[0] == 102:
+        optimal_sol_upp_bound_emp = int(
+            math.floor(cplex_solution[2] * (1 + cplex_solution[3])))
+        # else:
+        #    optimal_sol_upp_bound_emp = cplex_solution[0]
+
+        stats['emp_vc_dim'] = int(
+            math.floor(math.log2(optimal_sol_upp_bound_emp))) + 1
+        if stats['emp_vc_dim'] > math.log2(len(negative_border)):
+            sys.stderr.write("Lowering VC-dimension to maximum value\n")
+            stats['emp_vc_dim'] = int(
+                math.floor(math.log2(len(negative_border))))
+
+        sys.stderr.write(
+            " ".join(
+                ("cand_len={}".format(cand_len),
+                 "longer_equal={}".format(longer_equal),
+                 "emp_vc_dim={}".format(stats['emp_vc_dim']),
+                 "optimal_sol_upp_bound_emp={}\n".format(optimal_sol_upp_bound_emp))))
+        sys.stderr.flush()
+
+        # If stopping condition is satisfied, exit.
+        if stats['emp_vc_dim'] <= longer_equal:
+            break
+    os.remove(tmpfile_name)
+
+    # Compute the bound to the shatter coefficient, which we use to compute
+    # epsilon
+    bound = min((math.log(len(candidates)), stats['emp_vc_dim'] *
+        math.log(math.e * stats['eval_size'] / stats['emp_vc_dim'])))
+
+    # Compute second candidate to epsilon_2
+    emp_epsilon_2 = epsilon.get_eps_shattercoeff_bound(lower_delta,
+    stats['eval_size'], bound, max_freq_base_set)
+    sys.stderr.write(
+        "cand_len={} opt_sol_upp_bound_emp={} emp_vc_dim={} bound={} max_freq_base_set={} emp_e2={}\n".format(
+            cand_len, optimal_sol_upp_bound_emp, stats['emp_vc_dim'], bound,
+            max_freq_base_set, emp_epsilon_2))
+    sys.stderr.flush()
+
+    sys.stderr.write("not_emp_e2={}, emp_e2={}\n".format(
+        stats['epsilon_2_vc'], emp_epsilon_2))
+    sys.stderr.flush()
+    stats['epsilon_2'] = min(emp_epsilon_2, stats['epsilon_2_vc'])
 
     if len(candidates) > 0:
         sys.stderr.write("Computing the candidates that are TFIs...")
