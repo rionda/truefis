@@ -39,7 +39,6 @@ $\range(\mathcal{C})$ on a dataset $\Ds$.
   Then $\EVC(\range(\mathcal{C}),\Ds)\le d$.
 \end{theorem}
 
-\ifarxiv
 \begin{proof}
   The antichain requirement guarantees that the set of transactions considered in
   the computation of $d$ could indeed theoretically be shattered. Assume that a
@@ -73,7 +72,6 @@ $\range(\mathcal{C})$ on a dataset $\Ds$.
   least $2^{d-1}$ itemsets from $\mathcal{C}$. Hence $\mathcal{L}$ cannot be shattered and
   the thesis follows.
 \end{proof}
-\fi
 
 \subsection{Computing the VC-Dimension}\label{sec:computvc}
 The na\"ive computation of $d$  according to the definition in Thm.~\ref{lem:evcdimupbound}
@@ -137,7 +135,6 @@ the empirical VC-dimension of $\mathcal{C}$ on $\Ds$.
   $\EVC(\mathcal{C},\Ds)\le b_j$. %We call $b_j$ the \emph{empirical b-index of
   %$\mathcal{C}$ on $\Ds$} and denote it as $\eb(\mathcal{C},\Ds)$
 \end{lemma}
-\ifarxiv
 \begin{proof}
   If $b_j\le L_j$, then there are at least $b_j$ transactions which can contain
   $2^{b_j-1}$ itemsets from $\mathcal{C}$ and this is the maximum $b_i$ for
@@ -146,7 +143,6 @@ the empirical VC-dimension of $\mathcal{C}$ on $\Ds$.
   satisfies the conditions of Lemma~\ref{lem:evcdimupbound}. Hence
   $\EVC(\mathcal{C},\Ds)\le b_j$.
 \end{proof}
-\fi
 
 \begin{corollary}\label{lem:sukpvc}
   Let $q$ be profit of the SUKP associated to $\mathcal{C}$ with capacity

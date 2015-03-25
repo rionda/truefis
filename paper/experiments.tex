@@ -1,8 +1,4 @@
-\ifarxiv
 \begin{table}[htbp]
-\else
-\begin{table*}[htbp]
-\fi
   \centering
   \small
   \begin{tabular}{llrrr}
@@ -83,11 +79,7 @@ Dataset & Freq.~$\theta$ & TFIs & Times FPs & Times FNs\\
 \caption{Fractions of times that $\FI(\Ds,\Itm,\theta)$ contained false positives
 and missed TFIs (false negatives) over 20 datasets from the same ground truth.}
 \label{table:fp}
-\ifarxiv
 \end{table}
-\else
-\end{table*}
-\fi
 
 \iffalse
 \begin{table*}[htbp]
@@ -173,13 +165,9 @@ and missed TFIs (false negatives) over 20 datasets from the same ground truth.}
   $\varepsilon_2$ computed by our algorithm in the two cases.}
 \label{table:power}
 \end{table*}
-\fi
-\ifarxiv
+\fi % iffalse
 \begin{table}[htbp]
   \small
-\else
-\begin{table*}[htbp]
-\fi
   \centering
   \begin{tabular}{llrcccc}
     \toprule
@@ -258,11 +246,7 @@ and missed TFIs (false negatives) over 20 datasets from the same ground truth.}
   in the original FIMI dataset. In bold, the best result (highest reported
   fraction).}
 \label{table:power}
-\ifarxiv
 \end{table}
-\else
-\end{table*}
-\fi
 %\begin{table*}[tb]
 %\centering
 %\begin{tabular}{llrcccccc}
