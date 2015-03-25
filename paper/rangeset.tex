@@ -98,9 +98,9 @@ $\mathcal{C}$.
 %sets were put in the knapsack
 %the profit, while satisfying the capacity constraint.
 
-\begin{definition}[\citep{GoldschmidtNY94}]\label{def:sukp}
+\begin{definition}[Set Union Knapsack Problem (SUKP)\citep{GoldschmidtNY94}]\label{def:sukp}
   Let $U=\{a_1,\dotsc,a_\ell\}$ be a set of elements and let
-  $\mathcal{S}=\{A_1,\dotsc,A_k\}$ be a set of subsets of $U$, i.e.
+  $\mathcal{S}=\{A_1,\dotsc,A_k\}$ be a set of subsets of $U$, i.e.,
   $A_i\subseteq U$ for $1\le i\le k$. Each subset $A_i$, $1\le i\le k$, has an associated
   non-negative \emph{profit} $\rho(A_i)\in\mathbb{R}^+$, and each element $a_j$, $1\le
   j\le\ell$ as an associated non-negative weight $w(a_j)\in\mathbb{R}^+$.
@@ -153,16 +153,18 @@ the empirical VC-dimension of $\mathcal{C}$ on $\Ds$.
   $\EVC(\mathcal{C},\Ds)\le b_j$.
 \end{proof}
 
-\begin{corollary}\label{lem:sukpvc}
-  Let $q$ be profit of the SUKP associated to $\mathcal{C}$ with capacity
-  equal to $\ell=|\{a\in\Itm ~:~ \exists A\in\mathcal{C} \mbox{ s.t. } a\in
-  A\}|$ ($\ell$ is the number of items such that there is at least one itemset in $\mathcal{C}$ containing
-  them).
-  %$|\Itm|-1$.
-  Let $b=\lfloor\log_2 q\rfloor + 1$. Then
-  $\VC(\range(\mathcal{C}))\le b$. %We call $b*$ the \emph{b-index of
-  %$\mathcal{C}$} and denote it as $\b(\mathcal{C})$.
-\end{corollary}
+% The following is trivially true: the solution to this SUKP is the whole
+% collection of sets!
+%\begin{corollary}\label{lem:sukpvc}
+%  Let $q$ be profit of the SUKP associated to $\mathcal{C}$ with capacity
+%  equal to $\ell=|\{a\in\Itm ~:~ \exists A\in\mathcal{C} \mbox{ s.t. } a\in
+%  A\}|$ ($\ell$ is the number of items such that there is at least one itemset in $\mathcal{C}$ containing
+%  them).
+%  %$|\Itm|-1$.
+%  Let $b=\lfloor\log_2 q\rfloor + 1$. Then
+%  $\VC(\range(\mathcal{C}))\le b$. %We call $b*$ the \emph{b-index of
+%  %$\mathcal{C}$} and denote it as $\b(\mathcal{C})$.
+%\end{corollary}
 
 \paragraph{Complexity and runtime considerations.} Solving the SUKP optimally is
 NP-hard in the general case, although there are known restrictions for
