@@ -1,67 +1,21 @@
 \section{Conclusions}\label{sec:concl}
-The usefulness of frequent itemset mining is often hindered by spurious discoveries,
-or false positives, in the results. In this work we developed an algorithm to compute
-a frequency threshold
-$\hat\theta$ such that the collection of FIs at frequency $\hat\theta$ is a
-good approximation the collection of True Frequent Itemsets. The threshold is
-such that that the probability of reporting \emph{any} false positive
-is bounded by a user-specified quantity. We used concepts from statistical learning
-theory and from optimization to develop and analyze the algorithm. The
-experimental evaluation shows that the method we propose
-can indeed be used to control the presence of false positives while, at the
-same time, extracting a very large fraction of the TFIs from huge datasets. 
-%very high statistical power and are competitive or superior to existing
-%techniques to solve the same problem.
-%In this work we consider the problem of mining True Frequent Itemsets,
-%that are itemsets whose probability of appearing in a transaction sampled from a
-%distribution is at least $\theta$, where $\theta$ is a user-specified parameter,
-%given only a transactional dataset that is a collection of independent
-%identically distributed samples from the distribution. Since every transactional 
-%dataset represents only a finite observation from the process for which
-%knowledge is inferred using the mining task, this is a fundamental
-%problem in data mining, but has received scant attention in the literature.
-%
-%In this paper we present an algorithm to mine a collection of RFI's while
-%providing guarantees on the quality of the returned collection. 
-%In particular, our method
-%guarantees that the probability of any spurious discovery (i.e., an itemset in
-%the collection whose probability is below $\theta$)
-% is within the user-specified parameter $\delta$. Our method is orthogonal to
-% the numerous methods that have been  previously proposed in the literature to
-% control false discoveries
-% among the frequent itemsets, since such methods focus on the itemsets that are
-% frequent in the dataset, assuming that they reflect the RFI's.
-% 
-%To identify a high quality collection of real frequent itemsets, we use results
-%from statistical learning theory. We define a range set associated to the
-%problem of mining RFI's,  and give an
-%upper bound to its (empirical) VC-dimension, showing an interesting connection
-%with a variant of the knapsack optimization problem.
-%To the best of our knowledge, ours is the first work to apply techniques from
-%statistical learning theory to the field of RFI's, and in general the first
-%application of the sample complexity
-%bound based on empirical VC-Dimension to the field of data mining. We
-%implemented our test and evaluated its performances on large datasets generated
-%from available transactional datasets. We found that it is very efficient on
-%multiple metrics. Our method can control the FWER even better than what is
-%guaranteed by the theoretical analysis. We evaluated its statistical power and
-%compared it to the power of other available statistical tests adapted to the
-%discovery of RFI's, and found it not only very high in absolute terms, but also
-%comparable or even better than the power of state-of-the-art tests.
+The usefulness of frequent itemset mining is often hindered by spurious
+discoveries, or false positives, in the results. In this work we developed an
+algorithm to compute a frequency threshold $\hat\theta$ such that the collection
+of FIs at frequency $\hat\theta$ is a good approximation the collection of True
+Frequent Itemsets. The threshold is such that that the probability of reporting
+\emph{any} false positive is bounded by a user-specified quantity. We used
+concepts from statistical learning theory and from optimization to develop and
+analyze the algorithm. The experimental evaluation shows that the method we
+propose can indeed be used to control the presence of false positives while, at
+the same time, extracting a very large fraction of the TFIs from huge datasets.
+
 There are a number of directions for further research. Among these, we find
 particularly interesting and challenging the extension of our method to other
 definitions of statistical significance for patterns and to other definitions of
-patterns such as sequential patterns~\citep{LowCamRKP13}. %issue of including  the
-%user-specified minimum threshold $\theta$ in the computation of the final
-%threshold $\hat\theta$. %by making the computation of the ``safe''
-%threshold
-%acceptance region dependent on the minimum true frequency threshold, and studying 
-Also interesting is the derivation of better lower bounds to the VC-dimension
-of the range set of a collection of itemsets. Moreover, while this work focuses
-on itemsets mining, we believe that it can be extended and generalized to other
-settings of multiple hypothesis testing, and give another alternative to existing
-approaches for controlling the probability of false discoveries. %Family-Wise Error Rate.
-
-%further research is needed for the extraction of more
-%structured (e.g., sequences, graphs) True Frequent patterns.
-
+patterns such as sequential patterns~\citep{LowCamRKP13}. Also interesting is
+the derivation of better lower bounds to the VC-dimension of the range set of a
+collection of itemsets. Moreover, while this work focuses on itemsets mining, we
+believe that it can be extended and generalized to other settings of multiple
+hypothesis testing, and give another alternative to existing approaches for
+controlling the probability of false discoveries.

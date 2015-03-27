@@ -3,57 +3,52 @@ In this section we introduce the definitions, lemmas, and tools that we will use
 throughout the work, providing the details that are needed in later sections.
 
 \subsection{Itemsets mining}\label{sec:itemdef}
-Given a ground set $\Itm$ of \emph{items}, let $\prob$ be a
-probability distribution on $2^{\Itm}$. A \emph{transaction} $\tau\subseteq\Itm$
-is a single sample drawn from $\prob$. The \emph{length} $|\tau|$ of
-a transaction $\tau$ is the number of items in $\tau$.
-A \emph{dataset}
-$\Ds$ is a bag of $n$ transactions $\Ds=\{\tau_1,\dots,\tau_n ~:~
-\tau_i\subseteq\Itm\}$, i.e., of $n$
+Given a ground set $\Itm$ of \emph{items}, let $\prob$ be a probability
+distribution on $2^{\Itm}$. A \emph{transaction} $\tau\subseteq\Itm$ is a single
+sample drawn from $\prob$. The \emph{length} $|\tau|$ of a transaction $\tau$ is
+the number of items in $\tau$.  A \emph{dataset} $\Ds$ is a bag of $n$
+transactions $\Ds=\{\tau_1,\dots,\tau_n ~:~ \tau_i\subseteq\Itm\}$, i.e., of $n$
 \emph{independent identically distributed} (i.i.d.) samples from $\prob$. We
 call a subset of $\Itm$ an \emph{itemset}. For any itemset $A$, let
-$T(A)=\{\tau\subseteq\Itm ~:~ A\subseteq \tau\}$ be the \emph{support set}
-of $A$. The members of the set $T(A)$ are all the transactions built on $\Itm$
-that contain the itemset $A$. %For each itemset $A\subseteq\Itm$,
-We define the
-\emph{true frequency} $\tfreq(A)$ of $A$ with respect to $\prob$ as the
-probability that a transaction sampled from $\prob$ contains $A$:
+$T(A)=\{\tau\subseteq\Itm ~:~ A\subseteq \tau\}$ be the \emph{support set} of
+$A$. The members of the set $T(A)$ are all the transactions built on $\Itm$
+that contain the itemset $A$. We define the \emph{true frequency} $\tfreq(A)$ of
+$A$ with respect to $\prob$ as the probability that a transaction sampled from
+$\prob$ contains $A$:
 \[
 \tfreq(A) = \sum_{\tau\in T(A)}\prob(\tau)\enspace.
 \]
 
-Analogously, given a (observed) dataset $\Ds$, let $T_\Ds(A)$ denote
-the set of transactions in $\Ds$ containing $A$. The \emph{frequency} of $A$
-in $\Ds$ is the fraction of transactions in $\Ds$ that contain $A$: $f_\Ds(A)=
-|T_\Ds(A)|/|\Ds|$. It is easy to see that $f_\Ds(A)$ is the
-\emph{empirical average} (and an \emph{unbiased estimator}) for $\tfreq(A)$:
-${\mathbf E}[f_\Ds(A)]=\tfreq(A)$.
+Analogously, given a (observed) dataset $\Ds$, let $T_\Ds(A)$ denote the set of
+transactions in $\Ds$ containing $A$. The \emph{frequency} of $A$ in $\Ds$ is
+the fraction of transactions in $\Ds$ that contain $A$: $f_\Ds(A)=
+|T_\Ds(A)|/|\Ds|$. It is easy to see that $f_\Ds(A)$ is the \emph{empirical
+average} (and an \emph{unbiased estimator}) for $\tfreq(A)$: ${\mathbf
+E}[f_\Ds(A)]=\tfreq(A)$.
 
-Traditionally, the interest has been on extracting the set
-of \emph{Frequent Itemsets} (FIs) from $\Ds$ with respect to a minimum frequency
-threshold $\theta\in(0,1]$~\citep{AgrawalIS93}, that is, the set
+Traditionally, the interest has been on extracting the set of \emph{Frequent
+Itemsets} (FIs) from $\Ds$ with respect to a minimum frequency threshold
+$\theta\in(0,1]$~\citep{AgrawalIS93}, that is, the set
 \[
 \FI(\Ds,\Itm,\theta)=\{A\subseteq\Itm ~:~ f_\Ds(A)\ge\theta\}\enspace.\]
 
 In most applications the final goal of data mining is to gain a better
 understanding of the \emph{process generating the data}, i.e., of the
 distribution $\prob$, through the true frequencies $\tfreq$, which are
-\emph{unknown} and only approximately reflected in the dataset $\Ds$. Therefore, %in this work,
-we are interested in finding the itemsets with \emph{true} frequency
-$\tfreq$ at least $\theta$ for some $\theta\in(0,1]$. We call these itemsets the
-\emph{True Frequent Itemsets} (TFIs) and denote their set as %the set they form as
+\emph{unknown} and only approximately reflected in the dataset $\Ds$. Therefore,
+in this work, we are interested in finding the itemsets with \emph{true}
+frequency $\tfreq$ at least $\theta$ for some $\theta\in(0,1]$. We call these
+itemsets the \emph{True Frequent Itemsets} (TFIs) and denote their set as
 \[
 \TFI(\prob,\Itm,\theta)=\{A\subseteq\Itm ~:~ \tfreq(A)\ge\theta\}\enspace.\]
 
-If one is only given a \emph{finite} number of random
-samples (the dataset $\Ds$) from $\prob$ as it is usually the case, one can not
-aim at finding the exact set $\TFI(\prob,\Itm,\theta)$: no assumption can be
-made on the set-inclusion relationship between $\TFI(\prob,\Itm,\theta)$ and
-$\FI(\Ds,\Itm,\theta)$,
-because an itemset $A\in\TFI(\prob,\Itm,\theta)$ may not appear in
-$\FI(\Ds,\Itm,\theta)$, and vice versa. One can instead try
-to \emph{approximate} the set of TFIs. This is what we are interested in this
-work.
+If one is only given a \emph{finite} number of random samples (the dataset
+$\Ds$) from $\prob$ as it is usually the case, one can not aim at finding the
+exact set $\TFI(\prob,\Itm,\theta)$: no assumption can be made on the
+set-inclusion relationship between $\TFI(\prob,\Itm,\theta)$ and
+$\FI(\Ds,\Itm,\theta)$, because an itemset $A\in\TFI(\prob,\Itm,\theta)$ may not
+appear in $\FI(\Ds,\Itm,\theta)$, and vice versa. One can instead try to
+\emph{approximate} the set of TFIs. This is what we are interested in this work.
 
 \paragraph{Goal.} Given an user-specified
 parameter $\delta\in(0,1)$, we aim at providing a threshold
@@ -193,7 +188,7 @@ its proof in the Appendix.
 \end{theorem}
 
 %\subsection{Statistical hypothesis testing}\label{sec:stat_tests}
-%We develope our methods to identify the True Frequent Itemsets within the
+%We develop our methods to identify the True Frequent Itemsets within the
 %framework of \emph{statistical
 %hypothesis testing}. In statistical hypothesis testing, one uses some data
 %$Y$ to evaluate a \emph{null hypothesis} $H$, whose rejection corresponds to claiming
@@ -302,4 +297,3 @@ its proof in the Appendix.
 %Another important factor for a statistical test is its \emph{power}, that is the
 %probability that the test correctly rejects the null hypothesis when the null
 %hypothesis is false (also defined as $1-\Pr[\text{Type-2 error}]$).
-

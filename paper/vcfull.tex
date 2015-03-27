@@ -1,17 +1,15 @@
-The intuition behind the method is the following.
-Let $\mathcal{B}$ be
-the \emph{negative border} of $\TFI(\prob,\Itm,\theta)$, that is the set of itemsets
+The intuition behind the method is the following. Let $\mathcal{B}$ be the
+\emph{negative border} of $\TFI(\prob,\Itm,\theta)$, that is the set of itemsets
 not in $\TFI(\prob,\Itm,\theta)$ but such that all their proper subsets are in
 $\TFI(\prob,\Itm,\theta)$. If we can find an $\varepsilon$ such that $\Ds$ is an
-$\varepsilon$-approximation to $(\range(\mathcal{B}),\pi)$ then
-we have that any itemset
-$A\in\mathcal{B}$ has a frequency $f_\Ds(A)$ in $\Ds$ less than
-$\hat{\theta}=\theta+\varepsilon$, given that it must be $\tfreq(A)<\theta$. By the
-antimonotonicity property of the frequency, the same holds for all itemsets that
-are supersets of those in $\mathcal{B}$. Hence, the only itemsets that can have
-frequency in $\Ds$ greater or equal to $\hat{\theta}=\theta+\varepsilon$ are
-those with true frequency at least $\theta$. In the following paragraphs we show
-how to compute $\varepsilon$.
+$\varepsilon$-approximation to $(\range(\mathcal{B}),\pi)$ then we have that any
+itemset $A\in\mathcal{B}$ has a frequency $f_\Ds(A)$ in $\Ds$ less than
+$\hat{\theta}=\theta+\varepsilon$, given that it must be $\tfreq(A)<\theta$. By
+the antimonotonicity property of the frequency, the same holds for all itemsets
+that are supersets of those in $\mathcal{B}$. Hence, the only itemsets that can
+have frequency in $\Ds$ greater or equal to $\hat{\theta}=\theta+\varepsilon$
+are those with true frequency at least $\theta$. In the following paragraphs we
+show how to compute $\varepsilon$.
 
 We now describe our algorithm more formally. The pseudocode of our method is
 presented in Alg.~\ref{alg:vcfull}.
@@ -22,22 +20,20 @@ per rendere piu' chiaro il tutto.
 
 Let $\delta_1$ and $\delta_2$ be such that $(1-\delta_1)(1-\delta_2)\ge
 1-\delta$. Let $\range(2^\Itm)$ be the range space of all itemsets.
-We use Corol.~\ref{thm:vcdimubfirst} to
-compute an upper bound $d'$ to $\VC(\range(2^\Itm))$. Then we can use $d'$ in
-Thm.~\ref{thm:eapprox} to compute an $\varepsilon_1'$ such that $\Ds$ is, with
-probability at least $1-\delta_1$, an $\varepsilon_1'$-approximation to
-$(\range(2^\Itm),\prob)$.
+We use Corol.~\ref{thm:vcdimubfirst} to compute an upper bound $d'$ to
+$\VC(\range(2^\Itm))$. Then we can use $d'$ in Thm.~\ref{thm:eapprox} to compute
+an $\varepsilon_1'$ such that $\Ds$ is, with probability at least $1-\delta_1$,
+an $\varepsilon_1'$-approximation to $(\range(2^\Itm),\prob)$.
 
-Similarly, we use Thm.~\ref{thm:empvcdimubfirst} to compute an upper bound $d''$ to
-$\EVC(\range(2^\Itm),\Ds)$). Then we can use the highest frequency of an item in the
-dataset, the bound $d''$, and $2^{|\Itm|}$ in Thm.~\ref{thm:eapproxempir} (actually
-using~\eqref{eq:evceapproxitemsets}) to compute an $\varepsilon_1''$ such that
-$\Ds$ is, with probability at least $1-\delta_1$, an
+Similarly, we use Thm.~\ref{thm:empvcdimubfirst} to compute an upper bound $d''$
+to $\EVC(\range(2^\Itm),\Ds)$). Then we can use the highest frequency of an item
+in the dataset, the bound $d''$, and $2^{|\Itm|}$ in Thm.~\ref{thm:eapproxempir}
+(actually using~\eqref{eq:evceapproxitemsets}) to compute an $\varepsilon_1''$
+such that $\Ds$ is, with probability at least $1-\delta_1$, an
 $\varepsilon_1''$-approximation to $(\range(2^\Itm),\prob)$.
 
 \begin{fact}
-Let
-$\varepsilon_1=\min\{\varepsilon_1',\varepsilon_1''\}$. With probability at
+Let $\varepsilon_1=\min\{\varepsilon_1',\varepsilon_1''\}$. With probability at
 least $1-\delta_1$, $\Ds$ is an $\varepsilon_1$-approximation to
 $(\range(2^\Itm),\prob)$.
 \end{fact}
@@ -67,7 +63,7 @@ f_\Ds(A)<\theta+\varepsilon_1\}$, and $\mathcal{F}=\mathcal{G}\cup\mathcal{W}$.
 \begin{proof}
   Given that $\Ds$ is an $\varepsilon_1$-approximation to
   $(\range(2^\Itm),\prob)$, then
-  $\TFI(\prob,\Itm,\theta)\subseteq\mathcal{G}\cup\mathcal{C}_1$.  From this and
+  $\TFI(\prob,\Itm,\theta)\subseteq\mathcal{G}\cup\mathcal{C}_1$. From this and
   the definition of negative border and of $\mathcal{F}$, we have that
   $\mathcal{B}\subseteq\mathcal{F}$. Since $\mathcal{B}$ is a maximal antichain,
   then $\mathcal{B}\in\mathcal{Y}$. Hence the thesis.
@@ -100,7 +96,8 @@ $\hat{\theta}=\theta+\varepsilon_2$. The following Theorem shows that
 $\hat{\theta}$ has the desired properties.
 
 \begin{theorem}\label{lem:vcfull}
-With probability at least $1-\delta$, $\FI(\Ds,\Itm,\hat\theta)$ contains no false positives:
+With probability at least $1-\delta$, $\FI(\Ds,\Itm,\hat\theta)$ contains no
+false positives:
 \[
 \Pr\left(\FI(\Ds,\Itm,\hat\theta)\subseteq\TFI(\prob,\Itm,\theta)\right)\ge 1-\delta\enspace.\]
 \end{theorem}
@@ -115,7 +112,8 @@ With probability at least $1-\delta$, $\FI(\Ds,\Itm,\hat\theta)$ contains no fal
 
   Since $\mathsf{E}_1$ occurs, then Lemma~\ref{lem:antichains} holds, and the
   bounds we compute by solving the modified SUKP problems are indeed bounds to
-  $\VC(\range(\mathcal{B}))$ and $\EVC(\range(\mathcal{B},\Ds))$. %Then the computation of $\varepsilon_2$ is valid.
+  $\VC(\range(\mathcal{B}))$ and $\EVC(\range(\mathcal{B},\Ds))$. 
+  
   Since $\mathsf{E}_2$ also occurs, then for any $A\in\mathcal{B}$ we have
   $|\tfreq(A)-f_\Ds(A)|\le\varepsilon_2$, but given that $\tfreq(A)<\theta$
   because the elements of $\mathcal{B}$ are not TFIs, then we have
@@ -188,23 +186,23 @@ $\tau'\subseteq\tau''$ or $\tau''\subseteq\tau'$\;
   \label{alg:vcfull}
 \end{algorithm}
 
-\paragraph{Exploiting additional knowledge about $\prob$.}
-Our algorithm is completely \emph{distribution-free}, i.e., it does not require
-any assumption about the unknown distribution $\prob$. On the other hand, when
-information about $\prob$ is available, our method can exploit it to achieve
-better performances in terms of running time, practicality, and accuracy.
-For example, in most applications $\prob$ will not generate any transaction
-longer than some known upper bound $\ell\ll|\Itm|$. Consider for example an
-online marketplace like Amazon: it is extremely unlikely (if not humanly
-impossible) that a single customer buys one of each available product. Indeed,
-given the hundred of thousands of items on sale, it is safe to assume that all
-the transactions will contains at most $\ell$ items, for some $\ell\ll|\Itm|$. Other
-times, like in an online survey, it is the nature of the process that limits the
-number of items in a transaction, in this case the number of questions. A
-different kind of information about the generative process may consists in
-knowing that some combination of items may never occur, because ``forbidden'' in
-some wide sense. Other examples are possible. All these pieces of information
-can be used to compute better (i.e., stricter) upper bounds to the VC-dimension
+\paragraph{Exploiting additional knowledge about $\prob$.} Our algorithm is
+completely \emph{distribution-free}, i.e., it does not require any assumption
+about the unknown distribution $\prob$. On the other hand, when information
+about $\prob$ is available, our method can exploit it to achieve better
+performances in terms of running time, practicality, and accuracy.  For example,
+in most applications $\prob$ will not generate any transaction longer than some
+known upper bound $\ell\ll|\Itm|$. Consider for example an online marketplace
+like Amazon: it is extremely unlikely (if not humanly impossible) that a single
+customer buys one of each available product. Indeed, given the hundred of
+thousands of items on sale, it is safe to assume that all the transactions will
+contains at most $\ell$ items, for some $\ell\ll|\Itm|$. Other times, like in an
+online survey, it is the nature of the process that limits the number of items
+in a transaction, in this case the number of questions. A different kind of
+information about the generative process may consists in knowing that some
+combination of items may never occur, because ``forbidden'' in some wide sense.
+Other examples are possible. All these pieces of information can be used to
+compute better (i.e., stricter) upper bounds to the VC-dimension
 $\VC(\range(2^\Itm))$. For example, if we know that $\prob$ will never generate
 transactions with more than $\ell$ items, we can safely say that
 $\VC(\range(2^\Itm))\le \ell$, a much stricter bound than $|\Itm|-1$ from

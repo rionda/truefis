@@ -11,49 +11,39 @@ collection. This lead to the definition of concepts like \emph{closed},
 the one we take and we refer the interested reader to the survey by~\citet{CaldersRB06}.
 
 The intuition at the basis of the second approach to reduce the number of output
-patterns consists in
-observing that a large portion of the patterns may be \emph{spurious}, i.e., not
-actually \emph{interesting} but only a consequence of the fact that the dataset
-is just a sample from the underlying process that generates the data, the
-understanding of which is the ultimate goal of data mining. This observation led
-to a prolification of interestingness measures. In this work we are interested
-in a very specific definition of interestingness that is based on statistical
-properties of the patterns. We refer the reader to the surveys on different
-readers by~\citet[Sect.~3]{HanCXY07} and~\citet{GengH06}. %
-%While the problem of identifying the TFIs has received scant attention in the literature, a number
-%of approaches have been proposed to filter the FIs of \emph{spurious patterns}, i.e., patterns that are not
-%actually \emph{interesting} according to some measure of interestigness. We refer the reader to~\citep[Sect.~3]{HanCXY07}
-%and~\citep{GengH06} for surveys on different measures.
-We remark that, as noted by~\citet{LiuZW11}, that the use of the minimum
-support threshold $\theta$, reflecting the level of domain significance, is complementary to the
-use of interestingness measures, and that ``statistical significance measures and domain significance
-measures should be used together to filter uninteresting rules from different
-perspectives''. The algorithm we present can be seen as a method to filter out
-patterns that are not interesting according to the measure represented by the
-true frequency.
+patterns consists in observing that a large portion of the patterns may be
+\emph{spurious}, i.e., not actually \emph{interesting} but only a consequence of
+the fact that the dataset is just a sample from the underlying process that
+generates the data, the understanding of which is the ultimate goal of data
+mining. This observation led to a prolification of interestingness measures. In
+this work we are interested in a very specific definition of interestingness
+that is based on statistical properties of the patterns. We refer the reader to
+the surveys on different readers by~\citet[Sect.~3]{HanCXY07}
+and~\citet{GengH06}.  We remark that, as noted by~\citet{LiuZW11}, that the use
+of the minimum support threshold $\theta$, reflecting the level of domain
+significance, is complementary to the use of interestingness measures, and that
+``statistical significance measures and domain significance measures should be
+used together to filter uninteresting rules from different perspectives''. The
+algorithm we present can be seen as a method to filter out patterns that are not
+interesting according to the measure represented by the true frequency.
 
 A number of works explored the idea to use statistical properties of the
-patterns in order to assess their interestingness. While this is not the focus of our work,
-some of the techniques and models proposed are relevant to our framework.
-Most of these works are
-focused on association rules, but some results can be applied to itemsets. In
-these works, the notion of interestingness is related to the deviation between
-the observed frequency of a pattern in the dataset and its expected support in a
-random dataset generated according to a well-defined probability distribution that can incorporate
-prior belief and that can be updated during the mining process to ensure that
-the most ``surprising'' patterns are extracted. In many previous works, the
-probability distribution was defined by a simple independence model: an item belongs to a
+patterns in order to assess their interestingness. While this is not the focus
+of our work, some of the techniques and models proposed are relevant to our
+framework. Most of these works are focused on association rules, but some
+results can be applied to itemsets. In these works, the notion of
+interestingness is related to the deviation between the observed frequency of a
+pattern in the dataset and its expected support in a random dataset generated
+according to a well-defined probability distribution that can incorporate prior
+belief and that can be updated during the mining process to ensure that the most
+``surprising'' patterns are extracted. In many previous works, the probability
+distribution was defined by a simple independence model: an item belongs to a
 transaction independently from other
 items~\citep{SilversteinBM98,MegiddoS98,DuMouchelP01,GionisMMT07,Hamalainen10,KirschMAPUV12}.
-%Other works used Bayesian networks to express the prior
-%belief~\citep{JaroszewiczSS09}.
-In contrast, our work does not impose any
-restriction on the probability distribution generating the dataset, with the result that our method is as general as
-possible.
-%Moreover, the interestingness of a pattern is determined by its
-%probability according to the distribution that regulates the generation of
-%transactions (on which, again, we do not impose any limitation) and whether this
-%support is greater than a user-specified minimum threshold.
+Other works used Bayesian networks to express the prior
+belief~\citep{JaroszewiczSS09}. In contrast, our work does not impose \emph{any}
+restriction on the probability distribution generating the dataset, with the
+result that our method is as general as possible.
 
 \citet{KirschMAPUV12} developed a multi-hypothesis
 testing procedure to identify the best support threshold such that the number of
@@ -63,29 +53,24 @@ for the individual items. In our work, the minimum threshold $\theta$ is an inpu
 parameter fixed by the user, and we identify a threshold $\hat{\theta}\ge\theta$
 to guarantee that the collection of FIs w.r.t.~$\hat{\theta}$ does not contain
 any false discovery.
-%return a collection of itemsets such that
-%they all have a support at least as high as the threshold with respect to the
-%distribution that generates the sample data.
 
-\iffalse
-\citet{BoltonHA02} suggest that, in pattern extraction settings,
-it may be more relevant to bound the False Discovery Rate rather
-than the Family-Wise Error Rate, due to the high number of statistical tests
-involved. In our experimental evaluation we noticed that the high number of
-tests is an issue when using traditional multiple-hypothesis correction
-techniques. The methods we present do not incur in this issue because they
-consider all the itemsets together, without the need to test each of them
-singularly.
+%\citet{BoltonHA02} suggest that, in pattern extraction settings,
+%it may be more relevant to bound the False Discovery Rate rather
+%than the Family-Wise Error Rate, due to the high number of statistical tests
+%involved. In our experimental evaluation we noticed that the high number of
+%tests is an issue when using traditional multiple-hypothesis correction
+%techniques. The methods we present do not incur in this issue because they
+%consider all the itemsets together, without the need to test each of them
+%singularly.
 
-\citet{LallichTP06} introduce User Adjusted
-Family-Wise Error Rate (UAFWER), a flexible variant of FWER which allows a user
-specified number of false discoveries, rather than no false discovery as in the
-standard FWER definition. They present a bootstrap-based method to evaluate the
-quality of a collection of association rules by comparing their empirical
-interestingness with the interestingness in a sequence of random datasets
-obtained by resampling the original data. We found that we can easily bound the
-FWER, so we have no need to use the UAFWER.
-\fi
+%\citet{LallichTP06} introduce the User Adjusted Family-Wise Error Rate (UAFWER),
+%a flexible variant of FWER which allows a user specified number of false
+%discoveries, rather than no false discovery as in the standard FWER definition.
+%They present a bootstrap-based method to evaluate the quality of a collection of
+%association rules by comparing their empirical interestingness with the
+%interestingness in a sequence of random datasets obtained by resampling the
+%original data. We found that we can easily bound the FWER, so we have no need to
+%use the UAFWER.
 
 \citet{GionisMMT07} present a method to create random datasets that can act as
 samples from a distribution satisfying an assumed generative model. The main
@@ -98,25 +83,22 @@ available and indeed it would be difficult to obtain a procedure that is
 valid for any distribution, given that we aim at developing a method that makes
 no assumption on the distribution. Considering the same generative model,
 \citet{Hanhijarvi11} presents a direct adjustment method to bound the
-probability of false discoveries by %FWER while
-taking into consideration the actual number of hypotheses to be tested.
+probability of false discoveries by taking into consideration the actual number
+of hypotheses to be tested.
 
-\citet{Webb07} proposes the use of established statistical techniques to
-control the probability of false discoveries.
-%One method is based on the Bonferroni and
+\citet{Webb07} proposes the use of established statistical techniques to control
+the probability of false discoveries. %One method is based on the Bonferroni and
 %Holm correction, where the significance level is decreased proportionally to the
 %number of tested hypotheses and each of them is tested separately.
-In one of these methods (called holdout), the available data are split into two parts: one is
-used for pattern discovery, while the second is used to verify the significance
-of the discovered patterns, testing one statistical hypothesis at a time. A new
-method (layered critical values) to choose the critical values when using a
-direct adjustment technique to control the probability of false discoveries %FWER
-is presented by~\citet{Webb08} and works by exploiting the itemset lattice.
-%The first method we present is
-%inspired by the holdout technique, while
-The method we present instead identify a threshold frequency such that all the
-itemsets with frequency above the threshold are TFIs. There is no need to test
-each itemset separately and no need to split the dataset.
+In one of these methods (called holdout), the available data are split into two
+parts: one is used for pattern discovery, while the second is used to verify the
+significance of the discovered patterns, testing one statistical hypothesis at a
+time. A new method (layered critical values) to choose the critical values when
+using a direct adjustment technique to control the probability of false
+discoveries is presented by~\citet{Webb08} and works by exploiting the itemset
+lattice. The method we present instead identify a threshold frequency such that
+all the itemsets with frequency above the threshold are TFIs. There is no need
+to test each itemset separately and no need to split the dataset.
 %Our method can be used when the
 %data cannot be split, as can be the case for graphs or spatial data.
 %In our
@@ -148,18 +130,17 @@ each itemset separately and no need to split the dataset.
 %procedure to resample the dataset while guaranteeing that the generated datasets
 %come from the null distribution.
 
-\citet{LiuZW11} conduct an experimental evaluation of  direct corrections, holdout data,
-and random permutations methods to
-control the false positives, testing the methods on a very specific problem
-(association rules for binary classification).
+\citet{LiuZW11} conduct an experimental evaluation of  direct corrections,
+holdout data, and random permutations methods to control the false positives,
+testing the methods on a very specific problem (association rules for binary
+classification).
 
-In contrast with the methods presented in the works above,
-ours does not employ an explicit direct correction depending on the number of
-patterns considered as it is  done in traditional multiple hypothesis testing
-settings. %(i.e., multiple hypothesis testing)
-It instead uses the entire available data to obtain more accurate
-results,without the need to re-sampling it to generate random datasets or to
-split the dataset in two parts, being therefore more efficient computationally.
+In contrast with the methods presented in the works above, ours does not employ
+an explicit direct correction depending on the number of patterns considered as
+it is done in traditional multiple hypothesis testing settings. It instead uses
+the entire available data to obtain more accurate results,without the need to
+re-sampling it to generate random datasets or to split the dataset in two parts,
+being therefore more efficient computationally.
 
 %\citet{JacquemontFS09} presents lower bounds to the size of the
 %dataset needed to simultaneously guarantee that both the probability of Type-1
@@ -261,30 +242,27 @@ split the dataset in two parts, being therefore more efficient computationally.
 \subsection{The Vapnik-Chervonenkis dimension}\label{sec:prevworkvc}
 The {\em Vapnik-Chervonenkis dimension} was first introduced in a seminal
 article~\citep{VapnikC71} on the convergence of empirical averages to their
-expectations, but it was only with the work of~\citet{HausslerW86} and~\citet{BlumerEHW89} that it
-was applied to the field of learning. \citet{BoucheronBL05} present a good survey
-of the field with many recent advances. Since then, VC-dimension has encountered
-enormous success and application in the fields of computational
+expectations, but it was only with the work of~\citet{HausslerW86}
+and~\citet{BlumerEHW89} that it was applied to the field of learning.
+\citet{BoucheronBL05} present a good survey of the field with many recent
+advances. Since then, VC-dimension has encountered enormous success and
+application in the fields of computational
 geometry~\citep{Chazelle00,Matousek02} and machine
-learning~\citep{AnthonyB99,DevroyeGL96}. Other applications include
-database management and graph algorithms.
-In the former, it was used in the
-context of constraint databases to compute good approximations of aggregate
-operators~\citep{BenediktL02}. VC-dimension-related
-results were also recently applied in the field of database privacy
-by~\citet{BlumLR08} to show a bound on the number of queries
-needed for an attacker to learn a private concept in a database. \citet{Gross11}
-showed that content with unbounded
-VC-dimension can not be watermarked for privacy purposes.
-\citet{RiondatoACZU11} computed an upper bound to the VC-dimension of
-classes of SQL queries and used it to develop a sampling-based algorithm for
-estimating the size of the output (selectivity) of queries run on a dataset.
-The work of \citet{RiondatoU12} on the VC-dimension of frequent itemsets and
-association rules inspired us, although we deal with a different problem,
-different goals, and use different tools. In the graph algorithms literature,
-VC-Dimension has been used to develop algorithms to efficiently detect network
-failures~\citep{Kleinberg03,KleinbergSS08}, balanced separators~\citep{FeigeM06},
-events in a sensor networks~\citep{GandhiSW10}, compute approximate shortest
-paths~\citep{AbrahamDFGW11}, and estimate betweenness
-centrality~\citep{RiondatoK14}.
-
+learning~\citep{AnthonyB99,DevroyeGL96}. Other applications include database
+management and graph algorithms.  In the former, it was used in the context of
+constraint databases to compute good approximations of aggregate
+operators~\citep{BenediktL02}. VC-dimension-related results were also recently
+applied in the field of database privacy by~\citet{BlumLR08} to show a bound on
+the number of queries needed for an attacker to learn a private concept in a
+database. \citet{Gross11} showed that content with unbounded VC-dimension can
+not be watermarked for privacy purposes  \citet{RiondatoACZU11} computed an
+upper bound to the VC-dimension of classes of SQL queries and used it to develop
+a sampling-based algorithm for estimating the size of the output (selectivity)
+of queries run on a dataset. The work of \citet{RiondatoU14} on the
+VC-dimension of frequent itemsets and association rules inspired us, although we
+deal with a different problem, different goals, and use different tools. In the
+graph algorithms literature, VC-Dimension has been used to develop algorithms to
+efficiently detect network failures~\citep{Kleinberg03,KleinbergSS08}, balanced
+separators~\citep{FeigeM06}, events in a sensor networks~\citep{GandhiSW10},
+compute approximate shortest paths~\citep{AbrahamDFGW11}, and estimate
+betweenness centrality~\citep{RiondatoK14}.

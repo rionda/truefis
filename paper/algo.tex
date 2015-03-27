@@ -1,40 +1,33 @@
 \section{Finding the True Frequent Itemsets}\label{sec:main}
 In this section we present an algorithm that receives in input a dataset $\Ds$,
 a minimum frequency threshold $\theta$, and a confidence parameter
-$\delta\in(0,1)$ and identifies a threshold $\hat{\theta}$ such
-that, with probability at least $\delta$, all itemsets with frequency at least
-$\hat{\theta}$ in $\Ds$ are True Frequent Itemsets with respect to $\theta$. %
-%In other words, we present an algorithm 
-The threshold $\hat{\theta}$ can be used to find a collection
+$\delta\in(0,1)$ and identifies a threshold $\hat{\theta}$ such that, with
+probability at least $\delta$, all itemsets with frequency at least
+$\hat{\theta}$ in $\Ds$ are True Frequent Itemsets with respect to $\theta$. The
+threshold $\hat{\theta}$ can be used to find a collection
 $\mathcal{C}=\FI(\Ds,\Itm,\hat\theta)$ of itemsets such that $\Pr(\exists
 A\in\mathcal{C} \mbox{ s.t.~} \tfreq(A)<\theta)<\delta$.
-%so that each part is still
-%a collection of i.i.d.~samples from the data-generating distribution $\prob$. On
-%the other hand, splitting the dataset may not always be possible \XXX: Why?\MR
-%and we developed a second test for TFIs to handle this situation.
 
-%The intuition behind our method is as follows. 
-%MATTEO PLEASE ADD INTUITION
-\iffalse
-It starts by building a set
-$\mathcal{G}$ of ``candidates TFIs''. For each itemset
-$A\in\mathcal{G}$ we evaluate the probability that $\tfreq(A)$ is less than $\theta$
-by considering the probability that  $f(A)$ of $A$ in
-the dataset is observed when $\tfreq(A) < \theta$. If
-the frequency falls into the \emph{acceptance region} %$\Delta=[0,\theta+\varepsilon)$
-$[0,\theta+\varepsilon)$, where $\varepsilon$ is a function of $\delta$ and
-$\mathcal{G}$ computed by our methods,
-then $H_A$ is \emph{accepted}, otherwise $H_A$ is \emph{rejected}
-and $A$ is flagged as True Frequent and included in the output collection
-$\mathcal{C}$. Any
-itemset not in $\mathcal{G}$ is not considered and will not
-be reported in output. It should be clear that the definition of the acceptance
-region is critical for the method to have the desired FWER at most
-$\delta$: one needs to compute an $\varepsilon$ such that 
-\[ 
-\Pr\left(\exists A\in\mathcal{C}\mbox{ s.t. } \tfreq(A)<\theta\right)=\Pr\left(\exists A\in\mathcal{G} \mbox{ s.t. } \tfreq(A)<\theta \mbox{ and }
-f(A)\ge\theta+\varepsilon\right)\le\delta\enspace.\]
-\fi
+%It starts by building a set
+%$\mathcal{G}$ of ``candidates TFIs''. For each itemset
+%$A\in\mathcal{G}$ we evaluate the probability that $\tfreq(A)$ is less than $\theta$
+%by considering the probability that  $f(A)$ of $A$ in
+%the dataset is observed when $\tfreq(A) < \theta$. If
+%the frequency falls into the \emph{acceptance region} %$\Delta=[0,\theta+\varepsilon)$
+%$[0,\theta+\varepsilon)$, where $\varepsilon$ is a function of $\delta$ and
+%$\mathcal{G}$ computed by our methods,
+%then $H_A$ is \emph{accepted}, otherwise $H_A$ is \emph{rejected}
+%and $A$ is flagged as True Frequent and included in the output collection
+%$\mathcal{C}$. Any
+%itemset not in $\mathcal{G}$ is not considered and will not
+%be reported in output. It should be clear that the definition of the acceptance
+%region is critical for the method to have the desired FWER at most
+%$\delta$: one needs to compute an $\varepsilon$ such that
+%\[
+%\Pr\left(\exists A\in\mathcal{C}\mbox{ s.t. }
+%\tfreq(A)<\theta\right)=\Pr\left(\exists A\in\mathcal{G} \mbox{ s.t. }
+%\tfreq(A)<\theta \mbox{ and }
+%f(A)\ge\theta+\varepsilon\right)\le\delta\enspace.\]
 
 
 %The two methods we present differ in the definition of $\mathcal{G}$ and in the
