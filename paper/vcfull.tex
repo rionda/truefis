@@ -112,8 +112,8 @@ false positives:
 
   Since $\mathsf{E}_1$ occurs, then Lemma~\ref{lem:antichains} holds, and the
   bounds we compute by solving the modified SUKP problems are indeed bounds to
-  $\VC(\range(\mathcal{B}))$ and $\EVC(\range(\mathcal{B},\Ds))$. 
-  
+  $\VC(\range(\mathcal{B}))$ and $\EVC(\range(\mathcal{B},\Ds))$.
+
   Since $\mathsf{E}_2$ also occurs, then for any $A\in\mathcal{B}$ we have
   $|\tfreq(A)-f_\Ds(A)|\le\varepsilon_2$, but given that $\tfreq(A)<\theta$
   because the elements of $\mathcal{B}$ are not TFIs, then we have
@@ -155,12 +155,13 @@ f_\Ds(A)<\theta+\varepsilon_1\}$\;
   $b_2'\leftarrow$ \SolveAntichainSUKP{$U,\mathcal{F},|U|$}\;
   $d_2'\leftarrow\lfloor\log_2b_2'\rfloor+1$\;
   $\varepsilon_2' \leftarrow \sqrt{\frac{c}{|\Ds|}\left(d_2' + \ln\frac{2}{\delta_2}\right)}$\;
-  $\ell_1,\dotsc,\ell_w\leftarrow$ transaction lengths of $\Ds$ \Comment{see
+  $\Ds_\mathcal{F}\leftarrow \{\tau \cap U ~:~ \tau\in\Ds\}$\;
+  $\ell_1,\dotsc,\ell_w\leftarrow$ sizes of elements in $\Ds_\mathcal{C}$ \Comment{see
   Sect.~\ref{sec:computvc}}
-  $L_1,\dotsc,L_w\leftarrow$ the maximum number of
-transactions in $\Ds$ that have length at least $\ell_i$, $1\le i\le w$, and
-such that for no two $\tau'$, $\tau''$ of them we have either
-$\tau'\subseteq\tau''$ or $\tau''\subseteq\tau'$\;
+  $L_1,\dotsc,L_w\leftarrow$ the number of elements in $\Ds_\mathcal{C}$ that
+  have size at least $\ell_i$, $1\le i\le w$, and such that for no two $\tau'$,
+  $\tau''$ of them we have either $\tau'\subseteq\tau''$ or
+  $\tau''\subseteq\tau'$\;
   $i\leftarrow 0$\;
   \While{True}
   {

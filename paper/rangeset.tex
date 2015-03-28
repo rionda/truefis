@@ -35,8 +35,9 @@ $\range(\mathcal{C})$ on a dataset $\Ds$.
   $d$ be the maximum integer for which there are at least $d$
   transactions $\tau_1,\dotsc,\tau_d\in \Ds$ such that the set
   $\{\tau_1,\dotsc,\tau_d\}$ is an \emph{antichain}\footnote{An antichain is a
-  collection of sets such no one of them is a subset of another.}, and each $\tau_i$, $1\le i\le d$,
-  contains at least $2^{d-1}$ itemsets from $\mathcal{C}$.
+  collection of sets such no one of them is a subset of another.}, and each
+  $\tau_i$, $1\le i\le d$, contains at least $2^{d-1}$ itemsets from
+  $\mathcal{C}$.
   %\begin{enumerate*}
   %  \item
   %    The set $\{\tau_1,\dotsc,\tau_d\}$ is an antichain, and
@@ -81,66 +82,102 @@ $\range(\mathcal{C})$ on a dataset $\Ds$.
   and the thesis follows.
 \end{proof}
 
+Note that instead of $\mathcal{C}$, one can consider a filtered version
+$\mathcal{C}^*$ of $\mathcal{C}$ containing only the itemsets of $\mathcal{C}$
+that are \emph{closed}, i.e., for which no superset of them has the same
+frequency. From the definitions of the ranges and considering their
+intersections with $\Ds$, it is easy to see that the empirical VC-dimension of
+$\mathcal{C}^*$ on $\Ds$ is the same as the empirical VC-dimension of
+$\mathcal{C}$ on $\Ds$. Unless one already has access to the frequencies of the
+itemsets in $\mathcal{C}$, this filtering operation would require mining the
+dataset to obtain such frequencies. In the next section, we talk about
+$\mathcal{C}$, but everything holds also if we consider $\mathcal{C}*$.
+
 \subsection{Computing the VC-Dimension}\label{sec:computvc}
-The na\"ive computation of $d$  according to the definition in
+The na\"ive computation of the upper bound $d$ to the empirical VC-dimension of a
+collection $\mathcal{C}$ on a dataset $\Ds$ according to the definition in
 Thm.~\ref{lem:evcdimupbound} requires to scan the transactions one by one,
 compute the number of itemsets from $\mathcal{C}$ appearing in each transaction,
-and make sure to consider only itemsets constituting antichains. Given the very
+and make sure to consider only antichains of transactions. Given the very
 large number of transactions in typical dataset and the fact that the number of
 itemsets in a transaction is exponential in its length, this method would be
-computationally too expensive. An upper bound to $d$ (and therefore to
+computationally too expensive.\footnote{On the other hand, this computation is
+extremely easy to parallelize and adapt to a framework like MapReduce, so
+whether or not to this computation is too expensive depends on the
+circumstances.} An upper bound to $d$ (and therefore to
 $\EVC(\range(\mathcal{C}),\Ds)$) can be computed by solving a \emph{Set-Union
 Knapsack Problem} (SUKP)~\citep{GoldschmidtNY94} associated to $\mathcal{C}$.
 
 \begin{definition}[Set Union Knapsack Problem (SUKP)\citep{GoldschmidtNY94}]\label{def:sukp}
   Let $U=\{a_1,\dotsc,a_\ell\}$ be a set of elements and let
   $\mathcal{S}=\{A_1,\dotsc,A_k\}$ be a set of subsets of $U$, i.e.,
-  $A_i\subseteq U$ for $1\le i\le k$. Each subset $A_i$, $1\le i\le k$, has an associated
-  non-negative \emph{profit} $\rho(A_i)\in\mathbb{R}^+$, and each element $a_j$, $1\le
-  j\le\ell$ as an associated non-negative weight $w(a_j)\in\mathbb{R}^+$.
-  Given a subset $\mathcal{S}'\subseteq\mathcal{S}$, we define the profit of
-  $\mathcal{S}'$ as $P(\mathcal{S}')=\sum_{A_i\in \mathcal{S}'}\rho(A_i)$. Let
-  $U_{\mathcal{S}'}=\cup_{A_i\in\mathcal{S}'} A_i$. We
-  define the weight of $\mathcal{S}'$ as $W(\mathcal{S}')=\sum_{a_j\in
+  $A_i\subseteq U$ for $1\le i\le k$. Each subset $A_i$, $1\le i\le k$, has an
+  associated non-negative \emph{profit} $\rho(A_i)\in\mathbb{R}^+$, and each
+  element $a_j$, $1\le j\le\ell$ as an associated non-negative weight
+  $w(a_j)\in\mathbb{R}^+$.  Given a subset $\mathcal{S}'\subseteq\mathcal{S}$,
+  we define the profit of $\mathcal{S}'$ as $P(\mathcal{S}')=\sum_{A_i\in
+  \mathcal{S}'}\rho(A_i)$. Let $U_{\mathcal{S}'}=\cup_{A_i\in\mathcal{S}'}
+  A_i$. We define the weight of $\mathcal{S}'$ as $W(\mathcal{S}')=\sum_{a_j\in
   U_{\mathcal{S}'}} w(a_j)$. Given a non-negative parameter $c$ that we call
   \emph{capacity}, the \emph{Set-Union Knapsack Problem} (SUKP) requires to find
   the set $\mathcal{S}^*\subseteq\mathcal{S}$ which \emph{maximizes}
-  $P(\mathcal{S}')$ over all sets $\mathcal{S}'$ such that $W(\mathcal{S}')\le c$.
+  $P(\mathcal{S}')$ over all sets $\mathcal{S}'$ such that $W(\mathcal{S}')\le
+  c$.
 \end{definition}
 
-In our case, $U$ is the set of items that appear in the itemsets of
-$\mathcal{C}$, $\mathcal{S}=\mathcal{C}$, the profits and the weights are all
-unitary, and the capacity constraint is an integer $\ell$. We call this
-optimization problem the \emph{SUKP associated to $\mathcal{C}$ with capacity
-$\ell$}. It is easy to see that the optimal profit of this SUKP is the maximum
-number of itemsets from $\mathcal{C}$ that a transaction of length $\ell$ can
-contain. In order to show how to use this fact to compute an upper bound to
+In our case:
+\begin{itemize}
+	\item $U$ is the set of items that appear in the itemsets of $\mathcal{C}$,
+		\[
+			U=\{a\in A ~:~ A\in\mathcal{C}\},
+		\]
+	\item $\mathcal{S}=\mathcal{C}$,
+	\item the profits and the weights are all unitary, and
+	\item the capacity constraint is an integer $\ell$.
+\end{itemize}
+We call this optimization problem the \emph{SUKP associated to $\mathcal{C}$
+with capacity $\ell$}. It is easy to see that the optimal profit $p$ of this
+SUKP is the number of itemsets from $\mathcal{C}$ that can be built using $\ell$
+items from $U$:
+\[
+	p=\max_{\substack{\mathcal{A}\subseteq\mathcal{C}\\ |\cup_{A\in\mathcal{A}}
+A|\le\ell}} |\mathcal{A}|\enspace.
+\]
+
+In order to show how to use this fact to compute an upper bound to
 $\EVC(\range(\mathcal{C}),\Ds)$, we need to define some additional terminology.
-Let $\ell_1,\dotsc,\ell_w$ be the sequence of the \emph{transaction lengths} of
-$\Ds$, i.e., for each value $\ell$ for which there is at least a transaction in
-$\Ds$ of length $\ell$, there is one (and only one) index $i$, $1\le i\le w$
-such that $\ell_i=\ell$. Assume that the $\ell_i$'s are labelled in sorted
-decreasing order: $\ell_1>\ell_2>\dotsb>\ell_w$. Let now $L_i$, $1\le i\le w$ be
-the maximum number of transactions in $\Ds$ that have length at least $\ell_i$
-and such that for no two $\tau'$, $\tau''$ of them we have either
-$\tau'\subseteq\tau''$ or $\tau''\subseteq\tau'$. Let now $q_i$ be the optimal
-profit of the SUKP associated to $\mathcal{C}$ with capacity $L_i$, and let
-$b_i=\lfloor \log_2q_i\rfloor +1$.  The sequences $(\ell_i)_1^w$ and a sequence
-$(L_i^*)^w$ of upper bounds to $(L_i)_1^w$ can be computed efficiently with a
-scan of the dataset.  The following lemma uses these sequences to show how to
-obtain an upper bound to the empirical VC-dimension of $\mathcal{C}$ on $\Ds$.
+
+Consider the set $\Ds_\mathcal{C} = \{ \tau \cap U, \tau\in \Ds\}$ (which is a
+\emph{set}, not a bag, hence it does not contain duplicates, even if $\Ds$
+contains multiple identical transactions). This set can be computed with a
+single scan of $\Ds$.
+
+Let $\ell_1,\dotsc,\ell_w$ be the sequence of the sizes of the elements of
+$\Ds_\mathcal{C}$, i.e., for each value $\ell$ for which there is at least one
+element in $\Ds_\mathcal{C}$ of size $\ell$, there is one (and only one) index
+$i$, $1\le i\le w$ such that $\ell_i=\ell$. Assume that the $\ell_i$'s are
+labelled in sorted decreasing order: $\ell_1>\ell_2>\dotsb>\ell_w$. Let now
+$L_i$, $1\le i\le w$ be the number of elements of $\Ds_\mathcal{C}$ that have
+size at least $\ell_i$ and such that for no two $\tau'$, $\tau''$ of them we
+have either $\tau'\subseteq\tau''$ or $\tau''\subseteq\tau'$. Let now $q_i$ be
+the optimal profit of the SUKP associated to $\mathcal{C}$ with capacity $L_i$,
+and let $b_i=\lfloor \log_2q_i\rfloor +1$. The sequences $(\ell_i)_1^w$ and a
+sequence $(L_i^*)^w$ of upper bounds to $(L_i)_1^w$ can be computed efficiently
+with a scan of $\Ds_\mathcal{C}$. The following lemma uses these sequences to
+show how to obtain an upper bound to the empirical VC-dimension of $\mathcal{C}$
+on $\Ds$.
 
 \begin{lemma}\label{lem:sukpevc}
   Let $j$ be the minimum integer for which $b_i\le L_i$. Then
   $\EVC(\mathcal{C},\Ds)\le b_j$.
 \end{lemma}
 \begin{proof}
-  If $b_j\le L_j$, then there are at least $b_j$ transactions which can contain
-  $2^{b_j-1}$ itemsets from $\mathcal{C}$ and this is the maximum $b_i$ for
-  which it happens, because the sequence $b_1,b_2,\dotsc,b_w$ is sorted in
-  decreasing order, given that the sequence $q_1,q_2,\dotsc,q_w$ is. Then $b_j$
-  satisfies the conditions of Lemma~\ref{lem:evcdimupbound}. Hence
-  $\EVC(\mathcal{C},\Ds)\le b_j$.
+  If $b_j\le L_j$, then there are at least $b_j$ elements of $\Ds_\mathcal{C}$
+  which can contain $2^{b_j-1}$ itemsets from $\mathcal{C}$ and this is the
+  maximum $b_i$ for which it happens, because the sequence $b_1,b_2,\dotsc,b_w$
+  is sorted in decreasing order, given that the sequence $q_1,q_2,\dotsc,q_w$
+  is. Then $b_j$ satisfies the conditions of Lemma~\ref{lem:evcdimupbound}.
+  Hence $\EVC(\mathcal{C},\Ds)\le b_j$.
 \end{proof}
 
 % The following is trivially true: the solution to this SUKP is the whole
@@ -165,31 +202,16 @@ which can not be approximated within a factor of $2^{O(\log n)^\delta}$ for any
 $\delta>0$ unless $3STA \in
 DTIME(2^{n^{3/4+\varepsilon}})$~\citep{HajiaghayiJKLMRSV06}. A greedy algorithm
 by~\citet{Arulselvan14} allows a constant factor approximation if each
-items only appear in a constant fraction of itemsets of $\mathcal{C}$. For our
+item only appears in a constant fraction of itemsets of $\mathcal{C}$. For our
 case, it is actually \emph{not necessary to compute the optimal solution} to the
 SUKP: any upper bound solution for which we can prove that there is no power of
 two between that solution and the optimal solution would result in the
-\emph{same upper bound} to the (empirical) VC-dimension, while substantially
+same upper bound to the (empirical) VC-dimension, while substantially
 speeding up the computation. This property can be specified in currently
 available optimization problem solvers (e.g., CPLEX), which can then can compute
 the bound to the (empirical) VC-dimension very fast even for very large
 instances with thousands of items and hundred of thousands of itemsets in
 $\mathcal{C}$, making this approach practical.
-
-\paragraph{Refinements.} It is possible to make some refinements to our
-computation of the \emph{empirical} VC-dimension of a collection $\mathcal{C}$ of
-itemsets on a dataset $\Ds$. First of all, one can remove from $\mathcal{C}$ all
-itemsets that never appear in $\Ds$, as the corresponding ranges can not help
-shattering any set of transactions in $\Ds$. Identifying which itemsets to
-remove requires a single linear scan of $\Ds$. Secondly, when computing the
-capacities $L_i$ (i.e., their upper bounds $L_i^*$), we can ignore all the
-transactions that do not contain \emph{any} of the itemsets in $\mathcal{C}$ (or
-the filtered version of $\mathcal{C}$), as there is no way of shatter them using
-the ranges corresponding to itemsets in $\mathcal{C}$. Both refinements aim at
-reducing the optimal value of the SUKP associated to $\mathcal{C}$, and
-therefore at computing a smaller bound to the empirical VC-dimension of
-$\mathcal{C}$ on $\Ds$. We remark that these refinements can not be used when
-computing the (non-empirical) VC-dimension.
 
 \paragraph{The range set of all itemsets.}
 The range set associated to $2^\Itm$ is particularly interesting for us. It is
@@ -213,6 +235,5 @@ possible to compute bounds to $\VC(\range(2^\Itm))$ and $\EVC(\range(2^\Itm),
 the d-index of a dataset with a single linear scan of the dataset $\Ds$.
 The upper bound presented in Thm.~\ref{thm:empvcdimubfirst} is tight: there are
 datasets for which
-$\EVC(\range(2^\Itm),\Ds)=\mathsf{d}(\Ds)$~\citep{RiondatoU14}.  This implies
-that the upper bound presented in Corol.~\ref{thm:vcdimubfirst} is
-also tight.
+$\EVC(\range(2^\Itm),\Ds)=\mathsf{d}(\Ds)$~\citep{RiondatoU14}. This implies
+that the upper bound presented in Corol.~\ref{thm:vcdimubfirst} is also tight.
