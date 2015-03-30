@@ -11,89 +11,86 @@ have frequency in $\Ds$ greater or equal to $\hat{\theta}=\theta+\varepsilon$
 are those with true frequency at least $\theta$. In the following paragraphs we
 show how to compute $\varepsilon$.
 
-We now describe our algorithm more formally. The pseudocode of our method is
-presented in Alg.~\ref{alg:vcfull}.
-
-{\bf PER FABIO: } Fammi sapere se secondo te, nella descrizione che segue,
-dovremmo mettere delle references alle righe dello pseudocodice corrispondenti,
-per rendere piu' chiaro il tutto.
-
-Let $\delta_1$ and $\delta_2$ be such that $(1-\delta_1)(1-\delta_2)\ge
-1-\delta$. Let $\range(2^\Itm)$ be the range space of all itemsets.
-We use Corol.~\ref{thm:vcdimubfirst} to compute an upper bound $d'$ to
-$\VC(\range(2^\Itm))$. Then we can use $d'$ in Thm.~\ref{thm:eapprox} to compute
-an $\varepsilon_1'$ such that $\Ds$ is, with probability at least $1-\delta_1$,
-an $\varepsilon_1'$-approximation to $(\range(2^\Itm),\prob)$.
-
-Similarly, we use Thm.~\ref{thm:empvcdimubfirst} to compute an upper bound $d''$
-to $\EVC(\range(2^\Itm),\Ds)$). Then we can use the highest frequency of an item
-in the dataset, the bound $d''$, and $2^{|\Itm|}$ in Thm.~\ref{thm:eapproxempir}
-(actually using~\eqref{eq:evceapproxitemsets}) to compute an $\varepsilon_1''$
-such that $\Ds$ is, with probability at least $1-\delta_1$, an
-$\varepsilon_1''$-approximation to $(\range(2^\Itm),\prob)$.
-
-\begin{fact}
-Let $\varepsilon_1=\min\{\varepsilon_1',\varepsilon_1''\}$. With probability at
-least $1-\delta_1$, $\Ds$ is an $\varepsilon_1$-approximation to
-$(\range(2^\Itm),\prob)$.
-\end{fact}
-
-We want to find an upper bound the (empirical) VC-dimension of
-$\range(\mathcal{B})$. To this end, we use the fact that the negative border of
-a collection of itemsets is a \emph{maximal antichain} on $2^\Itm$, that is, a
-collection of sets from $2^\Itm$ such that for no two of them, one of them is
-included in the other and such that is not a proper subset of any other
-antichain. Let now $\mathcal{W}$ be the \emph{negative border} of
-$\mathcal{C}_1=\FI(\Ds,\Itm,\theta-\varepsilon_1)$,
+\paragraph{Computing a superset of $\mathcal{B}$.} The first step of our
+algorithm, which we call \ALG is to compute a superset of $\mathcal{B}$, the
+negative border of $\TFI(\prob,\Itm,\theta)$. Let $\delta_1$ and $\delta_2$ be
+such that $(1-\delta_1)(1-\delta_2)\ge 1-\delta$. Let $\range(2^\Itm)$ be the
+range space of all itemsets. Let $d$ be the upper bound to the empirical
+VC-dimension of $\range(2^\Itm)$ on $\Ds$, computed using
+\texttt{EVCBoundScan}. We can then use~\eqref{eq:evceapproxitemsets} with
+$\delta_1$, the bound $d$, and the maximum frequency of an item in $\Ds$ to
+compute an $\varepsilon_1$ such that $\Ds$ is, with probability at least
+$1-\delta_1$, an $\varepsilon_1$-approximation to $(\range(2^\Itm),\prob)$. Let
+now $\mathcal{W}$ be the \emph{negative border} of
+$\mathcal{C}_1=\FI(\Ds,\Itm,\theta-\varepsilon_1)$, and let
 $\mathcal{G}=\{A\subseteq\Itm ~:~ \theta-\varepsilon_1\le
 f_\Ds(A)<\theta+\varepsilon_1\}$, and $\mathcal{F}=\mathcal{G}\cup\mathcal{W}$.
 
-\begin{lemma}\label{lem:antichains}
-  Let $\mathcal{Y}$ be the set of maximal antichains in $\mathcal{F}$. If
-  $\Ds$ is an $\varepsilon_1$-approximation to $(\range(2^\Itm),\prob)$, then
-  \begin{enumerate*}
-    \item
-      $\max_{\mathcal{A}\in\mathcal{Y}}\EVC(\range(\mathcal{A}),\Ds)\ge\EVC(\range(\mathcal{B}),\Ds)$,
-      and
-    \item
-      $\max_{\mathcal{A}\in\mathcal{Y}}\VC(\range(\mathcal{A}))\ge\VC(\range(\mathcal{B}))$.
-  \end{enumerate*}
-\end{lemma}
+\begin{fact}\label{fact:supersetborder}
+	If $\Ds$ is a $\varepsilon_1$-approximation to $(\range(2^\Itm),\prob)$,
+	then $\mathcal{B}\subseteq\mathcal{F}$.
+\end{fact}
 
-\begin{proof}
-  Given that $\Ds$ is an $\varepsilon_1$-approximation to
-  $(\range(2^\Itm),\prob)$, then
-  $\TFI(\prob,\Itm,\theta)\subseteq\mathcal{G}\cup\mathcal{C}_1$. From this and
-  the definition of negative border and of $\mathcal{F}$, we have that
-  $\mathcal{B}\subseteq\mathcal{F}$. Since $\mathcal{B}$ is a maximal antichain,
-  then $\mathcal{B}\in\mathcal{Y}$. Hence the thesis.
-\end{proof}
+\paragraph{Computing an upper bound to $\EVC(\mathcal{B},\Ds)$.} Now that we
+have a superset $\mathcal{F}$ of $\mathcal{B}$, we want to compute an upper
+bound to the empirical VC-dimension of $\mathcal{B}$ on $\Ds$. Na\"ively, we
+could use any of the algorithms presented in Sect.~\ref{sec:computvc} to compute
+an upper bound to $\EVC(\mathcal{F},\Ds)$ and this would be a valid upper bound
+to the quantity we are interested in. The downside of this line of action is
+that $\mathcal{F}$ may be much larger than $\mathcal{B}$ and, even more
+importantly, that we are choosing to ignore available information on the
+structure of $\mathcal{B}$. In particular, we are choosing to ignore the
+following.
 
-In order to compute upper bounds to $\VC(\range(\mathcal{B}))$ and
-$\EVC(\range(\mathcal{B}),\Ds)$ we can solve slightly modified SUKPs
-associated to $\mathcal{F}$ with the \emph{additional constraint} that the
+\begin{fact}
+	The negative border of a collection of itemsets is a \emph{maximal
+	antichain} on $2^\Itm$
+\end{fact}
+
+The collection $\mathcal{F}$ is, except for degenerate and unrealistic cases,
+not an antichain: an upper bound to $\EVC(\mathcal{F},\Ds)$ would be a gross
+overestimation of $\EVC(\mathcal{B},\Ds)$. We would like to incorporate the fact
+that $\mathcal{B}$ is a maximal antichain in our computation of the bound to its
+empirical VC-dimension.
+
+We can modify \texttt{EVCBoundExact} by including, after having computed the
+set $\mathcal{C}_\tau$ (line~\ref{algline:intersectionloopend} in
+Alg.~\ref{alg:evcboundexact}), the size $\ell_\tau$ of the largest antichain in
+$\mathcal{C}_\tau$, which can be done in time polynomial in $\mathcal{C}_\tau$.
+We can then use $\ell_\tau$ as the value for $L[I_\tau]$
+(line~\ref{algline:assignmentintersection}). Since $\ell_\tau$ is the size of
+the largest antichain in $\mathcal{C}_\tau$, then $\ell_\tau$ is an upper bound
+to the number of itemsets from $\mathcal{B}$ that appear in $\tau$. Provided
+that $\Ds$ is a $\varepsilon_1$-approximation to $(\range(2^\Itm),\prob)$ (so
+that Fact~\ref{fact:supersetborder} holds) the so-modified algorithm, which we
+call \texttt{EVCBoundAntichain}, clearly gives an upper-bound to the d-index of
+$\mathcal{B}$ on $\Ds$, and therefore to $\EVC(\mathcal{B},\Ds)$. Due to the
+additional computation of $\ell_\tau$, this algorithm is slower than
+$\texttt{EVCBoundExact}$, but $\ell_\tau$ is usually much smaller than
+$|\mathcal{C}_\tau$, and therefore the upper bound to the empirical VC-dimension
+is smaller. Additionally, it is possible to modify \texttt{EVCBoundAntiChain} in
+the same way as \texttt{EVCBoundExact} was modified to obtain
+\texttt{EVCBoundScan}.
+
+Alternatively, we can modify \texttt{EVCBoundSUKP} to solve a slightly modified
+SUKPs associated to $\mathcal{F}$ with the \emph{additional constraint} that the
 optimal solution, which is a collection of itemsets, \emph{must be a maximal
-antichain}. In particular, to compute an upper bound to
-$\VC(\range(\mathcal{B}))$, we can solve a SUKPs with this additional constraint
-and capacity equal to $|U|$, with $U=\{a\in\Itm ~:~ \exists A\in\mathcal{F}
-\mbox{ s.t. } a\in A\}$. Note that the size of the solution to this SUKP is an
-upper bound to the size of $\mathcal{B}$. Indeed the returned solution is the
-largest maximal antichain that can be built using sets in $\mathcal{F}$, so its
-size is an upper bound to $|\mathcal{B}|$. We can therefore use this quantity
-in~\eqref{eq:evceapproxitemsets}.
+antichain}. The correctness follows from the fact that the optimal profit of
+the so-modified SUKP with capacity $\ell$ is the maximum number of itemsets from
+an antichain in $\mathcal{F}$ that can be built using a subset of $\ell$ of $U$,
+so it is an upper bound to the number of itemsets in $\mathcal{B}$ that can be
+built on $\ell$ items of $U$, provided that $\Ds$ is a
+$\varepsilon_1$-approximation to $(\range(2^\Itm),\prob)$ (so that
+Fact~\ref{fact:supersetborder} holds), and Lemma~\ref{lem:sukpevc} carries over.
 
-{\bf PER FABIO:} Fammi sapere se l'osservazione qui sopra sulla taglia di
-$\mathcal{B}$ si capisce (e se ti convince che sia vera \ldots)
-
-To compute bounds to $\EVC(\range(\mathcal{B},\Ds)$ we can solve modified SUKPs
-with the additional antichain constraint and the transaction lengths in $\Ds$ as
-capacities, as described in Sect.~\ref{sec:computvc}. Lemma~\ref{lem:sukpevc}
-still holds even for the solutions of these modified SUKPs. Using these bounds
-in Thms.~\ref{thm:eapprox} and~\ref{thm:eapproxempir}, we compute an
-$\varepsilon_2$ such that, with probability at least $1-\delta_2$, $\Ds$ is an
-$\varepsilon_2$-approximation to $(\range(\mathcal{B}),\prob)$. Let
-$\hat{\theta}=\theta+\varepsilon_2$. The following Theorem shows that
-$\hat{\theta}$ has the desired properties.
+In any case, after we have computed an upper bound $d_2$ to
+$\EVC(\range(\mathcal{B},\Ds)$, we can use it in~\eqref{eq:evceapproxitemsets}
+together with $\delta_2$ and the maximum frequency of an itemset of
+$\mathcal{F}$ in $\Ds$, to obtain an $\varepsilon_2$ such that, with probability
+at least $1-\delta_2$, $\Ds$ is an $\varepsilon_2$-approximation to
+$(\range(\mathcal{B}),\prob)$. Let $\hat{\theta}=\theta+\varepsilon_2$. The
+following Theorem shows that $\hat{\theta}$ has the desired properties.
+Algorithm~\ref{alg:vcfull} presents the pseudocode of our algorithm.
 
 \begin{theorem}\label{lem:vcfull}
 With probability at least $1-\delta$, $\FI(\Ds,\Itm,\hat\theta)$ contains no
@@ -110,9 +107,8 @@ false positives:
   $\mathsf{E}=\mathsf{E}_1\cap\mathsf{E}_1$ occurs with probability at least
   $1-\delta$. Suppose from now on that indeed $\mathsf{E}$ occurs.
 
-  Since $\mathsf{E}_1$ occurs, then Lemma~\ref{lem:antichains} holds, and the
-  bounds we compute by solving the modified SUKP problems are indeed bounds to
-  $\VC(\range(\mathcal{B}))$ and $\EVC(\range(\mathcal{B},\Ds))$.
+  Since $\mathsf{E}_1$ occurs, then Fact~\ref{fact:supersetborder} holds, and
+  the value $d_2$ is effectively an upper bound to $\EVC(\range(\mathcal{B},\Ds)$
 
   Since $\mathsf{E}_2$ also occurs, then for any $A\in\mathcal{B}$ we have
   $|\tfreq(A)-f_\Ds(A)|\le\varepsilon_2$, but given that $\tfreq(A)<\theta$
@@ -137,49 +133,20 @@ false positives:
   s.~t.~$\FI(\Ds,\Itm,\hat{\theta})$ contains only TFIs with prob.~at least
   $1-\delta$.}
   $\delta_1,\delta_2\leftarrow 1-\sqrt{1-\delta}$ \Comment{$\delta_1$ and $\delta_2$ do not need to have the same value}
-  $d_1'\leftarrow$ upper bound to $\VC(\range(2^\Itm))$ \Comment{e.g., $|\Itm|-1$}
-  $\varepsilon_1' \leftarrow \sqrt{\frac{c}{|\Ds|}\left(d_1' + \ln\frac{1}{\delta_1}\right)}$\;
-  $d_1''\leftarrow$ upper bound to $\EVC(\range(2^\Itm),\Ds)$ \Comment{i.e., d-index of
-  $\Ds$~\citep{RiondatoU12}}
-  %$\varepsilon_1'' \leftarrow
-  %2\sqrt{\frac{2d_1''\log(|\Ds|+1)}{|\Ds|}}+\sqrt{\frac{2\ln\frac{2}{\delta_1}}{|\Ds|}}$\;
-  $\varepsilon_1'' \leftarrow
-  2\sqrt{\frac{\max_{a\in\Itm}f_\Ds(\{a\})2\min\left\{\ln2^{|\Itm|},d_1''\ln\left(\frac{e|\Ds|}{d}\right)\right\}}{|\Ds|}}+\sqrt{\frac{2\ln\frac{4}{\delta_1}}{|\Ds|}}$\;
-  $\varepsilon_1\leftarrow\min\{\varepsilon_1',\varepsilon_1''\}$\;
+  $d_1\leftarrow$ upper bound to $\EVC(\range(2^\Itm),\Ds)$  \Comment{Using
+	one of the algorithms from Sect.~\ref{sec:computvc}}
+  $\varepsilon_1\leftarrow 2c\sqrt{\frac{2d_1\max_{a\in\Itm}f_\Ds(\{a\})}{|\Ds|}}
+  + \sqrt{\frac{2\ln\frac{4}{\delta}}{|\Ds|}}$\;
   $\mathcal{C}_1=\FI(\Ds,\Itm,\theta-\varepsilon_1)$\;
   $\mathcal{G}=\{A\subseteq\Itm ~:~ \theta-\varepsilon_1\le
 f_\Ds(A)<\theta+\varepsilon_1\}$\;
   $\mathcal{W}\leftarrow$ negative border of $\mathcal{C}_1$\;
   $\mathcal{F}=\mathcal{G}\cup\mathcal{W}$\;
   $U\leftarrow\{a\in\Itm : \exists A\in\mathcal{F} \mbox{ s.t. } a\in A\}$\;
-  $b_2'\leftarrow$ \SolveAntichainSUKP{$U,\mathcal{F},|U|$}\;
-  $d_2'\leftarrow\lfloor\log_2b_2'\rfloor+1$\;
-  $\varepsilon_2' \leftarrow \sqrt{\frac{c}{|\Ds|}\left(d_2' + \ln\frac{2}{\delta_2}\right)}$\;
-  $\Ds_\mathcal{F}\leftarrow \{\tau \cap U ~:~ \tau\in\Ds\}$\;
-  $\ell_1,\dotsc,\ell_w\leftarrow$ sizes of elements in $\Ds_\mathcal{C}$ \Comment{see
-  Sect.~\ref{sec:computvc}}
-  $L_1,\dotsc,L_w\leftarrow$ the number of elements in $\Ds_\mathcal{C}$ that
-  have size at least $\ell_i$, $1\le i\le w$, and such that for no two $\tau'$,
-  $\tau''$ of them we have either $\tau'\subseteq\tau''$ or
-  $\tau''\subseteq\tau'$\;
-  $i\leftarrow 0$\;
-  \While{True}
-  {
-  $b_2''\leftarrow$ \SolveAntichainSUKP{$U,\mathcal{F},\ell_i$}\;
-  $d_2''\leftarrow\lfloor\log_2b_2''\rfloor+1$\;
-  \uIf{$d_2''< L_i$}
-  {
-  break\;
-  }\Else{
-  $i\leftarrow i+1$\;
-  }
-  }
-  %$\varepsilon_2'' \leftarrow
-  %2\sqrt{\frac{2d_2''\log(|\Ds|+1)}{|\Ds|}}+\sqrt{\frac{2\ln\frac{2}{\delta_2}}{|\Ds|}}$\;
-  $\varepsilon_2'' \leftarrow
-  2\sqrt{\frac{\max_{A\in\mathcal{F}}f_\Ds(A)2\min\left\{\ln
-	b_2',d_2''\ln\left(\frac{e|\Ds|}{2}\right)\right\}}{|\Ds|}}+\sqrt{\frac{2\ln\frac{4}{\delta_2}}{|\Ds|}}$\;
-  $\varepsilon_2\leftarrow\min\{\varepsilon_2',\varepsilon_2''\}$\;
+  $d_2\leftarrow$ upper bound to $\EVC(\range\mathcal{B},\Ds)$ \Comment{Using
+   an ``antichain-aware'' algorithm}
+  $\varepsilon_2\leftarrow 2c\sqrt{\frac{2d_2\max_{A\in\mathcal{F}}f_\Ds(A)}{|\Ds|}}
+  + \sqrt{\frac{2\ln\frac{4}{\delta}}{|\Ds|}}$\;
   \Return{$\theta+\varepsilon_2$}
   \caption{Compute freq.~threshold $\hat{\theta}$
   s.~t.~$\FI(\Ds,\Itm,\hat{\theta})$ contains only TFIs with prob.~at least
@@ -187,28 +154,29 @@ f_\Ds(A)<\theta+\varepsilon_1\}$\;
   \label{alg:vcfull}
 \end{algorithm}
 
-\paragraph{Exploiting additional knowledge about $\prob$.} Our algorithm is
-completely \emph{distribution-free}, i.e., it does not require any assumption
-about the unknown distribution $\prob$. On the other hand, when information
-about $\prob$ is available, our method can exploit it to achieve better
-performances in terms of running time, practicality, and accuracy.  For example,
-in most applications $\prob$ will not generate any transaction longer than some
-known upper bound $\ell\ll|\Itm|$. Consider for example an online marketplace
-like Amazon: it is extremely unlikely (if not humanly impossible) that a single
-customer buys one of each available product. Indeed, given the hundred of
-thousands of items on sale, it is safe to assume that all the transactions will
-contains at most $\ell$ items, for some $\ell\ll|\Itm|$. Other times, like in an
-online survey, it is the nature of the process that limits the number of items
-in a transaction, in this case the number of questions. A different kind of
-information about the generative process may consists in knowing that some
-combination of items may never occur, because ``forbidden'' in some wide sense.
-Other examples are possible. All these pieces of information can be used to
-compute better (i.e., stricter) upper bounds to the VC-dimension
-$\VC(\range(2^\Itm))$. For example, if we know that $\prob$ will never generate
-transactions with more than $\ell$ items, we can safely say that
-$\VC(\range(2^\Itm))\le \ell$, a much stricter bound than $|\Itm|-1$ from
-Corol.~\ref{thm:vcdimubfirst}. This may result in a smaller $\varepsilon_1$, a
-smaller $\varepsilon$, and a smaller $\hat\theta$, which allows to produce more
-TFIs in the output collection. In the experimental evaluation, we show the
-positive impact of including additional information may on the performances of
-our algorithm.
+% THE FOLLOWING NO LONGER APPLIES BECAUSE WE DON'T COMPUTE THE NON-EMP VC.
+%\paragraph{Exploiting additional knowledge about $\prob$.} Our algorithm is
+%completely \emph{distribution-free}, i.e., it does not require any assumption
+%about the unknown distribution $\prob$. On the other hand, when information
+%about $\prob$ is available, our method can exploit it to achieve better
+%performances in terms of running time, practicality, and accuracy.  For example,
+%in most applications $\prob$ will not generate any transaction longer than some
+%known upper bound $\ell\ll|\Itm|$. Consider for example an online marketplace
+%like Amazon: it is extremely unlikely (if not humanly impossible) that a single
+%customer buys one of each available product. Indeed, given the hundred of
+%thousands of items on sale, it is safe to assume that all the transactions will
+%contains at most $\ell$ items, for some $\ell\ll|\Itm|$. Other times, like in an
+%online survey, it is the nature of the process that limits the number of items
+%in a transaction, in this case the number of questions. A different kind of
+%information about the generative process may consists in knowing that some
+%combination of items may never occur, because ``forbidden'' in some wide sense.
+%Other examples are possible. All these pieces of information can be used to
+%compute better (i.e., stricter) upper bounds to the VC-dimension
+%$\VC(\range(2^\Itm))$. For example, if we know that $\prob$ will never generate
+%transactions with more than $\ell$ items, we can safely say that
+%$\VC(\range(2^\Itm))\le \ell$, a much stricter bound than $|\Itm|-1$ from
+%Corol.~\ref{thm:vcdimubfirst}. This may result in a smaller $\varepsilon_1$, a
+%smaller $\varepsilon$, and a smaller $\hat\theta$, which allows to produce more
+%TFIs in the output collection. In the experimental evaluation, we show the
+%positive impact of including additional information may on the performances of
+%our algorithm.
