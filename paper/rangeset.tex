@@ -110,7 +110,7 @@ itemset collection $\mathcal{C}$ in a dataset $\Ds$. We start from an exact
 algorithm which may be too expensive in practice and then discuss a number of
 variants that trade off accuracy for speed.
 
-\subsubsection{Exact algorithm and faster variants}
+\subsubsection{Exact algorithm and faster variants}\label{sec:computvcexact}
 The exact algorithm (which we call \texttt{EVCBoundExact}) for the d-index of
 $\mathcal{C}$ on $\Ds$ starts by scanning $\Ds$ and computing, for each
 transaction $\tau\in\Ds$, the set $I_\tau=\tau\cap U$. If $I\tau\neq U$, then an
@@ -286,6 +286,14 @@ algorithm with both modification, which we call \texttt{EVCBoundScanFast},
 requires time approximately proportional to two scans of the dataset, at the
 price of a obtaining a looser bound to the empirical VC-dimension of
 $\mathcal{C}$ on $\Ds$.
+
+
+\paragraph{The case of all itemsets.} The case $\mathcal{C}=2^{\Itm}$ is of
+special interest for us. In this case, $U=\Itm$, and each transaction $\tau$
+contains exactly $2^{|\tau|}-1$ itemsets. Hence we can use
+\texttt{EVCBoundScanFast} or the almost equivalent algorithm
+by~\citet{RiondatoU14} to compute an upper bound to $EVC(\range(2^\Itm),\Ds)$
+with a single linear scan of $\Ds$.
 
 \subsubsection{Integer programming method}
 We now present another algorithm to compute an upper bound to the d-index of an

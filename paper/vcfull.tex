@@ -16,9 +16,9 @@ algorithm, which we call \ALG{}, is to compute a superset of $\mathcal{B}$, the
 negative border of $\TFI(\prob,\Itm,\theta)$. Let $\delta_1$ and $\delta_2$ be
 such that $(1-\delta_1)(1-\delta_2)\ge 1-\delta$. Let $\range(2^\Itm)$ be the
 range space of all itemsets. Let $d$ be the upper bound to the empirical
-VC-dimension of $\range(2^\Itm)$ on $\Ds$, computed using
-\texttt{EVCBoundScan}. We can then use~\eqref{eq:evceapproxitemsets} with
-$\delta_1$, the bound $d$, and the maximum frequency of an item in $\Ds$ to
+VC-dimension of $\range(2^\Itm)$ on $\Ds$, computed as discussed in
+Sect.~\ref{sec:computvcexact}. We can then use~\eqref{eq:evceapproxitemsets}
+with $\delta_1$, the bound $d$, and the maximum frequency of an item in $\Ds$ to
 compute an $\varepsilon_1$ such that $\Ds$ is, with probability at least
 $1-\delta_1$, an $\varepsilon_1$-approximation to $(\range(2^\Itm),\prob)$. Let
 now $\mathcal{W}$ be the \emph{negative border} of
@@ -141,8 +141,8 @@ false positives:
   s.~t.~$\FI(\Ds,\Itm,\hat{\theta})$ contains only TFIs with prob.~at least
   $1-\delta$.}
   $\delta_1,\delta_2\leftarrow 1-\sqrt{1-\delta}$ \Comment{$\delta_1$ and $\delta_2$ do not need to have the same value}
-  $d_1\leftarrow$ upper bound to $\EVC(\range(2^\Itm),\Ds)$  \Comment{Using
-	one of the algorithms from Sect.~\ref{sec:computvc}}
+  $d_1\leftarrow$ upper bound to $\EVC(\range(2^\Itm),\Ds)$  \Comment{as
+	discussed in Sect.~\ref{sec:computvcexact}}
   $\varepsilon_1\leftarrow 2c\sqrt{\frac{2d_1\max_{a\in\Itm}f_\Ds(\{a\})}{|\Ds|}}
   + \sqrt{\frac{2\ln\frac{4}{\delta}}{|\Ds|}}$\;
   $\mathcal{C}_1=\FI(\Ds,\Itm,\theta-\varepsilon_1)$\;
