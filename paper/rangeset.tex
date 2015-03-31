@@ -110,16 +110,17 @@ itemset collection $\mathcal{C}$ in a dataset $\Ds$. We start from an exact
 algorithm which may be too expensive in practice and then discuss a number of
 variants that trade off accuracy for speed.
 
-\paragraph{Exact algorithm.} The exact algorithm (which we call
-\texttt{EVCBoundExact}) for the d-index of $\mathcal{C}$ on $\Ds$ starts by
-scanning $\Ds$ and computing, for each transaction $\tau\in\Ds$, the set
-$I_\tau=\tau\cap U$. If $I\tau\neq U$, then an element with key $\tau\cap U$ and
-value $|\{A\in\mathcal{C} ~:~ A\subseteq\tau\}|$ is added to a hash table $L$,
-if no element with the same key was already present. The value is the number of
-itemsets of $\mathcal{C}$ that appear in any transaction whose intersection with
-$U$ is $I_\tau$. Once the scan is complete, let $d_1$ be the maximum $d$ for
-which there are at least $d$ keys in $L$ with value at least $2^{d-1}$.
-Formally, if we define, for any $d\in\mathbb{N}$
+\subsubsection{Exact algorithm and faster variants}
+The exact algorithm (which we call \texttt{EVCBoundExact}) for the d-index of
+$\mathcal{C}$ on $\Ds$ starts by scanning $\Ds$ and computing, for each
+transaction $\tau\in\Ds$, the set $I_\tau=\tau\cap U$. If $I\tau\neq U$, then an
+element with key $\tau\cap U$ and value $|\{A\in\mathcal{C} ~:~
+A\subseteq\tau\}|$ is added to a hash table $L$, if no element with the same key
+was already present. The value is the number of itemsets of $\mathcal{C}$ that
+appear in any transaction whose intersection with $U$ is $I_\tau$. Once the scan
+is complete, let $d_1$ be the maximum $d$ for which there are at least $d$ keys
+in $L$ with value at least $2^{d-1}$. Formally, if we define, for any
+$d\in\mathbb{N}$
 \[
 	T_d=\{A\subset U ~:~ L[A]\ge 2^{d-1}\},
 \]
@@ -261,9 +262,9 @@ with the pseudocode in Algorithm~\ref{alg:replacement}
 		Alg.~\ref{alg:evcboundexact}.}
 	\label{alg:replacement}
 \end{algorithm}
-The correctness of the algorithm with this replacement (we call the resulting
-algorithm \texttt{EVCBoundScan}) follows from the fact that at any iteration of
-the loop, the set $\mathcal{T}$ always contains $d$ elements of the form
+The correctness of the algorithm with this replacement (we denote the resulting
+algorithm as \texttt{EVCBoundScan}) follows from the fact that at any iteration
+of the loop, the set $\mathcal{T}$ always contains $d$ elements of the form
 $I_\tau=\tau\cap U$ for $\tau\in\Ds$ such that each element in $\mathcal{T}$
 contains at least $2^{d-1}$ itemsets from $\mathcal{C}$ and $d$ is the maximum
 integer for which such a set exists, among the keys of $L$ seen up to the
@@ -279,17 +280,17 @@ lines~\ref{algline:intersectionloopbegin}--\ref{algline:intersectionloopend} of
 Alg.~\ref{alg:evcboundexact}, we can use $2^{|I_\tau|}$ as an upper bound to the
 exact number of itemsets of $\mathcal{C}$ that appear in $\mathcal{C}$, and
 so-modified algorithm will clearly return an upper bound to the d-index. The
-algorithm with both modification, which we call \texttt{EVCBoundScanFast}
+algorithm with both modification, which we call \texttt{EVCBoundScanFast},
 requires time approximately proportional to two scans of the dataset, at the
 price of a obtaining a looser bound to the empirical VC-dimension of
 $\mathcal{C}$ on $\Ds$.
 
-\paragraph{Integer optimization method.} We now present another algorithm to
-compute an upper bound to the d-index of an itemset collection $\mathcal{C}$ on
-a dataset $\Ds$, and therefore to the empirical VC-dimension of $\mathcal{C}$ on
-$\Ds$. The algorithm, which we call \texttt{EVCBoundSUKP} requires to solve a
-\emph{Set Union Knapsack Problem} (SUKP)~\citep{GoldschmidtNY94} associated to
-the collection $\mathcal{C}$.
+\subsubsection{Integer programming method}
+We now present another algorithm to compute an upper bound to the d-index of an
+itemset collection $\mathcal{C}$ on a dataset $\Ds$, and therefore to the
+empirical VC-dimension of $\mathcal{C}$ on $\Ds$. The algorithm, which we call
+\texttt{EVCBoundSUKP} requires to solve a \emph{Set Union Knapsack Problem}
+(SUKP)~\citep{GoldschmidtNY94} associated to the collection $\mathcal{C}$.
 
 \begin{definition}[Set Union Knapsack Problem (SUKP)\citep{GoldschmidtNY94}]\label{def:sukp}
   Let $U=\{a_1,\dotsc,a_\ell\}$ be a set of elements and let
@@ -331,15 +332,14 @@ order: $\ell_1>\ell_2>\dotsb>\ell_w$. Let now $L_i$, $1\le i\le w$ be the number
 of elements of $\Ds_\mathcal{C}$ that have size at least $\ell_i$. %and such that
 %for no two $\tau'$, $\tau''$ of them we have either $\tau'\subseteq\tau''$ or
 %$\tau''\subseteq\tau'$.
-Let now $q_i$ be the optimal profit of the SUKP
-associated to $\mathcal{C}$ with capacity $L_i$, and let $b_i=\lfloor
-\log_2q_i\rfloor +1$. %The sequences $(\ell_i)_1^w$ and a sequence $(L_i^*)^w$
-%of upper bounds to $(L_i)_1^w$ can be computed efficiently with a scan of
-%$\Ds_\mathcal{C}$.
-The following lemma shows how to use these sequences to to obtain an upper bound
+Let now $q_i$ be the optimal profit of the SUKP associated to $\mathcal{C}$ with
+capacity $L_i$, and let $b_i=\lfloor \log_2q_i\rfloor +1$. %The sequences
+%$(\ell_i)_1^w$ and a sequence $(L_i^*)^w$ of upper bounds to $(L_i)_1^w$ can be
+%computed efficiently with a scan of $\Ds_\mathcal{C}$.
+The following lemma shows how to use these sequences to obtain an upper bound
 to the empirical VC-dimension of $\mathcal{C}$ on $\Ds$. We call the resulting
-method \texttt{EVCBoundSUKP}, and present its pseudocode
-in Alg.~\ref{alg:evcboundsukp}.
+method \texttt{EVCBoundSUKP}, and present its pseudocode in
+Alg.~\ref{alg:evcboundsukp}.
 
 \begin{lemma}\label{lem:sukpevc}
   Let $j$ be the minimum integer for which $b_i\le L_i$. Then
@@ -410,7 +410,7 @@ l'algoritmo effettivamente termini).
 %  %$\mathcal{C}$} and denote it as $\b(\mathcal{C})$.
 %\end{corollary}
 
-\noindent{\bf Complexity and runtime considerations.} Solving the SUKP optimally
+\paragraph{Complexity and runtime considerations.} Solving the SUKP optimally
 is NP-hard in the general case, although there are known restrictions for which
 it can be solved in polynomial time using dynamic
 programming~\citep{GoldschmidtNY94}. Since we have unit weights and unit
@@ -421,8 +421,8 @@ DTIME(2^{n^{3/4+\varepsilon}})$~\citep{HajiaghayiJKLMRSV06}. A greedy algorithm
 by~\citet{Arulselvan14} allows a constant factor approximation if each item only
 appears in a constant fraction of itemsets of $\mathcal{C}$. For our case, it is
 actually \emph{not necessary to compute the optimal solution} to the SUKP: any
-upper bound solution for which we can prove that there is no power of two
-between that solution and the optimal solution would result in the same upper
+solution $S$ for which we can prove that there is no power of two
+between $S$ and the optimal solution would result in the same upper
 bound to the (empirical) VC-dimension, while substantially speeding up the
 computation. This property can be specified in currently available optimization
 problem solvers (e.g., CPLEX), which can then can compute the bound to the

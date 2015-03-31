@@ -36,22 +36,22 @@ have a superset $\mathcal{F}$ of $\mathcal{B}$, we want to compute an upper
 bound to the empirical VC-dimension of $\mathcal{B}$ on $\Ds$. Na\"ively, we
 could use any of the algorithms presented in Sect.~\ref{sec:computvc} to compute
 an upper bound to $\EVC(\mathcal{F},\Ds)$ and this would be a valid upper bound
-to the quantity we are interested in. The downside of this line of action is
-that $\mathcal{F}$ may be much larger than $\mathcal{B}$ and, even more
-importantly, that we are choosing to ignore available information on the
-structure of $\mathcal{B}$. In particular, we are choosing to ignore the
-following.
+to $\EVC(\mathcal{B},\Ds)$ (provided Fact~\ref{fact:supersetborder} holds). The
+downside of this line of action is that $\mathcal{F}$ may be much larger than
+$\mathcal{B}$ and, even more importantly, that we are choosing to ignore
+available information on the structure of $\mathcal{B}$. In particular, we are
+choosing to ignore the following.
 
 \begin{fact}
 	The negative border of a collection of itemsets is a \emph{maximal
 	antichain} on $2^\Itm$
 \end{fact}
 
-The collection $\mathcal{F}$ is, except for degenerate and unrealistic cases,
-not an antichain: an upper bound to $\EVC(\mathcal{F},\Ds)$ would be a gross
-overestimation of $\EVC(\mathcal{B},\Ds)$. We would like to incorporate the fact
-that $\mathcal{B}$ is a maximal antichain in our computation of the bound to its
-empirical VC-dimension.
+The collection $\mathcal{F}$ is in general not an antichain, except for
+degenerate and unrealistic cases. An upper bound to $\EVC(\mathcal{F},\Ds)$
+would be a gross overestimation of $\EVC(\mathcal{B},\Ds)$, hence we would like
+to incorporate the fact that $\mathcal{B}$ is a maximal antichain in our
+computation of the bound to its empirical VC-dimension.
 
 We can modify \texttt{EVCBoundExact} by including, after having computed the
 set $\mathcal{C}_\tau$ (line~\ref{algline:intersectionloopend} in
@@ -67,26 +67,27 @@ call \texttt{EVCBoundAntichain}, clearly gives an upper-bound to the d-index of
 $\mathcal{B}$ on $\Ds$, and therefore to $\EVC(\mathcal{B},\Ds)$. Due to the
 additional computation of $\ell_\tau$, this algorithm is slower than
 $\texttt{EVCBoundExact}$, but $\ell_\tau$ is usually much smaller than
-$|\mathcal{C}_\tau$, and therefore the upper bound to the empirical VC-dimension
-is smaller. Additionally, it is possible to modify \texttt{EVCBoundAntiChain} in
-the same way as \texttt{EVCBoundExact} was modified to obtain
-\texttt{EVCBoundScan}.
+$|\mathcal{C}_\tau|$, and therefore the upper bound to the empirical VC-dimension
+is smaller. Additionally, it is possible to modify the second part of
+\texttt{EVCBoundAntiChain} in the same way as \texttt{EVCBoundExact} was
+modified to obtain \texttt{EVCBoundScan}.
 
 Alternatively, we can modify \texttt{EVCBoundSUKP} to solve a slightly modified
 SUKPs associated to $\mathcal{F}$ with the \emph{additional constraint} that the
-optimal solution, which is a collection of itemsets, \emph{must be a maximal
+optimal solution (a collection of itemsets) \emph{must be a maximal
 antichain}. The correctness follows from the fact that the optimal profit of
-the so-modified SUKP with capacity $\ell$ is the maximum number of itemsets from
-an antichain in $\mathcal{F}$ that can be built using a subset of $\ell$ of $U$,
-so it is an upper bound to the number of itemsets in $\mathcal{B}$ that can be
-built on $\ell$ items of $U$, provided that $\Ds$ is a
+the so-modified SUKP with capacity $\ell$ is the maximum number of itemsets
+forming an antichain in $\mathcal{F}$ that can be built using a subset of $\ell$
+of $U$, so it is an upper bound to the number of itemsets in $\mathcal{B}$ that
+can be built on $\ell$ items of $U$, provided that $\Ds$ is a
 $\varepsilon_1$-approximation to $(\range(2^\Itm),\prob)$ (so that
-Fact~\ref{fact:supersetborder} holds), and Lemma~\ref{lem:sukpevc} carries over.
+Fact~\ref{fact:supersetborder} holds). Hence Lemma~\ref{lem:sukpevc} carries
+over and this new algorithm, called \texttt{EVCBoundSUKPAntiChain} is correct.
 
-In any case, after we have computed an upper bound $d_2$ to
-$\EVC(\range(\mathcal{B},\Ds)$, we can use it in~\eqref{eq:evceapproxitemsets}
-together with $\delta_2$ and the maximum frequency of an itemset of
-$\mathcal{F}$ in $\Ds$, to obtain an $\varepsilon_2$ such that, with probability
+In any case, after having computed an upper bound $d_2$ to
+$\EVC(\range(\mathcal{B},\Ds)$, we can use $d_2$ in~\eqref{eq:evceapproxitemsets}
+together with $\delta_2$ and the maximum frequency in $\Ds$ of an itemset of
+$\mathcal{F}$, to obtain an $\varepsilon_2$ such that, with probability
 at least $1-\delta_2$, $\Ds$ is an $\varepsilon_2$-approximation to
 $(\range(\mathcal{B}),\prob)$. Let $\hat{\theta}=\theta+\varepsilon_2$. The
 following Theorem shows that $\hat{\theta}$ has the desired properties.
