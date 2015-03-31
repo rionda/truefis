@@ -241,8 +241,9 @@ obtaining an upper bound to the d-index:
 \end{enumerate}
 
 We can replace lines~\ref{algline:beginreplace}--\ref{algline:secondloopend}
-with the pseudocode in Algorithm~\ref{alg:replacement}
-\begin{algorithm}[h!]
+with the pseudocode in Algorithm~\ref{alg:replacement}.
+
+\begin{algorithm}[hbt]
 	\DontPrintSemicolon
 	$d\leftarrow 1$\;
 	$\kappa\leftarrow$ any key in $L$\;
@@ -262,6 +263,7 @@ with the pseudocode in Algorithm~\ref{alg:replacement}
 		Alg.~\ref{alg:evcboundexact}.}
 	\label{alg:replacement}
 \end{algorithm}
+
 The correctness of the algorithm with this replacement (we denote the resulting
 algorithm as \texttt{EVCBoundScan}) follows from the fact that at any iteration
 of the loop, the set $\mathcal{T}$ always contains $d$ elements of the form
