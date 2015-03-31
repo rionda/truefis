@@ -416,4 +416,22 @@ of items and hundred of thousands of itemsets in $\mathcal{C}$, making this
 approach practical.
 
 {\bf PER MATTEO:} Dovremmo anche dire qualcosa sulla differenza tra questo
-algoritmo e quelli di prima, e perche' lo presentiamo.
+algoritmo e quelli di prima, e perche' lo presentiamo. La differenza e' che gli
+algoritmi presentati prima o sfruttano completamente la struttura di
+$\mathcal{C}$ (\texttt{EVCBoundExact}, \texttt{EVCBoundScan}), o la ignorano
+quasi completamente (\texttt{EVCBoundScanFast}). Questo algoritmo cerca un middle
+ground, in cui informazioni riguardo alla struttura vengono sfruttate per
+ottenere un bound migliore al numero di itemsets di $\mathcal{C}$ che possono
+apparire in una transazione $\tau$ la cui intersezione con $U$ ha taglia $\ell$.
+In piu', come sara' piu' evidente quando facciamo le modifiche antichain,
+\texttt{EVCBoundScanFast} non e' applicabile per le antichain, perche' non porta
+nessun vantaggio. D'altra parte, \texttt{EVCBoundExact} e \texttt{EVCBoundScan}
+modificati per l'antichain sono eccessivamente costly, perche' richiedono di
+calcolare prima l'esatta collezione $\mathcal{C}_\tau$ di itemset di
+$\mathcal{C}$ che appaiono in $\tau$, e poi la massima taglia di un antichain su
+$\mathcal{C}_\tau$. Questo diventa eccessivamente costoso, secondo me, e il SUKP
+cerca un middle ground.  C'e' poi una qualche questione teorica/pratica qui:
+risolvere il SUKP e' in generale NP-hard, mentre fare quello che e' richiesto
+dai \texttt{EVCBoundExact} modificati per l'antichain e' comunque polinomiale.
+On the other hand, come osservato nel paragrafo prima, noi non abbiamo bisogno
+della soluzione ottima. Insomma, siamo in una sitazione un po' nebulosa
