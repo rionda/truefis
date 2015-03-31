@@ -12,7 +12,7 @@ are those with true frequency at least $\theta$. In the following paragraphs we
 show how to compute $\varepsilon$.
 
 \paragraph{Computing a superset of $\mathcal{B}$.} The first step of our
-algorithm, which we call \ALG is to compute a superset of $\mathcal{B}$, the
+algorithm, which we call \ALG{}, is to compute a superset of $\mathcal{B}$, the
 negative border of $\TFI(\prob,\Itm,\theta)$. Let $\delta_1$ and $\delta_2$ be
 such that $(1-\delta_1)(1-\delta_2)\ge 1-\delta$. Let $\range(2^\Itm)$ be the
 range space of all itemsets. Let $d$ be the upper bound to the empirical
@@ -151,7 +151,7 @@ f_\Ds(A)<\theta+\varepsilon_1\}$\;
   $\mathcal{W}\leftarrow$ negative border of $\mathcal{C}_1$\;
   $\mathcal{F}=\mathcal{G}\cup\mathcal{W}$\;
   $U\leftarrow\{a\in\Itm : \exists A\in\mathcal{F} \mbox{ s.t. } a\in A\}$\;
-  $d_2\leftarrow$ upper bound to $\EVC(\range\mathcal{B},\Ds)$ \Comment{Using
+  $d_2\leftarrow$ upper bound to $\EVC(\range(\mathcal{B}),\Ds)$ \Comment{Using
    an ``antichain-aware'' algorithm}
   $\varepsilon_2\leftarrow 2c\sqrt{\frac{2d_2\max_{A\in\mathcal{F}}f_\Ds(A)}{|\Ds|}}
   + \sqrt{\frac{2\ln\frac{4}{\delta}}{|\Ds|}}$\;
