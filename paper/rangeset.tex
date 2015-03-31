@@ -380,7 +380,7 @@ Alg.~\ref{alg:evcboundsukp}.
 		}
   }
   $i\leftarrow 1$\;
-  \While{True}{
+  \While{$i\le$ number of keys in $L$}{
 	$\ell_i\leftarrow $ $i$-th highest key in $L$\;
 	$q_i\leftarrow$\SolveSUKP{$U$, $\mathcal{C}$, $\ell_i$}\;
 	$b_i\leftarrow\lfloor\log_2 q_i\rfloor +1$\;
@@ -389,26 +389,11 @@ Alg.~\ref{alg:evcboundsukp}.
 	}
 	$i\leftarrow i+1$\;
   }
+  \Return{$\min\{L[\ell_i],\log_2|\mathcal{C}|\}$}\;
   \caption{\texttt{EVCBoundSUKP}: compute an upper bound to
   $\EVC(\range(\mathcal{C}),\Ds)$.}
   \label{alg:evcboundsukp}
 \end{algorithm}
-
-{\bf PER MATTEO:} Aggiungi paragrafo riguardo terminazione (controlla che
-l'algoritmo effettivamente termini).
-
-% The following is trivially true: the solution to this SUKP is the whole
-% collection of sets!
-%\begin{corollary}\label{lem:sukpvc}
-%  Let $q$ be profit of the SUKP associated to $\mathcal{C}$ with capacity
-%  equal to $\ell=|\{a\in\Itm ~:~ \exists A\in\mathcal{C} \mbox{ s.t. } a\in
-%  A\}|$ ($\ell$ is the number of items such that there is at least one itemset
-%  in $\mathcal{C}$ containing  them).
-%  %$|\Itm|-1$.
-%  Let $b=\lfloor\log_2 q\rfloor + 1$. Then
-%  $\VC(\range(\mathcal{C}))\le b$. %We call $b*$ the \emph{b-index of
-%  %$\mathcal{C}$} and denote it as $\b(\mathcal{C})$.
-%\end{corollary}
 
 \paragraph{Complexity and runtime considerations.} Solving the SUKP optimally
 is NP-hard in the general case, although there are known restrictions for which
