@@ -113,29 +113,31 @@ variants that trade off accuracy for speed.
 \subsubsection{Exact algorithm and faster variants}\label{sec:computvcexact}
 The exact algorithm (which we call \texttt{EVCBoundExact}) for the d-index of
 $\mathcal{C}$ on $\Ds$ starts by scanning $\Ds$ and computing, for each
-transaction $\tau\in\Ds$, the set $I_\tau=\tau\cap U$. If $I\tau\neq U$, then an
-element with key $\tau\cap U$ and value $|\{A\in\mathcal{C} ~:~
-A\subseteq\tau\}|$ is added to a hash table $L$, if no element with the same key
-was already present. The value is the number of itemsets of $\mathcal{C}$ that
-appear in any transaction whose intersection with $U$ is $I_\tau$. Once the scan
-is complete, let $d_1$ be the maximum $d$ for which there are at least $d$ keys
-in $L$ with value at least $2^{d-1}$. Formally, if we define, for any
+transaction $\tau\in\Ds$, the set $I_\tau=\tau\cap U$. If $I_\tau\neq U$ and
+$I_\tau\neq\emptyset$, then an element with key $\tau\cap U$ and value
+$|\{A\in\mathcal{C} ~:~ A\subseteq\tau\}|$ is added to a hash table $L$
+(provided no element with the same key was already present). The value is the
+number of itemsets of $\mathcal{C}$ that appear in any transaction whose
+intersection with $U$ is $I_\tau$. Once the scan is complete, let $d_1$ be the
+maximum $d$ for which there are at least $d$ keys in $L$ with value at least
+$2^{d-1}$. Formally, if we define, for any
 $d\in\mathbb{N}$
+\begin{align*}
+	T_d&=\{\kappa \mbox{ key of } L ~:~ L[\kappa]= 2^{d-1}\},
+	\mathsf{T}_d&=\cup_{i\ge d} T_d
+\end{align*}
+then $d_1=\max\{d ~:~ |\mathsf{T}_d|\ge d\}$.
+Let now $b_1$ be the size of the largest antichain on $\mathsf{T}_{d_1}$,
+obtained by solving the corresponding maximum bipartite matching problem. If
+$b_1\ge d_1$, then the algorithm can return $b_1$. Otherwise, for $i>1$, let
+$d_i$ be the maximum $d<d_{i-1}$ such that $|T_d|\ge d-b_{i-1}$,
+where $b_{i-1}$ is the size of the largest antichain on $\mathsf{T}_{d_{i-1}}$:
 \[
-	T_d=\{A\subset U ~:~ L[A]\ge 2^{d-1}\},
+	d_i=\max\{d<d_{i-1} ~:~ |\mathsf{T}_d\setminus\mathsf{T}_{d_{i-1}}|\ge d-b_{i-1}\}\enspace.
 \]
-then $d_1=\max\{d ~:~ |T_d|\ge d\}$.
-Let now $b_1$ be the size of the largest antichain on $T_{d_1}$, obtained by
-solving the corresponding maximum bipartite matching problem. If $b_1\ge d_1$,
-then the algorithm can return $b_1$. Otherwise, for $i>1$, let $d_i$ be the
-maximum $d$ such that $|T_d\setminus T_{d_{i-1}}|\ge d-b_{i-1}$, where $b_{i-1}$
-is the size of the largest antichain on $T_{d_{i-1}}$:
-\[
-	d_i=\max\{d<d_{i-1} ~:~ |T_d\setminus T_{d_{i-1}}|\ge d-b_{i-1}\}\enspace.
-\]
-We then compute the size $b_i$ of the largest antichain on $T_{d_i}$ and return
-$b_i$ if $b_i\ge d_i$. Note that if $d_i\le b_{i-1}$, we can actually avoid
-computing $b_i$ and return $d_i$ immediately.
+We then compute the size $b_i$ of the largest antichain on $\mathsf{T}_{d_i}$
+and return $b_i$ if $b_i\ge d_i$. Note that if $d_i\le b_{i-1}$, we can actually
+avoid computing $b_i$ and return $d_i$ immediately.
 
 The pseudocode of \texttt{EVCBoundExact} is presented in
 Alg.~\ref{alg:evcboundexact}. The algorithm obviously terminates because in the
@@ -165,24 +167,27 @@ algorithm terminates.
 					$\mathcal{C}_\tau\leftarrow \mathcal{C}_\tau\cup\{A\}$\;
 				}
 			}\label{algline:intersectionloopend}
-			$L[I_\tau]\leftarrow
-			|\mathcal{C}_\tau|$\;\label{algline:assignmentintersection}
-			\For{$d\leftarrow 1 $ \MyTo $\lfloor\log_2\ell\rfloor +1$}{
-				$T[d]\leftarrow T[d]\cup\{I_\tau\}$\;
+			$L[I_\tau]\leftarrow |\mathcal{C}_\tau|$\;\label{algline:assignmentintersection}
+			\If{$T$ does not contain any element with key
+				$\lfloor\log_2|\mathcal{C}_\tau|\rfloor + 1$}{
+					$T[\lfloor\log_2|\mathcal{C}_\tau|\rfloor + 1]\leftarrow \{I_\tau\}$\;
+			}\Else{
+				$T[\lfloor\log_2|\mathcal{C}_\tau|\rfloor + 1]\leftarrow
+				T[\lfloor\log_2|\mathcal{C}_\tau|\rfloor + 1]\cup\{I_\tau\}$\;
 			}
 		}
   }\label{algline:forend}
   $b_0\leftarrow 0$\;\label{algline:beginreplace}
-  $d_0\leftarrow 0$\;
-  $T[0]\leftarrow\emptyset$\;
+  $d_0\leftarrow +\infty$\;
+  $T[d_0]\leftarrow\emptyset$\;
   $i\leftarrow 1$\;
   \While{True} {\label{algline:secondloopbegin}
-	$d_i=\max\{ d ~:~ |T[d]\setminus T[d_{i-1}]|\ge d-b_{i-1}\}$\;
+  $d_i=\max\{ d < d_{i-1} ~:~ |\mathsf{T}_d\setminus\mathsf{T}_{d_{i-1}}|\ge d-b_{i-1}\}$\;
 	\If{$d_i\le b_{i-1}$}{
 		\Return{$d_i$}\;
 	}
 	$b_i\leftarrow$ size of largest antichain on
-	$T[d_i]$\;\label{algline:antichain}
+	$\mathsf{T}_{d_i}$\;\label{algline:antichain}
 	\If{$b_i \ge d_i$}{
 		\Return{$d_i$}
 	}
@@ -202,13 +207,13 @@ algorithm terminates.
 
 	\begin{description}
 		\item{Case 1.} Let $i$ be the index such that $b_i\ge d_i$. Then, there
-			is an antichain of size at least $d_i$ on $T_{d_i}$. Now, $T_{d_i}$
-			contains all and only the sets of the form $I_\tau=\tau\cap U$,
-			where $\tau$ is a transaction in $\Ds$, such that $I_\tau$ (and
-			therefore $\tau$) contains at least $2^{d_i-1}$ itemsets from
-			$\mathcal{C}$. From the definition of the sequence $d_j$, we have
-			that $d_i$ is the maximum value for which
-			we can find a collection of $d_i$ transactions
+			is an antichain of size at least $d_i$ on $\mathsf{T}_{d_i}$.
+			$\mathsf{T}_{d_i}$ contains all and only the sets of the form
+			$I_\tau=\tau\cap U$, where $\tau$ is a transaction in $\Ds$, such
+			that $I_\tau$ (and therefore $\tau$) contains \emph{at least}
+			$2^{d_i-1}$ itemsets from $\mathcal{C}$. From the definition of the
+			sequence $d_j$, we have that $d_i$ is the maximum value for which we
+			can find a collection of $d_i$ transactions
 			$\{\tau_1,\dotsc,\tau_{d_i}\}\subseteq\Ds$ for which the sets
 			$\tau_j\cap U$ form an antichain and such that each of these sets
 			contains at least $2^{d_i-1}$ itemsets of $\mathcal{C}$. This is
@@ -216,10 +221,11 @@ algorithm terminates.
 			hence the algorithm returns the correct value in this case.
 		\item{Case 2.} Let $i$ be the index such that $d_i\le b_{i-1}$. From the
 			definition of $b_{i-1}$, we know that there is an antichain of size
-			$b_{i-1}$ on $T_{d_{i-1}}$. Since $T_{d_{i-1}}\subseteq T_{d_i}$,
-			there is an antichain of size $b_{i-1}$ also on $T_{d_1}$ (the same
+			$b_{i-1}$ on $\mathsf{T}_{d_{i-1}}$. Since
+			$\mathsf{T}_{d_{i-1}}\subseteq \mathsf{T}_{d_i}$, there is an
+			antichain of size $b_{i-1}$ also on $\mathsf{T}_{d_1}$ (the same
 			antichain). So there is an antichain of size at least $d_i$ on
-			$T_{d_i}$. The proof then follows as in the previous case.
+			$\mathsf{T}_{d_i}$. The proof then follows as in the previous case.
 	\end{description}
 \end{proof}
 
@@ -240,42 +246,50 @@ obtaining an upper bound to the d-index:
 		very large.
 \end{enumerate}
 
-We can replace lines~\ref{algline:beginreplace}--\ref{algline:secondloopend}
-with the pseudocode in Algorithm~\ref{alg:replacement}.
+To solve the first issue we can modify the algorithm to simply return $d_1$,
+without having to solve any maximum bipartite matching problem. We call the
+resulting algorithm \texttt{EVCBoundScan}. It is easy to see that the returned
+value is still an upper bound to the empirical VC-dimension of $\mathcal{C}$ on
+$\Ds$, and the running time is greatly improved. Note that any other value
+$d_i$ for which $b_i < d_i$ can also be returned, giving the user some
+flexibility between the number of maximum bipartite matching to solve and the
+optimality of the bound.
+%We can replace lines~\ref{algline:beginreplace}--\ref{algline:secondloopend}
+%with the pseudocode in Algorithm~\ref{alg:replacement}.
+%
+%\begin{algorithm}[hbt]
+%	\DontPrintSemicolon
+%	$d\leftarrow 1$\;
+%	$\kappa\leftarrow$ any key in $L$\;
+%	$\mathcal{T}\leftarrow\{\kappa\}$\;
+%	\ForEach{key $k$ in $L$, except $\kappa$}{
+%		\If{$L[k]\ge 2^{d-1}$}{
+%			$\mathcal{R}\leftarrow\mathcal{T}\cup\{k\}$\;
+%			$d\leftarrow$ maximum integer $q$ such that $\mathcal{R}$ contains
+%			at least $q$ elements $c$ with $L[c]\ge 2^{q-1}$\;
+%			$\mathcal{T}\leftarrow$ set of the $d$ elements of $\mathcal{R}$ with
+%			largest values in $L$ (ties broken arbitrarily)\;
+%		}
+%	}
+%	\Return{$d$}\;
+%	\caption{Replacement for
+%		lines~\ref{algline:beginreplace}--\ref{algline:secondloopend} in
+%		Alg.~\ref{alg:evcboundexact}.}
+%	\label{alg:replacement}
+%\end{algorithm}
+%
+%The correctness of the algorithm with this replacement (we denote the resulting
+%algorithm as \texttt{EVCBoundScan}) follows from the fact that at any iteration
+%of the loop, the set $\mathcal{T}$ always contains $d$ elements of the form
+%$I_\tau=\tau\cap U$ for $\tau\in\Ds$ such that each element in $\mathcal{T}$
+%contains at least $2^{d-1}$ itemsets from $\mathcal{C}$ and $d$ is the maximum
+%integer for which such a set exists, among the keys of $L$ seen up to the
+%current iteration. This means that the value returned by \texttt{EVCBoundScan}
+%is an upper bound to the d-index, as we are relaxing the antichain requirement.
 
-\begin{algorithm}[hbt]
-	\DontPrintSemicolon
-	$d\leftarrow 1$\;
-	$\kappa\leftarrow$ any key in $L$\;
-	$\mathcal{T}\leftarrow\{\kappa\}$\;
-	\ForEach{key $k$ in $L$, except $\kappa$}{
-		\If{$L[k]\ge 2^{d-1}$}{
-			$\mathcal{R}\leftarrow\mathcal{T}\cup\{k\}$\;
-			$d\leftarrow$ maximum integer $q$ such that $\mathcal{R}$ contains
-			at least $q$ elements $c$ with $L[c]\ge 2^{q-1}$\;
-			$\mathcal{T}\leftarrow$ set of the $d$ elements of $\mathcal{R}$ with
-			largest values in $L$ (ties broken arbitrarily)\;
-		}
-	}
-	\Return{$d$}\;
-	\caption{Replacement for
-		lines~\ref{algline:beginreplace}--\ref{algline:secondloopend} in
-		Alg.~\ref{alg:evcboundexact}.}
-	\label{alg:replacement}
-\end{algorithm}
-
-The correctness of the algorithm with this replacement (we denote the resulting
-algorithm as \texttt{EVCBoundScan}) follows from the fact that at any iteration
-of the loop, the set $\mathcal{T}$ always contains $d$ elements of the form
-$I_\tau=\tau\cap U$ for $\tau\in\Ds$ such that each element in $\mathcal{T}$
-contains at least $2^{d-1}$ itemsets from $\mathcal{C}$ and $d$ is the maximum
-integer for which such a set exists, among the keys of $L$ seen up to the
-current iteration. This means that the value returned by \texttt{EVCBoundScan}
-is an upper bound to the d-index, as we are relaxing the antichain requirement.
-
-The running time is greatly improved compared to \texttt{EVCBoundScan} because
-now this part of the algorithm requires a single scan of the keys in $L$, and
-the work per key is minimal.
+%The running time is greatly improved compared to \texttt{EVCBoundScan} because
+%now this part of the algorithm requires a single scan of the keys in $L$, and
+%the work per key is minimal.
 
 As for the loop on
 lines~\ref{algline:intersectionloopbegin}--\ref{algline:intersectionloopend} of
@@ -287,13 +301,12 @@ requires time approximately proportional to two scans of the dataset, at the
 price of a obtaining a looser bound to the empirical VC-dimension of
 $\mathcal{C}$ on $\Ds$.
 
-
-\paragraph{The case of all itemsets.} The case $\mathcal{C}=2^{\Itm}$ is of
-special interest for us. In this case, $U=\Itm$, and each transaction $\tau$
-contains exactly $2^{|\tau|}-1$ itemsets. Hence we can use
-\texttt{EVCBoundScanFast} or the almost equivalent algorithm
-by~\citet{RiondatoU14} to compute an upper bound to $EVC(\range(2^\Itm),\Ds)$
-with a single linear scan of $\Ds$.
+%\paragraph{The case of all itemsets.} The case $\mathcal{C}=2^{\Itm}$ is of
+%special interest for us. In this case, $U=\Itm$, and each transaction $\tau$
+%contains exactly $2^{|\tau|}-1$ itemsets. Hence we can use
+%\texttt{EVCBoundScanFast} or the almost equivalent algorithm
+%by~\citet{RiondatoU14} to compute an upper bound to $\EVC(\range(2^\Itm),\Ds)$
+%with a single linear scan of $\Ds$.
 
 \subsubsection{Integer programming method}
 We now present another algorithm to compute an upper bound to the d-index of an
