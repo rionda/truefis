@@ -66,23 +66,30 @@ that Fact~\ref{fact:supersetborder} holds) the so-modified algorithm, which we
 call \texttt{EVCBoundAntichain}, clearly gives an upper-bound to the d-index of
 $\mathcal{B}$ on $\Ds$, and therefore to $\EVC(\mathcal{B},\Ds)$. Due to the
 additional computation of $\ell_\tau$, this algorithm is slower than
-$\texttt{EVCBoundExact}$, but $\ell_\tau$ is usually much smaller than
-$|\mathcal{C}_\tau|$, and therefore the upper bound to the empirical VC-dimension
-is smaller. Additionally, it is possible to modify the second part of
+$\texttt{EVCBoundExact}$. It is possible to modify the second part of
 \texttt{EVCBoundAntiChain} in the same way as \texttt{EVCBoundExact} was
-modified to obtain \texttt{EVCBoundScan}.
+modified to obtain \texttt{EVCBoundScan}, and obtain a slightly faster
+algorithm. Nevertheless, we believe that the need to compute potentially for
+each transaction $\tau$ both the set of itemsets of $\mathcal{C}$ in $\tau$ and
+additionally the size of the largest antichain on this set, make using
+\texttt{EVCBoundAntichain} a bit unpractical, despite being a polynomial time
+algorithm.
 
-Alternatively, we can modify \texttt{EVCBoundSUKP} to solve a slightly modified
-SUKPs associated to $\mathcal{F}$ with the \emph{additional constraint} that the
-optimal solution (a collection of itemsets) \emph{must be a maximal
-antichain}. The correctness follows from the fact that the optimal profit of
-the so-modified SUKP with capacity $\ell$ is the maximum number of itemsets
-forming an antichain in $\mathcal{F}$ that can be built using a subset of $\ell$
-of $U$, so it is an upper bound to the number of itemsets in $\mathcal{B}$ that
-can be built on $\ell$ items of $U$, provided that $\Ds$ is a
-$\varepsilon_1$-approximation to $(\range(2^\Itm),\prob)$ (so that
-Fact~\ref{fact:supersetborder} holds). Hence Lemma~\ref{lem:sukpevc} carries
-over and this new algorithm, called \texttt{EVCBoundSUKPAntiChain} is correct.
+It is actually for this reason that we developed \texttt{EVCBoundSUKP}, which we
+can modify \texttt{EVCBoundSUKP} to solve a slightly modified SUKPs associated
+to $\mathcal{F}$ with the \emph{additional constraint} that the optimal solution
+(a collection of itemsets) \emph{must be a maximal antichain}. The correctness
+follows from the fact that the optimal profit of the so-modified SUKP with
+capacity $\ell$ is the maximum number of itemsets forming an antichain in
+$\mathcal{F}$ that can be built using a subset of $\ell$ of $U$, so it is an
+upper bound to the number of itemsets in $\mathcal{B}$ that can be built on
+$\ell$ items of $U$, provided that $\Ds$ is a $\varepsilon_1$-approximation to
+$(\range(2^\Itm),\prob)$ (so that Fact~\ref{fact:supersetborder} holds). Hence
+Lemma~\ref{lem:sukpevc} carries over and this new algorithm, called
+\texttt{EVCBoundSUKPAntiChain} is correct. This algorithm is more practical than
+\texttt{EVCBoundAntichain}, striking a more balanced trade-off between
+exploiting information about $\mathcal{B}$ and obtaining an upper bound to its
+empirical VC-dimension in a reasonable amount of time.
 
 In any case, after having computed an upper bound $d_2$ to
 $\EVC(\range(\mathcal{B},\Ds)$, we can use $d_2$ in~\eqref{eq:evceapproxitemsets}

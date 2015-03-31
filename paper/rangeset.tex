@@ -288,9 +288,24 @@ $\mathcal{C}$ on $\Ds$.
 \subsubsection{Integer programming method}
 We now present another algorithm to compute an upper bound to the d-index of an
 itemset collection $\mathcal{C}$ on a dataset $\Ds$, and therefore to the
-empirical VC-dimension of $\mathcal{C}$ on $\Ds$. The algorithm, which we call
-\texttt{EVCBoundSUKP} requires to solve a \emph{Set Union Knapsack Problem}
-(SUKP)~\citep{GoldschmidtNY94} associated to the collection $\mathcal{C}$.
+empirical VC-dimension of $\mathcal{C}$ on $\Ds$. The intuition and the purpose
+of this algorithm is to strike a middle point in the trade-off space which has
+\texttt{EVCBoundExact} at one extreme and \texttt{EVCBoundScanFast} at the
+other. Indeed, \texttt{EVCBoundExact} uses all available information about
+$\mathcal{C}$ to compute the exact set (and number) of itemsets from
+$\mathcal{C}$ contained in each transaction. On the other hand,
+\texttt{EVCBoundScanFast} almost completely ignores any ``structure'' of
+$\mathcal{C}$, except for the set $U$ of items, and use the very loose upper bound
+$2^{|\tau\cap U|}-1$ for the number of itemsets from $\mathcal{C}$ that appear
+in a transaction $\tau$. The algorithm we present in this section tries to find
+a stricter upper bound by exploiting the knowledge about $\mathcal{C}$, but
+without having to compute the explicit set of itemsets of $\mathcal{C}$ in
+$\tau$, and instead asking how many itemsets of $\mathcal{C}$ can appear in a
+transaction $\tau$ for which $|\tau\cap U|=\ell$.
+
+The algorithm, which we call \texttt{EVCBoundSUKP} requires to solve a \emph{Set
+Union Knapsack Problem} (SUKP)~\citep{GoldschmidtNY94} associated to the
+collection $\mathcal{C}$.
 
 \begin{definition}[Set Union Knapsack Problem (SUKP)\citep{GoldschmidtNY94}]\label{def:sukp}
   Let $U=\{a_1,\dotsc,a_\ell\}$ be a set of elements and let
@@ -406,32 +421,21 @@ DTIME(2^{n^{3/4+\varepsilon}})$~\citep{HajiaghayiJKLMRSV06}. A greedy algorithm
 by~\citet{Arulselvan14} allows a constant factor approximation if each item only
 appears in a constant fraction of itemsets of $\mathcal{C}$. For our case, it is
 actually \emph{not necessary to compute the optimal solution} to the SUKP: any
-solution $S$ for which we can prove that there is no power of two
-between $S$ and the optimal solution would result in the same upper
-bound to the (empirical) VC-dimension, while substantially speeding up the
-computation. This property can be specified in currently available optimization
-problem solvers (e.g., CPLEX), which can then can compute the bound to the
-(empirical) VC-dimension very fast even for very large instances with thousands
-of items and hundred of thousands of itemsets in $\mathcal{C}$, making this
-approach practical.
+profit $p$ for which we can prove that there is no power of two between $p$ and
+the optimal profit would result in the same upper bound to the (empirical)
+VC-dimension, while substantially speeding up the computation. This
+early-termination property can be specified in currently available optimization
+problem solvers (e.g., CPLEX). Moreover, \emph{any upper bound to the optimal profit
+can be used}, resulting in a looser bound to the empirical VC-dimension.
+Optimization problem solvers compute such bounds as part of their execution
+(using cutting-plane methods), and can be instructed to terminate after a given
+amount of time and return the best computed upper bound. These observations and
+the extreme scalability of modern optimization problem solvers make it feasible
+to use \texttt{EVCBoundSUKP} even when $\mathcal{C}$ contains tens of thousands
+of itemsets.
 
-{\bf PER MATTEO:} Dovremmo anche dire qualcosa sulla differenza tra questo
-algoritmo e quelli di prima, e perche' lo presentiamo. La differenza e' che gli
-algoritmi presentati prima o sfruttano completamente la struttura di
-$\mathcal{C}$ (\texttt{EVCBoundExact}, \texttt{EVCBoundScan}), o la ignorano
-quasi completamente (\texttt{EVCBoundScanFast}). Questo algoritmo cerca un middle
-ground, in cui informazioni riguardo alla struttura vengono sfruttate per
-ottenere un bound migliore al numero di itemsets di $\mathcal{C}$ che possono
-apparire in una transazione $\tau$ la cui intersezione con $U$ ha taglia $\ell$.
-In piu', come sara' piu' evidente quando facciamo le modifiche antichain,
-\texttt{EVCBoundScanFast} non e' applicabile per le antichain, perche' non porta
-nessun vantaggio. D'altra parte, \texttt{EVCBoundExact} e \texttt{EVCBoundScan}
-modificati per l'antichain sono eccessivamente costly, perche' richiedono di
-calcolare prima l'esatta collezione $\mathcal{C}_\tau$ di itemset di
-$\mathcal{C}$ che appaiono in $\tau$, e poi la massima taglia di un antichain su
-$\mathcal{C}_\tau$. Questo diventa eccessivamente costoso, secondo me, e il SUKP
-cerca un middle ground.  C'e' poi una qualche questione teorica/pratica qui:
-risolvere il SUKP e' in generale NP-hard, mentre fare quello che e' richiesto
-dai \texttt{EVCBoundExact} modificati per l'antichain e' comunque polinomiale.
-On the other hand, come osservato nel paragrafo prima, noi non abbiamo bisogno
-della soluzione ottima. Insomma, siamo in una sitazione un po' nebulosa
+At first, it may seems that \texttt{EVCBoundSUKP} brings little-to-no advantage
+compared to \texttt{EVCBoundScan}. We kindly ask the reader to hold their
+judgment until the next section, where we modify the algorithms presented here
+to take into account additional information available on $\mathcal{C}$, and the
+practicality of \texttt{EVCBoundSUKP} will be more evident.
