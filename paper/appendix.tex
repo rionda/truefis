@@ -20,47 +20,11 @@ is known as the \emph{sample Rademacher average} of $r$ in the set $S$. The
 where $\mathbb{E}_\sigma$ denotes the expectation taken only w.r.t.~the random
 variables $\sigma_i$, $1\le i\le\ell$ (i.e., conditionally on the sample).
 
-Massart's lemma gives a bound to $\mathsf{R}_S$.
-\begin{lemma}[Massart's lemma, Thm.~3.3~\citep{BoucheronBL05}]\label{lem:massart}
-	Let $S$ be a finite subset of $D$ of size $|S|=\ell$. Then
-	\[
-		\mathsf{R}_S\le\max_{r\in\range}\sqrt{|r\cap S|}\frac{\sqrt{2\ln
-		|P_\range(S)|}}{\ell},
-	\]
-	where $P_\range(S)$ is the projection of $\range$ on $S$, i.e., the set
-	$\{S\cap r ~:~ r\in\range\}$.
-\end{lemma}
+The following result, which is at the core of statistical learning theory, gives
+a bound to the maximum deviation between the empirical average of a range and
+its true probability.
 
-The Sauer-Shelah lemma, a celebrated result in combinatorics, gives an upper
-bound to the size of the projection $P_\range(S)$, provided an upper bound to
-the (empirical) VC-dimension is known. It allows us to use bounds to the
-(empirical) VC-dimension in Massart's lemma.
-\begin{lemma}[Sauer-Shelah lemma, Lemma 6.10~\citep{ShalevSBD14}]\label{lem:sauer}
-	Let $\range$ be a range set on a domain $D$, and let $\VC(\range)\le d$.
-	Then, for any finite $S\subseteq D$ of size $|S|=\ell$, we have that
-	\[
-		|P_\range(S)|\le \sum_{i=0}^d\binom{\ell}{i}\enspace.
-	\]
-	In particular, if $\ell\ge d+1$, then $|P_\range(S)|\le (e\ell/d)^d$.
-
-	The result also holds if the upper bound $d$ to $\VC(\range)$ is replaced with
-	an upper bound $d_S$ to $\EVC(\range,S)$.
-\end{lemma}
-
-The following fact is trivial from the definition of projection.
-\begin{fact}\label{fact:shatterbound}
-	Let $\range$ be a range set on a domain $D$, and $S$ be a finite subset of
-	$D$. Then,
-	\[
-		|P_\range(S)|\le |\range|\enspace.
-	\]
-\end{fact}
-
-Theorem~\ref{thm:eapproxempir} follows by combining Massart's lemma, the
-Sauer-Shelah lemma, Fact~\ref{fact:shatterbound}, and the following
-result, which is at the core of statistical learning theory.
-
-\begin{theorem}[Thm.~3.3~\citep{BoucheronBL05}]
+\begin{theorem}[Thm.~3.3~\citep{BoucheronBL05}]\label{thm:fundthmlearn}
 	Let $S$ be a bag of $\ell$ elements from $D$, sampled independently
 	according to the distribution $\nu$.  Then, with probability at least
 	$1-\delta$,
@@ -69,3 +33,23 @@ result, which is at the core of statistical learning theory.
 		+\sqrt{\frac{2\ln\frac{2}{\delta}}{\ell}}\enspace.
 	\]
 \end{theorem}
+
+It is well known~\citep[Sect.~1.4.6]{Lugosi02} that using covering
+numbers~\citep{AnthonyB99}, the chaining technique by~\citet{Dudley84}, and a
+bound to covering numbers using the (empirical) VC-dimension $d$
+by~\citet{Haussler95}, one can obtain that
+\[
+	\mathsf{R}_S\le c\sqrt{\frac{d}{|S|}}\enspace.
+\]
+A more refined analysis~\citep{SridharanTR} allows us to incorporate the maximum
+size of the intersection of a range with the set $S$ and obtain
+\[
+	\mathsf{R}_S\le c\max_{r\in\range}\sqrt{|r\cap
+	S|}\frac{\sqrt{2d}}{|S|}\enspace.
+\]
+Note that this dependency on the maximum intersection is to be expected, as a
+similar dependency appears in Massart's finite class lemma~\citep[Lemma
+26.8]{ShalevSBD14}.
+
+By combining this bound to the Rademacher averages with
+Thm.~\ref{thm:fundthmlearn} we obtain Thm.~\ref{thm:eapproxempir}.
