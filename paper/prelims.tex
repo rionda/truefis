@@ -211,14 +211,16 @@ In our algorithm we make a heavy use of \emph{antichains}.
 \end{fact}
 
 Computing the size of the largest antichain on a collection $\mathcal{S}$ is
-equivalent to finding the maximum matching in a bipartite graph~\citep{FordF62}.
-The graph contains two nodes (one on each side) for each element of
-$\mathcal{S}$. There is an edge between a node $v$ on one side and a node $u$ on
-the other side if the element of $\mathcal{S}$ corresponding to $v$ is a subset
-of the element of $\mathcal{S}$ corresponding to $u$ and vice versa. Computing a
-maximum matching on this bipartite graph can be done in polynomial time in the
-size of $\mathcal{S}$ (more precisely in time $O(\sqrt{|\mathcal{S}|}|E|)$,
-where $|E|$ is the number of edges in the graph)~\citep{HopcroftK73}.
+equivalent to finding the maximum matching in a bipartite graph: if $m$ is the
+size of the maximum matching (i.e., the number of matched pairs of vertices),
+then the largest antichain has size $|\mathcal{S}|-m$~\citep{FordF62}. The graph
+contains two nodes (one on each side) for each element of $\mathcal{S}$. There
+is an edge between a node $v$ on the l.h.s.~and a node $u$ on the r.h.s.~iff the
+element of $\mathcal{S}$ corresponding to $v$ is a \emph{proper} subset of the
+element of $\mathcal{S}$ corresponding to $u$. Computing a maximum matching on
+in this bipartite graph can be done in polynomial time in the size of
+$\mathcal{S}$ (more precisely in time $O(\sqrt{|\mathcal{S}|}|E|)$, where $|E|$
+is the number of edges in the graph)~\citep{HopcroftK73}.
 
 % THE FOLLOWING IS VERY OLD STUFF THAT WE MOST PROBABLE WILL NOT NEED.
 %\subsection{Statistical hypothesis testing}\label{sec:stat_tests}
