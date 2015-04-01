@@ -250,10 +250,12 @@ To solve the first issue we can modify the algorithm to simply return $d_1$,
 without having to solve any maximum bipartite matching problem. We call the
 resulting algorithm \texttt{EVCBoundScan}. It is easy to see that the returned
 value is still an upper bound to the empirical VC-dimension of $\mathcal{C}$ on
-$\Ds$, and the running time is greatly improved. Note that any other value
-$d_i$ for which $b_i < d_i$ can also be returned, giving the user some
-flexibility between the number of maximum bipartite matching to solve and the
-optimality of the bound.
+$\Ds$, as it is the maximum $d$ for which there are at least $d$ transactions
+each containing at least $2^{d-1}$ itemsets of $\mathcal{C}$. In other words, by
+returning $d_1$ we ignore the antichain constraint. The running time is greatly
+improved. Any other value $d_i$ for which $b_i < d_i$ can also be returned,
+giving the user some flexibility between the number of maximum bipartite
+matching to solve and the optimality of the bound.
 %We can replace lines~\ref{algline:beginreplace}--\ref{algline:secondloopend}
 %with the pseudocode in Algorithm~\ref{alg:replacement}.
 %
