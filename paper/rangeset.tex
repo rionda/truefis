@@ -114,24 +114,19 @@ variants that trade off accuracy for speed.
 The exact algorithm (which we call \texttt{EVCBoundExact}) for the d-index of
 $\mathcal{C}$ on $\Ds$ starts by scanning $\Ds$ and computing, for each
 transaction $\tau\in\Ds$, the set $I_\tau=\tau\cap U$. If $I_\tau\neq U$ and
-$I_\tau\neq\emptyset$, then an element with key $\tau\cap U$ and value
-$|\{A\in\mathcal{C} ~:~ A\subseteq\tau\}|$ is added to a hash table $L$
-(provided no element with the same key was already present). The value is the
-number of itemsets of $\mathcal{C}$ that appear in any transaction whose
-intersection with $U$ is $I_\tau$. Once the scan is complete, let $d_1$ be the
-maximum $d$ for which there are at least $d$ keys in $L$ with value at least
-$2^{d-1}$. Formally, if we define, for any
-$d\in\mathbb{N}$
-\begin{align*}
-	T_d&=\{\kappa \mbox{ key of } L ~:~ L[\kappa]= 2^{d-1}\},
-	\mathsf{T}_d&=\cup_{i\ge d} T_d
-\end{align*}
-then $d_1=\max\{d ~:~ |\mathsf{T}_d|\ge d\}$.
-Let now $b_1$ be the size of the largest antichain on $\mathsf{T}_{d_1}$,
-obtained by solving the corresponding maximum bipartite matching problem. If
-$b_1\ge d_1$, then the algorithm can return $b_1$. Otherwise, for $i>1$, let
-$d_i$ be the maximum $d<d_{i-1}$ such that $|T_d|\ge d-b_{i-1}$,
-where $b_{i-1}$ is the size of the largest antichain on $\mathsf{T}_{d_{i-1}}$:
+$I_\tau\neq\emptyset$, then we add $I_\tau$ to a set $L$. Let now
+$\mathcal{C}_\tau$ be the sets of itemsets of $\mathcal{C}$ that appear in
+$\tau$. Now, for any $d\in\mathbb{N}$ let
+\[
+	T_d=\{I_\tau\in L ~:~ \tau\in\Ds \wedge \lfloor\log_2|\mathcal{C}_\tau|\rfloor+1= d\},\mbox{ and } \mathsf{T}_d=\bigcup_{i\ge d} T_d
+\]
+Once the scan is complete, let $d_1$  be the maximum integer for which
+$|\mathsf{T}_d|\ge d$, i.e., $d=\max\{d ~:~ |\mathsf{T}_d|\ge d\}$. Let now
+$b_1$ be the size of the largest antichain on $\mathsf{T}_{d_1}$, obtained by
+solving the corresponding maximum bipartite matching problem. If $b_1\ge d_1$,
+then the algorithm can return $b_1$. Otherwise, for $i>1$, let $d_i$ be the
+maximum $d<d_{i-1}$ such that $|T_d|\ge d-b_{i-1}$, where $b_{i-1}$ is the size
+of the largest antichain on $\mathsf{T}_{d_{i-1}}$:
 \[
 	d_i=\max\{d<d_{i-1} ~:~ |\mathsf{T}_d\setminus\mathsf{T}_{d_{i-1}}|\ge d-b_{i-1}\}\enspace.
 \]
@@ -155,25 +150,25 @@ algorithm terminates.
   \Input{Dataset $\Ds$, collection $\mathcal{C}$ of itemsets.}
   \Output{d-index of $\mathcal{C}$ in $\Ds$.}
   $U\leftarrow\{a\in A, A\in\mathcal{C}\}$\;
-  $L\leftarrow$ empty hash table\;
+  $L\leftarrow\emptyset$\;
   $T\leftarrow$ empty hash table\;
   \For{$\tau\in\Ds$}{\label{algline:forbegin}
 		$I_\tau\leftarrow \tau\cap U$\;
-		\If{$I_\tau\neq U$ \MyAnd $I_\tau\neq\emptyset$ \MyAnd $L$ does not
-		contain an element with key $I_\tau$} {
+		\If{$I_\tau\neq U$ \MyAnd $I_\tau\neq\emptyset$ \MyAnd $I_\tau\not\in L$} {
 			$\mathcal{C}_\tau\leftarrow \emptyset$\;
 			\For{$A\in\mathcal{C}$}{\label{algline:intersectionloopbegin}
 				\If{$A\subseteq I_\tau$}{
 					$\mathcal{C}_\tau\leftarrow \mathcal{C}_\tau\cup\{A\}$\;
 				}
 			}\label{algline:intersectionloopend}
-			$L[I_\tau]\leftarrow |\mathcal{C}_\tau|$\;\label{algline:assignmentintersection}
-			\If{$T$ does not contain any element with key
-				$\lfloor\log_2|\mathcal{C}_\tau|\rfloor + 1$}{
-					$T[\lfloor\log_2|\mathcal{C}_\tau|\rfloor + 1]\leftarrow \{I_\tau\}$\;
-			}\Else{
-				$T[\lfloor\log_2|\mathcal{C}_\tau|\rfloor + 1]\leftarrow
-				T[\lfloor\log_2|\mathcal{C}_\tau|\rfloor + 1]\cup\{I_\tau\}$\;
+			$L\leftarrow L\cup\{I_\tau\}$\;
+			$\ell_\tau=|\mathcal{C}_\tau|$\;\label{algline:assignmentintersection}
+			\eIf{$T$ does not contain any element with key
+				$\lfloor\log_2\ell_\tau\rfloor + 1$}{
+					$T[\lfloor\log_2\ell_\tau\rfloor + 1]\leftarrow \{I_\tau\}$\;
+			}{
+				$T[\lfloor\log_2\ell_\tau\rfloor + 1]\leftarrow
+				T[\lfloor\log_2\ell_\tau\rfloor + 1]\cup\{I_\tau\}$\;
 			}
 		}
   }\label{algline:forend}
