@@ -35,25 +35,12 @@ double get_SUKP_profit(IloCplex &cplex) {
 	double profit = 0.0;
 	try {
 		cplex.solve();
-		// If I read the documentation correctly, getBestObjValue() corresponds
-		// to the best feasible integer solution found, and is a lower bound to
-		// the optimal, while getObjValue() may correspond to a non-integer,
-		// non-feasible solution and is an upper bound to the optimal. The two
-		// are the same if the problem is solved optimally.
-		int best_integer_value = cplex.getBestObjValue();
-		int obj_value = cplex.getObjValue();
-		// Upper bound to the ratio between the 'best' feasible integer solution
-		// value found by the solver and the actual maximum. This is equivalent
-		// to cplex.getMIPRelativeGap();
-		double sol_gap = ((double) best_integer_value - obj_value) / best_integer_value;
-		assert(sol_gap <= cplex.getMIPRelativeGap());
-		// By dividing by 1-gap, we get an upper bound to the optimal profit.
-		profit = floor(((double) best_integer_value) / (1.0 - sol_gap));
-		// Given the above discussion about what 'obj_value' is, doing the
-		// following should be valid.
-		if (profit > obj_value) {
-			profit = obj_value;
-		}
+		// getBestObjValue() is an upper bound to the optimal solution, and may
+		// correspond to an infeasible/non-integer solution, but given that the
+		// solver stops if the gap between the best found integer solution and
+		// the optimal is smaller than some threshold (specified as the 'gap'
+		// parameter to get_CPLEX), then this is the best value we can use.
+		profit = cplex.getBestObjValue();
 	} catch (IloException& e) {
 		std::cerr << "ConcertException: " << e << std::endl;
 		return -1.0;
@@ -101,9 +88,9 @@ int set_capacity(IloModel &model, const int capacity) {
  * Returns 0 if successful, -1 otherwise.
  */
 int get_CPLEX(
-		IloCplex *cplex, IloModel &model, const IloEnv &env, 
-		const std::unordered_set<int> &items, 
-		const std::forward_list<std::set<int> > &collection, 
+		IloCplex *cplex, IloModel &model, const IloEnv &env,
+		const std::unordered_set<int> &items,
+		const std::forward_list<std::set<int> > &collection,
 		const int capacity, const bool use_antichain, const double gap) {
 	try {
 		std::unordered_map<int, int> items_to_vars;
