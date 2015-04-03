@@ -20,8 +20,10 @@ CPP=g++-mp-4.9
 IGRAPH=-I/opt/local/include/ -L/opt/local/lib -ligraph
 else
 CPP=g++-4.9
-CPLEX=-I/local/projects/cplex/cplex/cplex121/x86_64/include -L/local/projects/cplex/cplex/cplex121/x86_64/lib/x86-64_debian4.0_4.1/static_pic -lilocplex -lcplex
-CONCERT=-I/local/projects/cplex/concert/concert29/x86_64/include -L/local/projects/cplex/concert/concert29/x86_64/lib/x86-64_debian4.0_4.1/static_pic -lconcert
+#CPLEX=-I/local/projects/cplex/cplex/cplex121/x86_64/include -L/local/projects/cplex/cplex/cplex121/x86_64/lib/x86-64_debian4.0_4.1/static_pic -lilocplex -lcplex
+#CONCERT=-I/local/projects/cplex/concert/concert29/x86_64/include -L/local/projects/cplex/concert/concert29/x86_64/lib/x86-64_debian4.0_4.1/static_pic -lconcert
+CPLEX=-I/local/projects/cplex/cplex12.6/cplex/include -L/local/projects/cplex/cplex12.6/cplex/lib/x86-64_linux/static_pic -lilocplex -lcplex
+CONCERT=-I/local/projects/cplex/cplex12.6/concert/include -L/local/projects/cplex/cplex12.6/concert/lib/x86-64_linux/static_pic -lconcert
 IGRAPH=-I/home/matteo/include -L/home/matteo/lib -ligraph
 endif
 # Instruct CPLEX to compile with the standard headers, and without asserts and
@@ -52,8 +54,8 @@ archive: truefis.tar.bz2
 clean:
 	-/bin/rm -rf compute_stats *.dSYM
 
-compute_stats: compute_stats.cpp dataset.cpp dataset.h graph.cpp graph.h stats.cpp stats.h sukp.cpp sukp.h Makefile
-	$(CPP) dataset.cpp graph.cpp stats.cpp sukp.cpp $@.cpp $(CFLAGS) $(CPLEX_FLAGS) $(CPLEX) $(CONCERT) $(IGRAPH) $(OTHER_LIBS) -o $@
+compute_stats: compute_stats.cpp dataset.cpp dataset.h graph.cpp graph.h itemsets.cpp itemsets.h stats.cpp stats.h sukp.cpp sukp.h Makefile
+	$(CPP) dataset.cpp graph.cpp itemsets.cpp stats.cpp sukp.cpp $@.cpp $(CFLAGS) $(CPLEX_FLAGS) $(CPLEX) $(CONCERT) $(IGRAPH) $(OTHER_LIBS) -o $@
 
 truefis.tar.bz2: ../README.md ../LICENSE ../NOTICE Makefile *.h *.cpp
 	-/bin/rm -rf truefis

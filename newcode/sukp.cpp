@@ -64,6 +64,11 @@ double get_SUKP_profit(IloCplex &cplex) {
 	return profit;
 }
 
+/**
+ * Set the capacity constraint of the model to a new value.
+ *
+ * Returns the new capacity if succesful, -1 otherwise.
+ */
 int set_capacity(IloModel &model, const int capacity) {
 	static const std::string capacity_constr_name = "capacity";
 	try {
@@ -76,15 +81,30 @@ int set_capacity(IloModel &model, const int capacity) {
 		}
 	} catch (IloException& e) {
 		std::cerr << "ConcertException: " << e << std::endl;
-		return -1.0;
+		return -1;
 	} catch (...) {
 		std::cerr << "UnknownException" << std::endl;
-		return -1.0;
+		return -1;
 	}
 	return capacity;
 }
 
-int get_CPLEX(IloCplex *cplex, IloModel &model, const IloEnv &env, const std::unordered_set<int> &items, const std::forward_list<std::set<int> > &collection, const int capacity, const bool use_antichain, const double gap) {
+/**
+ * Build the CPLEX model and objects to represent a SUKP.
+ * If 'use_antichain' is true, the SUKP has the antichain constraints.
+ *
+ * The value 'gap' is used to specify a tolerance: the solver will stops as soon
+ * as it finds a feasible integer solution whose value is provably no more than a
+ * fraction 'gap' smaller than the optimal. This is useful to speed up the
+ * computation. As discussed in the paper, we do not need the optimal solution.
+ *
+ * Returns 0 if successful, -1 otherwise.
+ */
+int get_CPLEX(
+		IloCplex *cplex, IloModel &model, const IloEnv &env, 
+		const std::unordered_set<int> &items, 
+		const std::forward_list<std::set<int> > &collection, 
+		const int capacity, const bool use_antichain, const double gap) {
 	try {
 		std::unordered_map<int, int> items_to_vars;
 		int var_ind = 0;
@@ -128,22 +148,22 @@ int get_CPLEX(IloCplex *cplex, IloModel &model, const IloEnv &env, const std::un
 			// creates the minimum number of constraints, which is good for
 			// memory.
 			igraph_t *graph = create_antichain_graph(collection, itemsets_to_vars);
-			igraph_vector_ptr res;
-			igraph_vector_ptr_init(&res, 0);
+			igraph_vector_ptr_t cliques;
+			igraph_vector_ptr_init(&cliques, 0);
 			// Get maximal cliques of size at least 2.
 			// We can ignore single nodes, as the constraint would be irrelevant
-			igraph_maximal_cliques(graph, &res, 2, 0);
+			igraph_maximal_cliques(graph, &cliques, 2, 0);
 			for (int i = 0; i < igraph_vector_ptr_size(&cliques); ++i) {
-				igraph_vector_t *clique = VECTOR(cliques)[i];
+				igraph_vector_t *clique = (igraph_vector_t*) VECTOR(cliques)[i];
 				IloExpr clique_expr(env);
 				for (int j = 0; j < igraph_vector_size(clique); ++j) {
 					clique_expr += vars[VECTOR(*clique)[j]];
 				}
-				constraints.add(IloRange(env, 0.0; clique_expr, 1.0));
+				constraints.add(IloRange(env, 0.0, clique_expr, 1.0));
 				igraph_vector_destroy(clique);
 				igraph_free(clique);
 			}
-			igraph_vector_ptr_destroy(&res);
+			igraph_vector_ptr_destroy(&cliques);
 			igraph_destroy(graph);
 			// The following is the straightforward solution, but it is
 			// commented out because it creates a huge number of constraints,

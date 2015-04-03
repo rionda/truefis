@@ -45,15 +45,15 @@ bool is_subset(const std::set<int> &first, const std::set<int> &second) {
  *
  */
 int get_largest_antichain_size(const std::forward_list<const std::set<int> *> &sets) {
+	int max_id = 0;
 	int sets_size = 0;
 	std::unordered_map<const std::set<int> *, int> sets_to_ids;
-	int max_id = 0;
 	for (const std::set<int> *s : sets) {
 		sets_to_ids[s] = max_id++;
 		++sets_size;
 	}
 	igraph_vector_t edges;
-	igraph_vector_init(&edges, sets_size);
+	igraph_vector_init(&edges, 0);
 	for (auto first_it = sets.begin(); first_it != sets.end(); ++first_it) {
 		auto second_it = first_it;
 		++second_it;
@@ -114,12 +114,12 @@ igraph_t *create_antichain_graph(const std::forward_list<std::set<int> > &collec
 			// nodes in edges[0] and edges[1], the second between edges[2] and
 			// edges[3] and so on.
 			if (is_subset(*smaller, *larger)) {
-				igraph_vector_push_back(&edges, sets_to_ids[&(*smaller)]);
-				igraph_vector_push_back(&edges, sets_to_ids[&(*larger)]);
+				igraph_vector_push_back(&edges, sets_to_ids.at(&(*smaller)));
+				igraph_vector_push_back(&edges, sets_to_ids.at(&(*larger)));
 			}
 		}
 	}
-	igraph_t *graph;
+	igraph_t *graph = NULL;
 	igraph_empty(graph, sets_to_ids.size(), false); // undirected graph
 	igraph_add_edges(graph, &edges, 0);
 	return graph;

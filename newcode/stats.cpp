@@ -27,7 +27,6 @@
 #include <map>
 #include <set>
 #include <string>
-#include <sstream>
 #include <unordered_map>
 #include <unordered_set>
 
@@ -35,6 +34,7 @@
 
 #include "dataset.h"
 #include "graph.h"
+#include "itemsets.h"
 #include "stats.h"
 #include "sukp.h"
 
@@ -43,20 +43,6 @@
  */
 bool reverse_int_comp(const int lhs, const int rhs) {
 	return lhs > rhs;
-}
-
-/**
- * Convert a string into a set of integers, representing an itemset or a
- * transaction.
- */
-std::set<int> line2itemset(const std::string &line) {
-	std::stringstream linestream(line);
-	std::string item;
-	std::set<int> items;
-	while(std::getline(linestream, item, ' ')) {
-		items.insert(std::stoi(item));
-	}
-	return items;
 }
 
 /**
