@@ -31,6 +31,8 @@
 #include <unordered_map>
 #include <unordered_set>
 
+#include <ilcplex/ilocplex.h>
+
 #include "dataset.h"
 #include "graph.h"
 #include "stats.h"
@@ -165,10 +167,33 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
 	// We do not need a counter 'i' like in the pseudocode, we can use an
 	// iterator that exploits the sorted nature of the map
 	std::map<int, int, bool (*)(int,int)>::iterator it = intersection_sizes_counts.begin();
-	for (; it != intersection_sizes_counts.end(); ++it) {
-		int b =  ((int) floor(log2(get_SUKP_profit(items, collection, it->second, use_antichain)))) + 1;
-		if (b <= it->second) {
-			return b;
+	ILOSTLBEGIN
+	IloEnv env;
+	IloModel model;
+	IloCplex cplex;
+	if (get_CPLEX(model, cplex, env, items, collection, it->second, use_antichain) == -1) {
+		// XXX TODO something went wrong
+		env.end();
+	};
+	while (true) {
+		// The following is q in the pseudocode
+		double profit = get_SUKP_profit(cplex);
+		if (profit == -1.0) {
+			// XXX TODO something went wrong
+			env.end();
+		}
+		// This is b in the pseudocode
+		int bound =  ((int) floor(log2(profit))) + 1;
+		if (bound <= it->second) {
+			return bound;
+		} else {
+			++it;
+			if (it != intersection_sizes_counts.end()) {
+				set_capacity(model, it->second);
+			} else {
+				env.end();
+				break;
+			}
 		}
 	}
 	--it;

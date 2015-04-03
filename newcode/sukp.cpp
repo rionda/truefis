@@ -27,11 +27,58 @@
 
 #include "sukp.h"
 
-int get_SUKP_profit(const std::unordered_set<int> &items, const std::forward_list<std::set<int> > &collection, const int capacity, const bool use_antichain, const double gap) {
-	int profit;
+double get_SUKP_profit(const IloCplex &cplex) {
+	try {
+		cplex.solve();
+		// If I read the documentation correctly, getBestObjValue() corresponds
+		// to the best feasible integer solution found, and is a lower bound to
+		// the optimal, while getObjValue() may correspond to a non-integer,
+		// non-feasible solution and is an upper bound to the optimal. The two
+		// are the same if the problem is solved optimally.
+		int best_integer_value = cplex.getBestObjValue();
+		int obj_value = cplex.getObjValue();
+		// Upper bound to the ratio between the 'best' feasible integer solution
+		// value found by the solver and the actual maximum. This is equivalent
+		// to cplex.getMIPRelativeGap();
+		double sol_gap = ((double) best_integer_value - obj_value) / best_integer_value;
+		assert(sol_gap <= cplex.getMIPRelativeGap());
+		// By dividing by 1-gap, we get an upper bound to the optimal profit.
+		double profit = floor(((double) best_integer_value) / (1.0 - sol_gap));
+		// Given the above discussion about what 'obj_value' is, doing the
+		// following should be valid.
+		if (profit > obj_value) {
+			profit = obj_value;
+		}
+	} catch (IloException& e) {
+		std::cerr << "ConcertException: " << e << std::endl;
+		return -1.0;
+	} catch (...) {
+		std::cerr << "UnknownException" << std::endl;
+		return -1.0;
+	}
+	return profit;
+}
 
-	ILOSTLBEGIN
-	IloEnv env;
+int set_capacity(IloModel &model, const int capacity) {
+	static const string capacity_constr_name = "capacity";
+	try {
+		for (IloExtractable extr : IloModel) {
+			if (extr.isConstraint() && capacity_constr_name.compare(extr.getName())) {
+				IloRange constr = (IloRange) extr.asConstraint();
+				IloRange.setUB(capacity);
+			}
+		}
+	} catch (IloException& e) {
+		std::cerr << "ConcertException: " << e << std::endl;
+		return -1.0;
+	} catch (...) {
+		std::cerr << "UnknownException" << std::endl;
+		return -1.0;
+	}
+	return capacity;
+}
+
+int get_CPLEX(IloModel &model, IloCplex &cplex,  const IloEnv &env, const std::unordered_set<int> &items, const std::forward_list<std::set<int> > &collection, const int capacity, const bool use_antichain, const double gap = 0.1);
 	try {
 		std::unsorted_map<int, int> items_to_vars;
 		int var_ind = 0;
@@ -103,31 +150,12 @@ int get_SUKP_profit(const std::unordered_set<int> &items, const std::forward_lis
 		cplex.setParam(IloCplex::EpAGap, 2.0);
 		// Set a maximum time limit, in seconds (600=10mins. no clue.)
 		cplex.setParam(IloCple::TiLim, 600);
-		cplex.solve();
-		// If I read the documentation correctly, getBestObjValue() corresponds
-		// to the best feasible integer solution found, and is a lower bound to
-		// the optimal, while getObjValue() may correspond to a non-integer,
-		// non-feasible solution and is an upper bound to the optimal. The two
-		// are the same if the problem is solved optimally.
-		int best_integer_value = cplex.getBestObjValue();
-		int obj_value = cplex.getObjValue();
-		// Upper bound to the ratio between the 'best' feasible integer solution
-		// value found by the solver and the actual maximum. This is equivalent
-		// to cplex.getMIPRelativeGap();
-		double sol_gap = ((double) best_integer_value - obj_value) / best_integer_value;
-		assert(sol_gap <= cplex.getMIPRelativeGap());
-		// By dividing by 1-gap, we get an upper bound to the optimal profit.
-		profit = (int) floor(((double) best_integer_value) / (1.0 - sol_gap));
-		// Given the above discussion about what 'obj_value' is, doing the
-		// following should be valid.
-		if (profit > obj_value) {
-			profit = obj_value;
-		}
 	} catch (IloException& e) {
 		std::cerr << "ConcertException: " << e << std::endl;
+		return -1;
 	} catch (...) {
 		std::cerr << "UnknownException" << std::endl;
+		return -1;
 	}
-	env.end();
-	return profit;
+	return 0;
 }
