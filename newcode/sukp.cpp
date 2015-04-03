@@ -16,18 +16,21 @@
  * limitations under the License.
  *
  */
+#include <algorithm>
 #include <iostream>
 #include <forward_list>
 #include <unordered_map>
 #include <unordered_set>
 #include <set>
 #include <string>
+#include <vector>
 
 #include <ilcplex/ilocplex.h>
 
 #include "sukp.h"
 
-double get_SUKP_profit(const IloCplex &cplex) {
+double get_SUKP_profit(IloCplex &cplex) {
+	double profit = 0.0;
 	try {
 		cplex.solve();
 		// If I read the documentation correctly, getBestObjValue() corresponds
@@ -43,7 +46,7 @@ double get_SUKP_profit(const IloCplex &cplex) {
 		double sol_gap = ((double) best_integer_value - obj_value) / best_integer_value;
 		assert(sol_gap <= cplex.getMIPRelativeGap());
 		// By dividing by 1-gap, we get an upper bound to the optimal profit.
-		double profit = floor(((double) best_integer_value) / (1.0 - sol_gap));
+		profit = floor(((double) best_integer_value) / (1.0 - sol_gap));
 		// Given the above discussion about what 'obj_value' is, doing the
 		// following should be valid.
 		if (profit > obj_value) {
@@ -60,12 +63,13 @@ double get_SUKP_profit(const IloCplex &cplex) {
 }
 
 int set_capacity(IloModel &model, const int capacity) {
-	static const string capacity_constr_name = "capacity";
+	static const std::string capacity_constr_name = "capacity";
 	try {
-		for (IloExtractable extr : IloModel) {
+		for (IloModel::Iterator it(model); it.ok(); ++it) {
+			IloExtractable extr = *it;
 			if (extr.isConstraint() && capacity_constr_name.compare(extr.getName())) {
-				IloRange constr = (IloRange) extr.asConstraint();
-				IloRange.setUB(capacity);
+				IloRange capacity_range(dynamic_cast<IloRangeI *>(extr.asConstraint().getImpl()));
+				capacity_range.setUB(capacity);
 			}
 		}
 	} catch (IloException& e) {
@@ -78,18 +82,17 @@ int set_capacity(IloModel &model, const int capacity) {
 	return capacity;
 }
 
-int get_CPLEX(IloModel &model, IloCplex &cplex,  const IloEnv &env, const std::unordered_set<int> &items, const std::forward_list<std::set<int> > &collection, const int capacity, const bool use_antichain, const double gap = 0.1);
+int get_CPLEX(IloCplex *cplex, IloModel &model, const IloEnv &env, const std::unordered_set<int> &items, const std::forward_list<std::set<int> > &collection, const int capacity, const bool use_antichain, const double gap) {
 	try {
-		std::unsorted_map<int, int> items_to_vars;
+		std::unordered_map<int, int> items_to_vars;
 		int var_ind = 0;
 		IloIntVarArray vars(env);
 		IloRangeArray constraints(env);
-		IloModel model(env);
 		// Create variables for the items and build the capacity constraint
 		IloExpr capacity_expr(env);
-		for (int item : items) {
+		for (; var_ind < items.size(); ++var_ind) {
 			vars.add(IloIntVar(env, 0, 1));
-			capacity_expr.add(1.0 * vars[var_ind++]);
+			capacity_expr += vars[var_ind];
 		}
 		// Add capacity constraint
 		constraints.add(IloRange(env, 0.0, capacity_expr, capacity, "capacity"));
@@ -97,7 +100,7 @@ int get_CPLEX(IloModel &model, IloCplex &cplex,  const IloEnv &env, const std::u
 		// Create variables for the itemsets, add knapsack constraints, and
 		// create objective function
 		IloExpr obj_expr(env);
-		std::unordered_map<std::set<int>*, int> itemsets_to_vars;
+		std::unordered_map<const std::set<int>*, int> itemsets_to_vars;
 		for (std::forward_list<std::set<int> >::const_iterator it =
 				collection.begin(); it != collection.end(); ++it) {
 			vars.add(IloIntVar(env, 0, 1));
@@ -117,24 +120,26 @@ int get_CPLEX(IloModel &model, IloCplex &cplex,  const IloEnv &env, const std::u
 			// or vice versa, then add the constraint 0 \le var_A + var_B \le 1.
 			// XXX The following may not be good for memory, as we are adding a
 			// lot of constraints.
-			for (std::forward_list<std::set<int>*>::const_iterator first_it = collection.begin(); first_it != collection.end(); ++first_it) {
-				std::forward_list<std::set<int>*>::const_iterator second_it = first_it;
+			for (std::forward_list<std::set<int>>::const_iterator first_it = collection.begin(); first_it != collection.end(); ++first_it) {
+				std::forward_list<std::set<int>>::const_iterator second_it(first_it);
 				for (++second_it; second_it != collection.end(); ++second_it) {
-					if (min((*(*first_it)).size(),(*(*second_it)).size()) > 1) {
-						std::vector<int> intersection(min((*(*first_it)).size(),(*(*second_it)).size()));
+					size_t min_size = std::min(first_it->size(), second_it->size());
+					if (min_size > 1) {
+						std::vector<int> intersection(min_size);
 						std::vector<int>::iterator it = std::set_intersection(
-								(*(*first_it)).begin(),
-							(*(*first_it)).end(), (*(*second_it)).begin(),
-							(*(*second_it)).end(),  intersection.begin());
-						if (it - intersection.begin() == min((*(*first_it)).size(),(*(*second_it)).size())) {
-							constraints.add(IloRange(env, 0.0, vars[ ] + vars[ ], 1.0));
+							first_it->begin(),
+							first_it->end(), second_it->begin(),
+							second_it->end(), intersection.begin());
+						if (it - intersection.begin() == min_size) {
+							constraints.add(IloRange(env, 0.0, vars[itemsets_to_vars[&(*first_it)]] + vars[itemsets_to_vars[&(*second_it)]], 1.0));
 						}
 					}
 				}
 			}
 		}
 		model.add(constraints);
-		IloCplex cplex(model);
+		IloCplex my_cplex(model);
+		cplex = &my_cplex;
 		// Set the relative gap below which to stop.
 		// The solver stops if it founds a feasible solution whose value is
 		// proved to be within a fraction 'gap' of the optimal. Note that being
@@ -143,13 +148,13 @@ int get_CPLEX(IloModel &model, IloCplex &cplex,  const IloEnv &env, const std::u
 		// solution divided by the gap (queried below) to obtain an upper bound
 		// to the optimal solution. As long as the gap is below 0.5, this is a
 		// good approximation for our purposes. See also discussion in the paper
-		cplex.setParam(IloCplex::EpGap, gap);
+		my_cplex.setParam(IloCplex::EpGap, gap);
 		// Set the absolute gap below which to stop.
 		// As above, but for an absolute gap, instead of relative. Since we are
 		// using the log2 of the solution, being within 2.0 doesn't change much.
-		cplex.setParam(IloCplex::EpAGap, 2.0);
+		my_cplex.setParam(IloCplex::EpAGap, 2.0);
 		// Set a maximum time limit, in seconds (600=10mins. no clue.)
-		cplex.setParam(IloCple::TiLim, 600);
+		my_cplex.setParam(IloCplex::TiLim, 600);
 	} catch (IloException& e) {
 		std::cerr << "ConcertException: " << e << std::endl;
 		return -1;

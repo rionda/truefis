@@ -167,17 +167,17 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
 	// We do not need a counter 'i' like in the pseudocode, we can use an
 	// iterator that exploits the sorted nature of the map
 	std::map<int, int, bool (*)(int,int)>::iterator it = intersection_sizes_counts.begin();
-	ILOSTLBEGIN
+	//ILOSTLBEGIN
 	IloEnv env;
-	IloModel model;
-	IloCplex cplex;
-	if (get_CPLEX(model, cplex, env, items, collection, it->second, use_antichain) == -1) {
+	IloModel model(env);
+	IloCplex *cplex = NULL;
+	if (get_CPLEX(cplex, model, env, items, collection, it->second, use_antichain) == -1) {
 		// XXX TODO something went wrong
 		env.end();
 	};
 	while (true) {
 		// The following is q in the pseudocode
-		double profit = get_SUKP_profit(cplex);
+		double profit = get_SUKP_profit(*cplex);
 		if (profit == -1.0) {
 			// XXX TODO something went wrong
 			env.end();

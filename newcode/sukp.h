@@ -24,10 +24,10 @@
 
 #include <ilcplex/ilocplex.h>
 
-int get_CPLEX(IloModel &model, IloCplex &cplex,  const IloEnv &env, const std::unordered_set<int> &items, const std::forward_list<std::set<int> > &collection, const int capacity, const bool use_antichain, const double gap = 0.1);
+int get_CPLEX(IloCplex *cplex, IloModel &model, const IloEnv &env, const std::unordered_set<int> &items, const std::forward_list<std::set<int> > &collection, const int capacity, const bool use_antichain, const double gap = 0.1);
 
 int set_capacity(IloModel &model, const int capacity);
 
-double get_SUKP_profit(const IloCplex &cplex);
+double get_SUKP_profit(IloCplex &cplex);
 
 #endif
