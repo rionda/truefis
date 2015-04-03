@@ -22,7 +22,7 @@
 #include <unordered_map>
 #include <vector>
 
-#include <igraph.h>
+#include <igraph/igraph.h>
 
 #include "graph.h"
 
@@ -39,7 +39,7 @@
 int get_max_bipartite_matching_size(const int num_nodes, const std::vector<int> &edges_vector) {
 	igraph_vector_t edges;
 	igraph_vector_init(&edges, edges_vector.size());
-	for (int i = 0; i < edges_vector.size(); ++i) {
+	for (unsigned int i = 0; i < edges_vector.size(); ++i) {
 		VECTOR(edges)[i] = edges_vector[i];
 	}
 	igraph_vector_bool_t types;
@@ -98,7 +98,7 @@ int get_largest_antichain_size(const std::forward_list<const std::set<int> *> &s
 			// Add an edge if first is a subset of second
 			if (it == difference.begin()) {
 				edges.push_back(sets_to_ids[first]);
-				edges.push_back(sets.size() + sets_to_ids[second]);
+				edges.push_back(sets_size + sets_to_ids[second]);
 			}
 		}
 	}

@@ -17,15 +17,15 @@ UNAME := $(shell uname)
 
 ifeq ($(UNAME), Darwin)
 CPP=g++-mp-4.9
-IGRAPH=-I/opt/local/include/igraph -L/opt/local/lib
+IGRAPH=-I/opt/local/include/ -L/opt/local/lib
 else
 CPP=g++-4.9
-IGRAPH=
+CPLEX=-I/local/projects/cplex/current/cplex/x86_64/include -L/local/projects/cplex/current/cplex/x86_64/lib
+IGRAPH=-I/home/matteo/include -L/home/matteo/lib
 endif
 #DEBUG=-DDEBUG
 
 OPT=-Ofast -pipe -m64 -march=native -mtune=native
-endif
 #PROFILE=-pg
 #GDB=-ggdb3
 
@@ -35,7 +35,7 @@ ifeq ($(UNAME), Darwin)
 STATIC=-static-libgcc -static-libstdc++
 endif
 
-WARNS=-Wextra -Wall -Wstrict-aliasing=1 -Werror -pedantic-errors -Wshadow
+WARNS=-Wextra -Wall -Wstrict-aliasing=1 -Werror -pedantic-errors -Wshadow -Wno-sign-compare
 
 ANSI_FLAGS=-ansi -std=c++11 -fabi-version=6
 
@@ -50,11 +50,11 @@ archive: truefis.tar.bz2
 clean:
 	-/bin/rm -rf compute_stats *.dSYM
 
-compute_stats: compute_stats.cpp stats.cpp util.cpp stats.h util.h Makefile
-	$(CPP) dataset.cpp graph.cpp stats.cpp sukp.cpp $@.cpp $(CFLAGS) -o $@ $(IGRAPH) -ligraph -lm
+compute_stats: compute_stats.cpp dataset.cpp dataset.h graph.cpp graph.h stats.cpp stats.h sukp.cpp sukp.h Makefile
+	$(CPP) dataset.cpp graph.cpp stats.cpp sukp.cpp $@.cpp $(CFLAGS) -o $@ $(IGRAPH) -ligraph -lilocplex -lconcert -lcplex -lm -lpthread
 
 truefis.tar.bz2: ../README.md ../LICENSE ../NOTICE Makefile *.h *.cpp
-	-/bin/rm -rf truefis 
+	-/bin/rm -rf truefis
 	mkdir truefis
 	cp ../README.md ../LICENSE ../NOTICE truefis
 	cp Makefile truefis

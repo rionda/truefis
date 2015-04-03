@@ -124,8 +124,10 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
 	}
 	// The following is called U in the pseudocode
 	std::unordered_set<int> items;
+	int collection_size = 0;
 	for (std::set<int> itemset : collection) {
 		items.insert(itemset.begin(), itemset.end());
+		++collection_size;
 	}
 	// The following is called L in the pseudocode
 	std::map<int, int, bool (*)(int,int)> intersection_sizes_counts(reverse_int_comp);
@@ -169,6 +171,8 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
 			return b;
 		}
 	}
+	--it;
+	return (int) floor(fmin(it->second, log2(collection_size)));
 }
 
 /**

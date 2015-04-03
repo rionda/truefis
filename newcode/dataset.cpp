@@ -33,7 +33,7 @@
  */
 Dataset::Dataset(
 		const std::string _path, const int _size, const bool compute_size) :
-	path(_path), size(_size) {
+	size(_size), path(_path) {
 		std::ifstream dataset(path);
 		if(! dataset.good()) {
 			// TODO Handle failure if problem in opening file;
