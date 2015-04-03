@@ -25,8 +25,10 @@
 #include <string>
 #include <vector>
 
+#include <igraph/igraph.h>
 #include <ilcplex/ilocplex.h>
 
+#include "graph.h"
 #include "sukp.h"
 
 double get_SUKP_profit(IloCplex &cplex) {
@@ -116,26 +118,54 @@ int get_CPLEX(IloCplex *cplex, IloModel &model, const IloEnv &env, const std::un
 		model.add(IloMaximize(env, obj_expr));
 
 		if (use_antichain) {
+			// Add the antichain constraints.
+			// We create a graph whose nodes are the itemsets in the collection,
+			// and there is an edge between two nodes if one is a subset of the
+			// other. Maximal cliques in this graph are maximal chains and we add
+			// one constraint per maximal chain, denoting that we can at most
+			// pick one itemset per maximal chain. This is a bit smaller than
+			// the straightforward solution (commented out below), but it
+			// creates the minimum number of constraints, which is good for
+			// memory.
+			igraph_t *graph = create_antichain_graph(collection, itemsets_to_vars);
+			igraph_vector_ptr res;
+			igraph_vector_ptr_init(&res, 0);
+			// Get maximal cliques of size at least 2.
+			// We can ignore single nodes, as the constraint would be irrelevant
+			igraph_maximal_cliques(graph, &res, 2, 0);
+			for (int i = 0; i < igraph_vector_ptr_size(&cliques); ++i) {
+				igraph_vector_t *clique = VECTOR(cliques)[i];
+				IloExpr clique_expr(env);
+				for (int j = 0; j < igraph_vector_size(clique); ++j) {
+					clique_expr += vars[VECTOR(*clique)[j]];
+				}
+				constraints.add(IloRange(env, 0.0; clique_expr, 1.0));
+				igraph_vector_destroy(clique);
+				igraph_free(clique);
+			}
+			igraph_vector_ptr_destroy(&res);
+			igraph_destroy(graph);
+			// The following is the straightforward solution, but it is
+			// commented out because it creates a huge number of constraints,
+			// which is bad for memory.
 			// Add the antichain constraints: if itemset 'A' the subset of 'B'
 			// or vice versa, then add the constraint 0 \le var_A + var_B \le 1.
-			// XXX The following may not be good for memory, as we are adding a
-			// lot of constraints.
-			for (std::forward_list<std::set<int>>::const_iterator first_it = collection.begin(); first_it != collection.end(); ++first_it) {
-				std::forward_list<std::set<int>>::const_iterator second_it(first_it);
-				for (++second_it; second_it != collection.end(); ++second_it) {
-					size_t min_size = std::min(first_it->size(), second_it->size());
-					if (min_size > 1) {
-						std::vector<int> intersection(min_size);
-						std::vector<int>::iterator it = std::set_intersection(
-							first_it->begin(),
-							first_it->end(), second_it->begin(),
-							second_it->end(), intersection.begin());
-						if (it - intersection.begin() == min_size) {
-							constraints.add(IloRange(env, 0.0, vars[itemsets_to_vars[&(*first_it)]] + vars[itemsets_to_vars[&(*second_it)]], 1.0));
-						}
-					}
-				}
-			}
+			// for (std::forward_list<std::set<int>>::const_iterator first_it = collection.begin(); first_it != collection.end(); ++first_it) {
+			// 	std::forward_list<std::set<int>>::const_iterator second_it(first_it);
+			// 	for (++second_it; second_it != collection.end(); ++second_it) {
+			// 		size_t min_size = std::min(first_it->size(), second_it->size());
+			// 		if (min_size > 1) {
+			// 			std::vector<int> intersection(min_size);
+			// 			std::vector<int>::iterator it = std::set_intersection(
+			// 				first_it->begin(),
+			// 				first_it->end(), second_it->begin(),
+			// 				second_it->end(), intersection.begin());
+			// 			if (it - intersection.begin() == min_size) {
+			// 				constraints.add(IloRange(env, 0.0, vars[itemsets_to_vars[&(*first_it)]] + vars[itemsets_to_vars[&(*second_it)]], 1.0));
+			// 			}
+			// 		}
+			// 	}
+			// }
 		}
 		model.add(constraints);
 		IloCplex my_cplex(model);
