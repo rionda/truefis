@@ -144,7 +144,7 @@ false positives:
   $d_1\leftarrow$ upper bound to $\EVC(\range(2^\Itm),\Ds)$  \Comment{as
 	discussed in Sect.~\ref{sec:computvcexact}}
   $\varepsilon_1\leftarrow 2c\sqrt{\frac{2d_1\max_{a\in\Itm}f_\Ds(\{a\})}{|\Ds|}}
-  + \sqrt{\frac{2\ln\frac{4}{\delta}}{|\Ds|}}$\;
+  + \sqrt{\frac{2\ln\frac{4}{\delta_1}}{|\Ds|}}$\;
   $\mathcal{C}_1=\FI(\Ds,\Itm,\theta-\varepsilon_1)$\;
   $\mathcal{G}=\{A\subseteq\Itm ~:~ \theta-\varepsilon_1\le
 f_\Ds(A)<\theta+\varepsilon_1\}$\;
@@ -153,7 +153,7 @@ f_\Ds(A)<\theta+\varepsilon_1\}$\;
   $d_2\leftarrow$ upper bound to $\EVC(\range(\mathcal{B}),\Ds)$ \Comment{using
 	  an ``antichain-aware'' algorithm on $\mathcal{F}$}
   $\varepsilon_2\leftarrow 2c\sqrt{\frac{2d_2\max_{A\in\mathcal{F}}f_\Ds(A)}{|\Ds|}}
-  + \sqrt{\frac{2\ln\frac{4}{\delta}}{|\Ds|}}$\;
+  + \sqrt{\frac{2\ln\frac{4}{\delta_2}}{|\Ds|}}$\;
   \Return{$\theta+\varepsilon_2$}
   \caption{Compute freq.~threshold $\hat{\theta}$
   s.~t.~$\FI(\Ds,\Itm,\hat{\theta})$ contains only TFIs with prob.~at least
