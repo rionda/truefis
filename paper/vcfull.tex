@@ -150,8 +150,8 @@ false positives:
 f_\Ds(A)<\theta+\varepsilon_1\}$\;
   $\mathcal{W}\leftarrow$ negative border of $\mathcal{C}_1$\;
   $\mathcal{F}=\mathcal{G}\cup\mathcal{W}$\;
-  $d_2\leftarrow$ upper bound to $\EVC(\range(\mathcal{B}),\Ds)$ \Comment{Using
-   an ``antichain-aware'' algorithm}
+  $d_2\leftarrow$ upper bound to $\EVC(\range(\mathcal{B}),\Ds)$ \Comment{using
+	  an ``antichain-aware'' algorithm on $\mathcal{F}$}
   $\varepsilon_2\leftarrow 2c\sqrt{\frac{2d_2\max_{A\in\mathcal{F}}f_\Ds(A)}{|\Ds|}}
   + \sqrt{\frac{2\ln\frac{4}{\delta}}{|\Ds|}}$\;
   \Return{$\theta+\varepsilon_2$}
