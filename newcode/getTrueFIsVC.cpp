@@ -1,0 +1,183 @@
+/**
+ * Compute a collection of itemsets that is, with probability at least 1-\delta,
+ * a subset of TFI(\pi,\Itm,\theta), using the 'non-holdout-VC' algorithm.
+ * XXX Update the name of the algorithm if needed.
+ *
+ * Copyright 2015 Matteo Riondato <matteo@cs.brown.edu>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *
+ */
+
+#include <cmath> // for sqrt
+#include <cstdlib> // for EXIT_FAILURE, SUCCESS
+#include <iostream>
+#include <map>
+#include <set>
+#include <string>
+#include <unordered_set>
+
+#include <unistd.h> // for getopt
+extern int optind;
+
+#include "config.h"
+#include "dataset.h"
+#include "epsilon.h"
+#include "itemsets.h"
+#include "stats.h"
+
+/**
+ * Print usage on stderr.
+ */
+void usage(const char *binary_name) {
+	std::cerr << binary_name << ": compute, with probability at least 1-delta, a subset of the TrueFIs w.r.t. theta" << std::endl;
+	std::cerr << "USAGE: " << binary_name << " [-hv] delta theta bound_method_1st_phase count_method_2nd_phase bound_method_2nd_phase frequent_itemsets_path dataset_path" << std::endl;
+	std::cerr << "\t-h: print this help message and exit" << std::endl;
+	std::cerr << "\t-v: be verbose" << std::endl;
+}
+
+/**
+ * Populate configurations by parsing command line options and arguments
+ */
+int get_configs(int argc, char **argv, ds_config &ds_conf, mine_config &mine_conf, stats_config &stats_conf_1st, stats_config &stats_conf_2nd) {
+	int opt;
+	while ((opt = getopt(argc, argv, "hv")) != -1) {
+		switch (opt) {
+		case 'h':
+			usage(argv[0]);
+			return EXIT_SUCCESS;
+			break;
+		case 'v':
+			mine_conf.verbose = true;
+			break;
+		}
+	}
+	if (optind != argc - 7) {
+		std::cerr << "ERROR: wrong number of arguments" << std::endl;
+		return EXIT_FAILURE;
+	}
+	mine_conf.delta = std::stod(argv[argc - 7]);
+	if (mine_conf.delta <= 0.0 || mine_conf.delta >= 1.0) {
+		std::cerr <<  "ERROR: delta must be a number greater than 0 and smaller than 1" << std::endl;
+		return EXIT_FAILURE;
+	}
+	mine_conf.theta = std::stod(argv[argc - 6]);
+	if (mine_conf.theta <= 0.0 || mine_conf.theta >= 1.0) {
+		std::cerr << "ERROR: theta must be a number greater than 0 and smaller than 1" << std::endl;
+		return EXIT_FAILURE;
+	}
+	stats_conf_1st.use_antichain = false;
+	stats_conf_1st.cnt_method = COUNT_EXACT; // not used anyway
+	std::string method(argv[argc - 5]);
+	if (method == "exact") {
+		stats_conf_1st.bnd_method = BOUND_EXACT;
+	} else if (method == "scan") {
+		stats_conf_1st.bnd_method = BOUND_SCAN;
+	} else {
+		std::cerr << "ERROR: bound method for 1st phase must be 'exact' or 'scan'" << std::endl;
+		return EXIT_FAILURE;
+	}
+	stats_conf_2nd.use_antichain = true;
+	method.assign(argv[argc - 4]);
+	if (method == "exact") {
+		stats_conf_2nd.cnt_method = COUNT_EXACT;
+	} else if (method == "fast") {
+		stats_conf_2nd.cnt_method = COUNT_FAST;
+	} else if (method == "sukp") {
+		stats_conf_2nd.cnt_method = COUNT_SUKP;
+	} else {
+		std::cerr << "ERROR: count method for 2nd phase must be 'exact', 'fast', or 'sukp'" << std::endl;
+		return EXIT_FAILURE;
+	}
+	method.assign(argv[argc - 3]);
+	if (method == "exact") {
+		stats_conf_2nd.bnd_method = BOUND_EXACT;
+	} else if (method == "scan") {
+		stats_conf_2nd.bnd_method = BOUND_SCAN;
+	} else {
+		std::cerr << "ERROR: bound method for 2nd phase must be 'exact' or 'scan'" << std::endl;
+		return EXIT_FAILURE;
+	}
+	ds_conf.fi_path.assign(argv[argc - 2]);
+	ds_conf.path.assign(argv[argc - 1]);
+	return -1;
+}
+
+int main(int argc, char **argv) {
+	// Get configurations
+	ds_config ds_conf;
+	mine_config mine_conf;
+	stats_config stats_conf1;
+	stats_config stats_conf2;
+	int opt_ret = get_configs(argc, argv, ds_conf, mine_conf, stats_conf1, stats_conf2);
+	if (opt_ret == EXIT_FAILURE || opt_ret == EXIT_SUCCESS) {
+		return opt_ret;
+	}
+	Dataset dataset(ds_conf);
+	Stats stats1(dataset, stats_conf1);
+	// The following acts as both \delta_1 and \delta_2 in the pseudocode.
+	double lowered_delta = 1.0 - std::sqrt(1 - mine_conf.delta);
+	double epsilon_1 = get_epsilon(stats1, dataset, lowered_delta);
+	// The following is called \mathcal{C}_1 in the pseudocode.
+	std::map<std::set<int>, const double> frequent_itemsets;
+	dataset.get_frequent_itemsets(mine_conf.theta - epsilon_1, frequent_itemsets);
+	std::unordered_set<const std::set<int>*> closed_itemsets;
+	get_closed_itemsets(frequent_itemsets, closed_itemsets);
+	std::unordered_set<const std::set<int>*> maximal_itemsets;
+	get_maximal_itemsets(closed_itemsets, maximal_itemsets);
+	// The following is called \mathcal{W} in the pseudocode
+	std::set<std::set<int> > neg_border;
+	get_negative_border(maximal_itemsets, neg_border);
+	// The following is called \mathcal{F} in the pseudocode
+	std::unordered_set<const std::set<int>*> collection_F;
+	for (std::set<std::set<int> >::iterator it = neg_border.begin(); it != neg_border.end(); ++it) {
+		collection_F.insert(&(*it));
+	}
+	// After the loop is completed, the map will only contain the (closed)
+	// itemsets in the set \mathcal{G} in the pseudocode.
+	// In the loop, we also insert (pointers to) these closed itemsets into
+	// collection_F
+	for (std::map<std::set<int>, const double>::iterator fis_it = frequent_itemsets.begin(); fis_it != frequent_itemsets.end();) {
+		// Print and remove the itemsets with frequency at least theta+epsilon_1.
+		if (fis_it->second >= mine_conf.theta + epsilon_1) {
+			std::cout << itemset2string(fis_it->first) << " " << fis_it->second << std::endl;
+			// Exploit the fact that changes to STL maps do not invalidate iterators
+			std::map<std::set<int>, const double>::iterator tmp(fis_it);
+			++fis_it;
+			frequent_itemsets.erase(tmp->first);
+			continue;
+		}
+		// Remove frequent itemsets (with frequency lower than \theta+\epsilon_1) that are not closed
+		if (closed_itemsets.find(&(fis_it->first)) == closed_itemsets.end()) {
+			// Exploit the fact that changes to STL maps do not invalidate iterators
+			std::map<std::set<int>, const double>::iterator tmp(fis_it);
+			++fis_it;
+			frequent_itemsets.erase(tmp->first);
+			continue;
+		} else { // Insert the pointer into collection_F
+			collection_F.insert(&(fis_it->first));
+		}
+		++fis_it;
+	}
+	// The following compute the EVC bound called d_2 in the pseudocode, and the
+	// maximum frequency of an itemset from F.
+	Stats stats2(dataset, collection_F, stats_conf2);
+	double epsilon_2 = get_epsilon(stats2, dataset, lowered_delta);
+	// Print the itemsets with frequency at least theta+epsilon_2
+	//
+	for (std::map<std::set<int>, const double>::iterator fis_it = frequent_itemsets.begin(); fis_it != frequent_itemsets.end(); ++fis_it) {
+		if (fis_it->second >= mine_conf.theta + epsilon_2) {
+			std::cout << itemset2string(fis_it->first) << " " << fis_it->second << std::endl;
+		}
+	}
+}

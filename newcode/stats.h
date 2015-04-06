@@ -23,18 +23,10 @@
 
 #include <set>
 #include <string>
+#include <unordered_set>
 
-enum Stats_method_count {
-	COUNT_EXACT = 1,
-	COUNT_FAST = 2,
-	COUNT_SUKP = 3
-};
-
-enum Stats_method_bound {
-	BOUND_EXACT = 1,
-	BOUND_SCAN = 2
-};
-
+#include "config.h"
+#include "dataset.h"
 
 class Stats {
 	int evc_bound;
@@ -42,8 +34,8 @@ class Stats {
 	public:
 		Stats(): evc_bound(0), max_supp(0.0) {};
 		Stats(int _evc_bound, double _max_supp): evc_bound(_evc_bound), max_supp(_max_supp) {};
-		Stats(Dataset &, const Stats_method_bound &);
-		Stats(Dataset &, const std::set<std::set<int> > &, const Stats_method_count &, const Stats_method_bound &, const bool = false);
+		Stats(Dataset &, const stats_config &);
+		Stats(Dataset &, const std::unordered_set<const std::set<int>*> &, const stats_config &); 
 		int get_evc_bound();
 		int get_max_supp();
 };

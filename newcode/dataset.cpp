@@ -16,54 +16,110 @@
  *  limitations under the License.
  *
  */
+#include <cassert>
+#include <cstdlib>
 #include <fstream>
+#include <iostream>
 #include <string>
+#include <map>
+#include <set>
+#include <unordered_map>
 
+#include "config.h"
 #include "dataset.h"
+#include "itemsets.h"
 
 /**
- * Constructor.
+ * Constructor using configuration.
  *
- * Parameters:
- * _path: the path to the file containing the transactions. Must be readable.
- * _size (optional, default = -1): if not less than -1, set the size of the
- * dataset to this value. A value of -1 is like not setting any size.
- * compute_size (optional, default = false): if true, force the computation of
- * the size of the dataset. If true, the value of _size is ignored.
  */
-Dataset::Dataset(
-		const std::string _path, const int _size, const bool compute_size) :
-	size(_size), path(_path) {
-		std::ifstream dataset(path);
-		if(! dataset.good()) {
-			// TODO Handle failure if problem in opening file;
-			dataset.close();
-		}
+Dataset::Dataset(const ds_config &conf) : max_supp(conf.max_supp), size(conf.size), fi_path(conf.fi_path), path(conf.path) {
+	assert(! path.empty());
+	assert(! fi_path.empty());
+	std::ifstream dataset(path);
+	if(! dataset.good()) {
 		dataset.close();
-		if (compute_size) {
-			get_size(true);
-		} else if (size < -1) {
-			size = -1;
+		std::cerr << "ERROR: cannot open dataset file" << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	dataset.close();
+	std::ifstream fi(fi_path);
+	if(! fi.good()) {
+		fi.close();
+		std::cerr << "ERROR: cannot open frequent itemsets file" << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	fi.close();
+	if (size <= -1 || max_supp <= -1) {
+		get_size(true);
+	}
+}
+
+int Dataset::get_frequent_itemsets(const double theta, std::map<std::set<int>, const double> &frequent_itemsets) {
+	std::fstream fi_stream(fi_path);
+	if (! fi_stream.good()) {
+		fi_stream.close();
+		std::cerr << "ERROR: cannot open frequent itemsets file" << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+	std::string line;
+	std::getline(fi_stream, line);
+	assert(std::stoi(line) == size);
+	double prev_freq = 2.0;
+	frequent_itemsets.clear();
+	while (getline(fi_stream, line)) {
+		const size_t parenthesis_index = line.find_first_of("(");
+		const std::string itemset_str = line.substr(0, parenthesis_index - 1);
+		const std::set<int> itemset = string2itemset(itemset_str);
+		const double support = std::stoi(line.substr(parenthesis_index +1));
+		const double freq = support / size;
+		if (freq > prev_freq) {
+			std::cerr << "ERROR: results must be sorted" << std::endl;
+			std::exit(EXIT_FAILURE);
 		}
+		if (freq >= theta) {
+			frequent_itemsets.emplace(itemset, freq);
+			prev_freq = freq;
+		} else {
+			break;
+		}
+	}
+	fi_stream.close();
+	return frequent_itemsets.size();
 }
 
 /**
  * Return the size of the dataset.
  *
  * Recompute it if we never computed before or 'recompute' is true
+ *
+ * As a desired side effect, max_supp is also computed.
  */
 int Dataset::get_size(const bool recompute) {
 	if (size == -1 || recompute) {
 		std::ifstream dataset(path);
 		if(! dataset.good()) {
-			// TODO Handle failure if problem in opening file;
 			dataset.close();
-			return -1;
+			std::cerr << "ERROR: cannot open dataset file" << std::endl;
+			std::exit(EXIT_FAILURE);
 		}
+		max_supp = 0;
 		size = 0;
 		std::string line;
+		std::unordered_map<int, int> item_freqs;
 		while (getline(dataset, line)) {
 			++size;
+			const std::set<int> transaction = string2itemset(line);
+			for (const int item : transaction) {
+				if (item_freqs.find(item) == item_freqs.end()) {
+					item_freqs[item] = 1;
+				} else {
+					item_freqs[item]++;
+					if (max_supp < item_freqs[item]) {
+						max_supp = item_freqs[item];
+					}
+				}
+			}
 		}
 		dataset.close();
 	}
@@ -73,11 +129,12 @@ int Dataset::get_size(const bool recompute) {
 /**
  * Return the maximum support of an item in the dataset.
  *
- * Recompute it if we never computed before or 'recompute' is true
+ * Recompute it if we never computed before or 'recompute' is true.
+ * In this case, size is also computed, as a desired side effect.
  */
 int Dataset::get_max_supp(const bool recompute) {
 	if (max_supp == -1 || recompute) {
-		// TODO Recompute;
+		get_size(true);
 	}
 	return max_supp;
 }

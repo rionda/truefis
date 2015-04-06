@@ -32,6 +32,7 @@
 
 #include <ilcplex/ilocplex.h>
 
+#include "config.h"
 #include "dataset.h"
 #include "graph.h"
 #include "itemsets.h"
@@ -56,7 +57,7 @@ bool reverse_int_comp(const int lhs, const int rhs) {
  */
 int compute_evc_bound(
 		const std::map<int, std::forward_list<const std::set<int> *>, bool (*)(int,int)>
-		&intersections_by_size, const Stats_method_bound &method) {
+		&intersections_by_size, const stats_config &conf) {
 	// The following check is true if all transactions contains all items from U
 	// or no item from U.
 	if (intersections_by_size.empty()) {
@@ -80,10 +81,10 @@ int compute_evc_bound(
 			}
 			++trans_it;
 		}
-		if (method == BOUND_SCAN) {
+		if (conf.bnd_method == BOUND_SCAN) {
 			// Return d_1
 			break;
-		} else if (method == BOUND_EXACT) {
+		} else if (conf.bnd_method == BOUND_EXACT) {
 			// Run the exact method, computing antichains
 			max_antichain_size = get_largest_antichain_size(curr_T);
 			if (max_antichain_size >= evc_bound) {
@@ -125,7 +126,7 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
 	int size = 0;
 	while (std::getline(dataset_s, line)) {
 		++size;
-		std::set<int> tau = line2itemset(line);
+		std::set<int> tau = string2itemset(line);
 		std::vector<int> intersection_v(tau.size());
 		std::vector<int>::iterator it;
 		it = std::set_intersection(
@@ -199,7 +200,7 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
  * bound to the empirical VC-dimension. See stats.h for documentation on
  * Stats_method_bound.
  */
-Stats::Stats(Dataset& dataset, const Stats_method_bound &method) {
+Stats::Stats(Dataset& dataset, const stats_config &stats_conf) {
 	std::ifstream dataset_s(dataset.get_path());
 	if(! dataset_s.good()) {
 		// XXX TODO Handle failure if problem in opening file;
@@ -220,7 +221,7 @@ Stats::Stats(Dataset& dataset, const Stats_method_bound &method) {
 	// special case, we also use it to populate U.
 	while (std::getline(dataset_s, line)) {
 		++size;
-		std::set<int> tau = line2itemset(line);
+		std::set<int> tau = string2itemset(line);
 		for (int item : tau) {
 			items.insert(item);
 			if (item_supps.count(item) == 0) {
@@ -256,17 +257,14 @@ Stats::Stats(Dataset& dataset, const Stats_method_bound &method) {
 		transactions_by_size[key].clear();
 		transactions_by_size.erase(key);
 	}
-	evc_bound = compute_evc_bound(transactions_by_size, method);
+	evc_bound = compute_evc_bound(transactions_by_size, stats_conf);
 }
 
 Stats::Stats(
 		Dataset &dataset,
-		const std::set<std::set<int> > &collection,
-		const Stats_method_count &count_method,
-		const Stats_method_bound &bound_method,
-		const bool use_antichain) {
+		const std::unordered_set<const std::set<int> *> &collection, const stats_config &stats_conf) {
 	std::ifstream dataset_s(dataset.get_path());
-	if (count_method == COUNT_SUKP) {
+	if (stats_conf.cnt_method == COUNT_SUKP) {
 		// XXX TODO Implement
 		evc_bound = 0;
 		max_supp = 0;
@@ -283,8 +281,8 @@ Stats::Stats(
 	}
 	// The following is called U in the pseudocode
 	std::set<int> items;
-	for (std::set<int> itemset : collection) {
-		items.insert(itemset.begin(), itemset.end());
+	for (const std::set<int> *itemset : collection) {
+		items.insert(itemset->begin(), itemset->end());
 	}
 	// The following is called T in the pseudocode. The name is a little
 	// confusing, because the keys are not really the sizes of the
@@ -304,7 +302,7 @@ Stats::Stats(
 	// This is the first loop in the pseudocode, to populate T and L
 	while (std::getline(dataset_s, line)) {
 		++size;
-		std::set<int> tau = line2itemset(line);
+		const std::set<int> tau = string2itemset(line);
 		std::vector<int> intersection_v(tau.size());
 		std::vector<int>::iterator it;
 		it = std::set_intersection(
@@ -317,31 +315,31 @@ Stats::Stats(
 		}
 		if (insertion_pair.second) { // intersection was not already in intersections
 			int itemsets_in_tau_log = tau.size();
-			std::forward_list<const std::set<int> *> itemsets_in_tau_list;
-			if (count_method == COUNT_EXACT) {
+			std::forward_list<const std::set<int>*> itemsets_in_tau_list;
+			if (stats_conf.cnt_method == COUNT_EXACT) {
 				int itemsets_in_tau = 0;
-				for (std::set<std::set<int> >::const_iterator itemset = collection.begin(); itemset != collection.end(); ++itemset) {
-					if ((*itemset).size() <= intersection.size() &&
+				for (std::unordered_set<const std::set<int>*>::const_iterator itemset = collection.begin(); itemset != collection.end(); ++itemset) {
+					if ((*itemset)->size() <= intersection.size() &&
 							std::includes(intersection.begin(),
-								intersection.end(), (*itemset).begin(),
-								(*itemset).end())) {
+								intersection.end(), (*itemset)->begin(),
+								(*itemset)->end())) {
 						++itemsets_in_tau;
 						// If we are interested in antichains, we actually need
 						// to store (iterators to) the itemsets.
-						if (use_antichain) {
-							itemsets_in_tau_list.push_front(&(*itemset));
+						if (stats_conf.use_antichain) {
+							itemsets_in_tau_list.push_front(*itemset);
 						}
-						if (itemsets_supps.count(&(*itemset)) == 0) {
-							itemsets_supps[&(*itemset)] = 1;
+						if (itemsets_supps.count(*itemset) == 0) {
+							itemsets_supps[*itemset] = 1;
 						} else {
-							itemsets_supps[&(*itemset)]++;
-							if (itemsets_supps[&(*itemset)] > max_supp) {
+							itemsets_supps[*itemset]++;
+							if (itemsets_supps[*itemset] > max_supp) {
 								++max_supp;
 							}
 						}
 					}
 				}
-				if (use_antichain) {
+				if (stats_conf.use_antichain) {
 					itemsets_in_tau =
 						get_largest_antichain_size(itemsets_in_tau_list);
 				}
@@ -358,7 +356,7 @@ Stats::Stats(
 	dataset_s.close();
 	dataset.set_size(size); // Set size in the database object
 	//itemsets_supps.clear(); XXX I never know if this is a good idea
-	evc_bound = compute_evc_bound(intersections_by_size, bound_method);
+	evc_bound = compute_evc_bound(intersections_by_size, stats_conf);
 }
 
 

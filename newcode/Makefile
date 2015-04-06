@@ -17,14 +17,16 @@ UNAME := $(shell uname)
 
 ifeq ($(UNAME), Darwin)
 CPP=g++-mp-4.9
+CPLEX=-I$(HOME)/Applications/IBM/ILOG/CPLEX_Studio1261/cplex/include -L$(HOME)/Applications/IBM/ILOG/CPLEX_Studio1261/cplex/lib/x86-64_osx/static_pic  -lilocplex -lcplex
+CONCERT=-I$(HOME)/Applications/IBM/ILOG/CPLEX_Studio1261/concert/include -L$(HOME)/Applications/IBM/ILOG/CPLEX_Studio1261/concert/lib/x86-64_osx/static_pic  -lconcert
 IGRAPH=-I/opt/local/include/ -L/opt/local/lib -ligraph
+OPT=-Ofast -pipe -m64
 else
 CPP=g++-4.9
-#CPLEX=-I/local/projects/cplex/cplex/cplex121/x86_64/include -L/local/projects/cplex/cplex/cplex121/x86_64/lib/x86-64_debian4.0_4.1/static_pic -lilocplex -lcplex
-#CONCERT=-I/local/projects/cplex/concert/concert29/x86_64/include -L/local/projects/cplex/concert/concert29/x86_64/lib/x86-64_debian4.0_4.1/static_pic -lconcert
 CPLEX=-I/local/projects/cplex/cplex12.6/cplex/include -L/local/projects/cplex/cplex12.6/cplex/lib/x86-64_linux/static_pic -lilocplex -lcplex
 CONCERT=-I/local/projects/cplex/cplex12.6/concert/include -L/local/projects/cplex/cplex12.6/concert/lib/x86-64_linux/static_pic -lconcert
 IGRAPH=-I/home/matteo/include -L/home/matteo/lib -ligraph
+OPT=-Ofast -pipe -m64 -march=native -mtune=native
 endif
 # Instruct CPLEX to compile with the standard headers, and without asserts and
 # debugs
@@ -33,21 +35,18 @@ CPLEX_FLAGS=-fPIC -fexceptions -DIL_STD -DNDEBUG
 OTHER_LIBS=-lm -lpthread
 
 #DEBUG=-DDEBUG
-
-OPT=-Ofast -pipe -m64 -march=native -mtune=native
 #PROFILE=-pg
 #GDB=-ggdb3
-
 #WARNS=-Wextra -Wall -Wstrict-aliasing=1 -Werror -pedantic-errors -Wshadow -Wno-sign-compare
 WARNS=-Wall -Wstrict-aliasing=1 -Werror -pedantic-errors -Wno-sign-compare
 
 ANSI_FLAGS=-ansi -std=c++11 -fabi-version=6
 
-CFLAGS=$(ANSI_FLAGS) $(WARNS) $(OPT) $(STATIC) $(GDB) $(DEBUG) $(PROFILE)
+CFLAGS=$(ANSI_FLAGS) $(WARNS) $(OPT)
 
 .PHONY: all clean
 
-all: compute_stats
+all: compute_stats getTrueFIsVC
 
 archive: truefis.tar.bz2
 
@@ -56,6 +55,9 @@ clean:
 
 compute_stats: compute_stats.cpp dataset.cpp dataset.h graph.cpp graph.h itemsets.cpp itemsets.h stats.cpp stats.h sukp.cpp sukp.h Makefile
 	$(CPP) dataset.cpp graph.cpp itemsets.cpp stats.cpp sukp.cpp $@.cpp $(CFLAGS) $(CPLEX_FLAGS) $(CPLEX) $(CONCERT) $(IGRAPH) $(OTHER_LIBS) -o $@
+
+getTrueFIsVC: getTrueFIsVC.cpp config.h dataset.cpp dataset.h epsilon.cpp epsilon.h graph.cpp graph.h itemsets.cpp itemsets.h stats.cpp stats.h sukp.cpp sukp.h Makefile
+	$(CPP) dataset.cpp epsilon.cpp graph.cpp itemsets.cpp stats.cpp sukp.cpp $@.cpp $(CFLAGS) $(CPLEX_FLAGS) $(CPLEX) $(CONCERT) $(IGRAPH) $(OTHER_LIBS) -o $@
 
 truefis.tar.bz2: ../README.md ../LICENSE ../NOTICE Makefile *.h *.cpp
 	-/bin/rm -rf truefis

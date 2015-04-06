@@ -26,16 +26,7 @@
 #include <igraph/igraph.h>
 
 #include "graph.h"
-
-bool is_subset(const std::set<int> &first, const std::set<int> &second) {
-	assert(first.size() <= second.size());
-	std::vector<int>::iterator it;
-	std::vector<int> difference(first.size());
-	it = std::set_difference(
-			first.begin(), first.end(), second.begin(), second.end(),
-			difference.begin());
-	return it == difference.begin();
-}
+#include "itemsets.h"
 
 /**
  * Return the size of the largest antichain in sets

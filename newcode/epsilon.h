@@ -1,5 +1,5 @@
 /**
- * A class to represent a dataset. Code in dataset.cpp .
+ * Declarations for the functions to compute epsilon. Code in epsilon.cpp
  *
  * Copyright 2015 Matteo Riondato <matteo@cs.brown.edu>
  *
@@ -16,28 +16,9 @@
  * limitations under the License.
  *
  */
-#ifndef _DATASET_H
-#define _DATASET_H
 
-#include <map>
-#include <set>
-#include <string>
+#include "dataset.h"
+#include "stats.h"
 
-#include "config.h"
-
-class Dataset {
-	int max_supp;
-	int size;
-	const std::string fi_path;
-	const std::string path;
-	public:
-		Dataset(const ds_config &);
-		std::string get_fi_path() const { return fi_path; }
-		std::string get_path() const { return path; }
-		int get_frequent_itemsets(const double, std::map<std::set<int>, const double> &);
-		int get_max_supp(const bool = false);
-		int get_size(const bool = false);
-		int set_max_supp(const int);
-		int set_size(const int);
-};
-#endif
+double get_epsilon(const double, const double, const double, const double, const double=0.5);
+double get_epsilon(Stats &stats, Dataset &, const double, const double=0.5);
