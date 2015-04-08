@@ -20,11 +20,11 @@
 #define _SUKP_H
 
 #include <forward_list>
-#include <unordered_set>
+#include <set>
 
 #include <ilcplex/ilocplex.h>
 
-int get_CPLEX(IloCplex *cplex, IloModel &model, const IloEnv &env, const std::unordered_set<int> &items, const std::forward_list<std::set<int> > &collection, const int capacity, const bool use_antichain, const double gap = 0.1);
+int get_CPLEX(IloCplex *cplex, IloModel &model, const IloEnv &env, const std::unordered_set<int> &items, const std::unordered_set<const std::set<int>*> &collection, const int capacity, const bool use_antichain, const double gap = 0.1);
 
 int set_capacity(IloModel &model, const int capacity);
 

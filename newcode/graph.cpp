@@ -87,18 +87,18 @@ int get_largest_antichain_size(const std::forward_list<const std::set<int> *> &s
 	return sets_size - matching_size;
 }
 
-igraph_t *create_antichain_graph(const std::forward_list<std::set<int> > &collection, const std::unordered_map<const std::set<int>*, int> &sets_to_ids) {
+igraph_t *create_antichain_graph(const std::unordered_set<const std::set<int>*> &collection, const std::unordered_map<const std::set<int>*, int> &sets_to_ids) {
 	igraph_vector_t edges;
 	igraph_vector_init(&edges, sets_to_ids.size());
-	for (std::forward_list<std::set<int> >::const_iterator first_it = collection.begin(); first_it != collection.end(); ++first_it) {
-		std::forward_list<std::set<int> >::const_iterator second_it = first_it;
+	for (std::unordered_set<const std::set<int>*>::const_iterator first_it = collection.begin(); first_it != collection.end(); ++first_it) {
+		std::unordered_set<const std::set<int>*>::const_iterator second_it = first_it;
 		++second_it;
 		for (; second_it != collection.end(); ++second_it) {
-			std::forward_list<std::set<int> >::const_iterator smaller = first_it;
-			std::forward_list<std::set<int> >::const_iterator larger = second_it;
+			const std::set<int> *smaller = *first_it;
+			const std::set<int> *larger = *second_it;
 			if (smaller->size() > larger->size()) {
-				smaller = second_it;
-				larger = first_it;
+				smaller = *second_it;
+				larger = *first_it;
 			}
 			// Add an edge if smaller is a subset of larger
 			// edges has 2*no.-of-edges elements. The first edge is between

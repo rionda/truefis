@@ -55,6 +55,19 @@ Dataset::Dataset(const ds_config &conf) : max_supp(conf.max_supp), size(conf.siz
 	}
 }
 
+/**
+ * Constructor using argument. Only the first one is mandatory. 
+ */
+Dataset::Dataset(const std::string &_path, const int _max_supp, const int _size, const std::string &_fi_path) : max_supp(_max_supp), size(_size), fi_path(_fi_path), path(_path) {
+	assert(! path.empty());
+	std::ifstream dataset(path);
+	if(! dataset.good()) {
+		dataset.close();
+		std::cerr << "ERROR: cannot open dataset file" << std::endl;
+		std::exit(EXIT_FAILURE);
+	}
+}
+
 int Dataset::get_frequent_itemsets(const double theta, std::map<std::set<int>, const double> &frequent_itemsets) {
 	std::fstream fi_stream(fi_path);
 	if (! fi_stream.good()) {

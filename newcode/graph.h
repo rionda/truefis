@@ -22,10 +22,11 @@
 #include <forward_list>
 #include <set>
 #include <unordered_map>
+#include <unordered_set>
 
 #include <igraph/igraph.h>
 
-igraph_t *create_antichain_graph(const std::forward_list<std::set<int> > &, const std::unordered_map<const std::set<int>*, int> &);
+igraph_t *create_antichain_graph(const std::unordered_set<const std::set<int>*> &, const std::unordered_map<const std::set<int>*, int> &);
 
 int get_largest_antichain_size(const std::forward_list<const std::set<int> *> &);
 

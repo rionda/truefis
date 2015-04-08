@@ -18,6 +18,7 @@
 #include <iostream>
 #include <string>
 
+#include "config.h"
 #include "dataset.h"
 #include "stats.h"
 
@@ -30,13 +31,15 @@ int main (int argc, char **argv) {
 	}
 	std::string dataset_path(argv[1]);
 	Dataset dataset(dataset_path);
-	int method = strtol(argv[2], NULL, 10);
-	Stats_method_bound method_bound;
+	stats_config conf;
+	conf.use_antichain = false;
+	conf.cnt_method = COUNT_EXACT;
+	int method = std::stoi(argv[2]);
 	if (method == 1)
-		method_bound = BOUND_SCAN;
+		conf.bnd_method = BOUND_SCAN;
 	else
-		method_bound = BOUND_EXACT;
-	Stats stats(dataset, method_bound);
+		conf.bnd_method = BOUND_EXACT;
+	Stats stats(dataset, conf);
 	std::cout << "size: " << dataset.get_size() << " max_supp: " <<
 		dataset.get_max_supp() << " evc_bound: " << stats.get_evc_bound() <<
 		" max_supp: " <<  stats.get_max_supp() << std::endl;

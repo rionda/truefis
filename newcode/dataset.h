@@ -32,6 +32,7 @@ class Dataset {
 	const std::string path;
 	public:
 		Dataset(const ds_config &);
+		Dataset(const std::string &, const int=-1, const int=-1, const std::string & = std::string());
 		std::string get_fi_path() const { return fi_path; }
 		std::string get_path() const { return path; }
 		int get_frequent_itemsets(const double, std::map<std::set<int>, const double> &);

@@ -18,11 +18,10 @@
  */
 #include <algorithm>
 #include <iostream>
-#include <forward_list>
-#include <unordered_map>
-#include <unordered_set>
 #include <set>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <vector>
 
 #include <igraph/igraph.h>
@@ -90,7 +89,7 @@ int set_capacity(IloModel &model, const int capacity) {
 int get_CPLEX(
 		IloCplex *cplex, IloModel &model, const IloEnv &env,
 		const std::unordered_set<int> &items,
-		const std::forward_list<std::set<int> > &collection,
+		const std::unordered_set<const std::set<int>*> &collection,
 		const int capacity, const bool use_antichain, const double gap) {
 	try {
 		std::unordered_map<int, int> items_to_vars;
@@ -110,16 +109,16 @@ int get_CPLEX(
 		// create objective function
 		IloExpr obj_expr(env);
 		std::unordered_map<const std::set<int>*, int> itemsets_to_vars;
-		for (std::forward_list<std::set<int> >::const_iterator it =
+		for (std::unordered_set<const std::set<int>*>::const_iterator it =
 				collection.begin(); it != collection.end(); ++it) {
 			vars.add(IloIntVar(env, 0, 1));
-			for (int item : *it) {
+			for (int item : *(*it)) {
 				// Knapsack constraint: if the item 'a' is in the itemset 'B',
 				// then 0 \le var_a - var_B \le 1.
 				constraints.add(IloRange(env, 0.0, vars[items_to_vars[item]] - vars[var_ind], 1.0));
 			}
 			obj_expr += 1.0 * vars[var_ind];
-			itemsets_to_vars[&(*it)] = var_ind++;
+			itemsets_to_vars[*it] = var_ind++;
 		}
 		// Add objective function
 		model.add(IloMaximize(env, obj_expr));

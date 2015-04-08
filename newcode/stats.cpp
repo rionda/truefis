@@ -21,8 +21,10 @@
 #include <algorithm>
 #include <cassert>
 #include <cmath>
+#include <cstdlib>
 #include <forward_list>
 #include <fstream>
+#include <iostream>
 #include <list>
 #include <map>
 #include <set>
@@ -99,12 +101,13 @@ int compute_evc_bound(
 }
 
 int compute_evc_bound_using_sukp(Dataset &dataset,
-		const std::forward_list<std::set<int> > &collection, const bool use_antichain,
-		std::pair<int,int> &result) {
+		const std::unordered_set<const std::set<int>*> &collection, const
+		stats_config &stats_conf, std::pair<int,int> &result) {
 	std::ifstream dataset_s(dataset.get_path());
 	if(! dataset_s.good()) {
-		// XXX TODO Handle failure if problem in opening file;
+		std::cerr << "ERROR: cannot open dataset file" << std::endl;
 		dataset_s.close();
+		std::exit(EXIT_FAILURE);
 	}
 	if (collection.empty()) {
 		result.first = 0;
@@ -114,8 +117,8 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
 	// The following is called U in the pseudocode
 	std::unordered_set<int> items;
 	int collection_size = 0;
-	for (std::set<int> itemset : collection) {
-		items.insert(itemset.begin(), itemset.end());
+	for (const std::set<int> *itemset : collection) {
+		items.insert(itemset->begin(), itemset->end());
 		++collection_size;
 	}
 	// The following is called L in the pseudocode
@@ -158,16 +161,18 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
 	IloEnv env;
 	IloModel model(env);
 	IloCplex *cplex = NULL;
-	if (get_CPLEX(cplex, model, env, items, collection, it->second, use_antichain) == -1) {
-		// XXX TODO something went wrong
+	if (get_CPLEX(cplex, model, env, items, collection, it->second, stats_conf.use_antichain) == -1) {
+		std::cerr << "ERROR: something went wrong while building the CPLEX model" << std::endl;
 		env.end();
+		std::exit(EXIT_FAILURE);
 	};
 	while (true) {
 		// The following is q in the pseudocode
 		double profit = get_SUKP_profit(*cplex);
 		if (profit == -1.0) {
-			// XXX TODO something went wrong
+			std::cerr << "ERROR: something went wrong while solving the SUKP" << std::endl;
 			env.end();
+			std::exit(EXIT_FAILURE);
 		}
 		// This is b in the pseudocode
 		int bound =  ((int) floor(log2(profit))) + 1;
@@ -188,8 +193,7 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
 }
 
 /**
- * Constructor for the case when the collection of itemsets is the set of all
- * itemsets.
+ * Constructor for the case when the collection of itemsets is all itemsets.
  *
  * A side effect of this constructor is to set the size and the maximum support
  * of an item in the dataset object.
@@ -203,8 +207,9 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
 Stats::Stats(Dataset& dataset, const stats_config &stats_conf) {
 	std::ifstream dataset_s(dataset.get_path());
 	if(! dataset_s.good()) {
-		// XXX TODO Handle failure if problem in opening file;
+		std::cerr << "ERROR: cannot open dataset file" << std::endl;
 		dataset_s.close();
+		std::exit(EXIT_FAILURE);
 	}
 	// The following is called T in the pseudocode
 	std::map<int, std::forward_list<const std::set<int> *>, bool (*)(int,int)>
@@ -265,14 +270,16 @@ Stats::Stats(
 		const std::unordered_set<const std::set<int> *> &collection, const stats_config &stats_conf) {
 	std::ifstream dataset_s(dataset.get_path());
 	if (stats_conf.cnt_method == COUNT_SUKP) {
-		// XXX TODO Implement
-		evc_bound = 0;
-		max_supp = 0;
+		std::pair<int, int> result;
+		compute_evc_bound_using_sukp(dataset, collection, stats_conf, result);
+		evc_bound = result.first;
+		max_supp = result.second;
 		return;
 	}
 	if(! dataset_s.good()) {
-		// XXX TODO Handle failure if problem in opening file;
+		std::cerr << "ERROR: cannot open dataset file" << std::endl;
 		dataset_s.close();
+		std::exit(EXIT_FAILURE);
 	}
 	if (collection.empty()) {
 		evc_bound = 0;
@@ -345,7 +352,7 @@ Stats::Stats(
 				}
 				itemsets_in_tau_log = ((int) floor(log2(itemsets_in_tau))) + 1;
 			}
-			if (intersections_by_size.count(itemsets_in_tau_log) == 0) {
+			if (intersections_by_size.find(itemsets_in_tau_log) == intersections_by_size.end()) {
 				std::forward_list<const std::set<int> *> v(1, &(*insertion_pair.first));
 				intersections_by_size[itemsets_in_tau_log] = v;
 			} else {
