@@ -123,21 +123,51 @@ int main(int argc, char **argv) {
 	if (opt_ret == EXIT_FAILURE || opt_ret == EXIT_SUCCESS) {
 		return opt_ret;
 	}
-	Dataset dataset(ds_conf);
+	if (mine_conf.verbose) {
+		std::cerr << "INFO: creating dataset object...";
+	}
+	Dataset dataset(ds_conf, false);
+	if (mine_conf.verbose) {
+		std::cerr << "done" << std::endl;
+		std::cerr << "INFO: creating stats object...";
+	}
 	Stats stats1(dataset, stats_conf1);
+	if (mine_conf.verbose) {
+		std::cerr << "done (evc_bound=" << stats1.get_evc_bound() << ", max_supp=" << stats1.get_max_supp() << ")" << std::endl;
+	}
 	// The following acts as both \delta_1 and \delta_2 in the pseudocode.
 	double lowered_delta = 1.0 - std::sqrt(1 - mine_conf.delta);
 	double epsilon_1 = get_epsilon(stats1, dataset, lowered_delta);
+	if (mine_conf.verbose) {
+		std::cerr << "INFO: epsilon_1=" << epsilon_1 << std::endl;
+		std::cerr << "INFO: computing frequent itemsets...";
+	}
 	// The following is called \mathcal{C}_1 in the pseudocode.
 	std::map<std::set<int>, const double> frequent_itemsets;
 	dataset.get_frequent_itemsets(mine_conf.theta - epsilon_1, frequent_itemsets);
+	if (mine_conf.verbose) {
+		std::cerr << "done (" << frequent_itemsets.size() << " FIs)" << std::endl;
+		std::cerr << "INFO: computing closed itemsets...";
+	}
 	std::unordered_set<const std::set<int>*> closed_itemsets;
 	get_closed_itemsets(frequent_itemsets, closed_itemsets);
+	if (mine_conf.verbose) {
+		std::cerr << "done (" << closed_itemsets.size() << " CIs)" << std::endl;
+		std::cerr << "INFO: computing maximal itemsets...";
+	}
 	std::unordered_set<const std::set<int>*> maximal_itemsets;
 	get_maximal_itemsets(closed_itemsets, maximal_itemsets);
+	if (mine_conf.verbose) {
+		std::cerr << "done (" << maximal_itemsets.size() << " MIs)" << std::endl;
+		std::cerr << "INFO: computing negative border...";
+	}
 	// The following is called \mathcal{W} in the pseudocode
 	std::set<std::set<int> > neg_border;
 	get_negative_border(maximal_itemsets, neg_border);
+	if (mine_conf.verbose) {
+		std::cerr << "done (" << neg_border.size() << " itemsets in the neg. border)" << std::endl;
+		std::cerr << "INFO : creating collection_F...";
+	}
 	// The following is called \mathcal{F} in the pseudocode
 	std::unordered_set<const std::set<int>*> collection_F;
 	for (std::set<std::set<int> >::iterator it = neg_border.begin(); it != neg_border.end(); ++it) {
@@ -169,15 +199,29 @@ int main(int argc, char **argv) {
 		}
 		++fis_it;
 	}
+	if (mine_conf.verbose) {
+		std::cerr << "done (" << collection_F.size() << " itemsets)" << std::endl;
+		std::cerr << "INFO: computing stats2..." << std::endl;
+	}
 	// The following compute the EVC bound called d_2 in the pseudocode, and the
 	// maximum frequency of an itemset from F.
 	Stats stats2(dataset, collection_F, stats_conf2);
+	if (mine_conf.verbose) {
+		std::cerr << "done (evc_bound=" << stats2.get_evc_bound() << ", max_supp=" << stats2.get_max_supp() << ")" << std::endl;
+	}
 	double epsilon_2 = get_epsilon(stats2, dataset, lowered_delta);
+	if (mine_conf.verbose) {
+		std::cerr << "INFO: epsilon_2=" << epsilon_2 << std::endl;
+	}
 	// Print the itemsets with frequency at least theta+epsilon_2
-	//
+	int output_count = 0;
 	for (std::map<std::set<int>, const double>::iterator fis_it = frequent_itemsets.begin(); fis_it != frequent_itemsets.end(); ++fis_it) {
 		if (fis_it->second >= mine_conf.theta + epsilon_2) {
 			std::cout << itemset2string(fis_it->first) << " " << fis_it->second << std::endl;
+			++output_count;
 		}
+	}
+	if (mine_conf.verbose) {
+		std::cerr << "INFO: output size is " << output_count << " itemsets" << std::endl;
 	}
 }
