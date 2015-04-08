@@ -33,7 +33,7 @@
  * Constructor using configuration.
  *
  */
-Dataset::Dataset(const ds_config &conf) : max_supp(conf.max_supp), size(conf.size), fi_path(conf.fi_path), path(conf.path) {
+Dataset::Dataset(const ds_config &conf, const bool compute) : max_supp(conf.max_supp), size(conf.size), fi_path(conf.fi_path), path(conf.path) {
 	assert(! path.empty());
 	assert(! fi_path.empty());
 	std::ifstream dataset(path);
@@ -50,7 +50,7 @@ Dataset::Dataset(const ds_config &conf) : max_supp(conf.max_supp), size(conf.siz
 		std::exit(EXIT_FAILURE);
 	}
 	fi.close();
-	if (size <= -1 || max_supp <= -1) {
+	if (compute) {
 		get_size(true);
 	}
 }
