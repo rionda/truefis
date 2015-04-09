@@ -24,10 +24,9 @@
 
 #include <ilcplex/ilocplex.h>
 
-int get_CPLEX(IloCplex *cplex, IloModel &model, const IloEnv &env, const std::unordered_set<int> &items, const std::unordered_set<const std::set<int>*> &collection, const int capacity, const bool use_antichain, const double gap = 0.1);
-
-int set_capacity(IloModel &model, const int capacity);
-
-double get_SUKP_profit(IloCplex &cplex);
+int get_CPLEX_model(IloModel &, const IloEnv &, const std::unordered_set<int> &, const std::unordered_set<const std::set<int>*> &, const int, const bool);
+double get_SUKP_profit(IloCplex &);
+int set_capacity(IloModel &, const int);
+int set_CPLEX_params(IloCplex &, const double=0.1, const double=2.0, const int=600);
 
 #endif

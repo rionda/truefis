@@ -19,7 +19,8 @@
  *
  */
 
-#include <cmath> // for sqrt
+#include <cassert>
+#include <cmath> // for sqrt, round
 #include <cstdlib> // for EXIT_FAILURE, SUCCESS
 #include <iostream>
 #include <map>
@@ -28,6 +29,7 @@
 #include <unordered_set>
 
 #include <unistd.h> // for getopt
+extern char *optarg;
 extern int optind;
 
 #include "config.h"
@@ -41,8 +43,11 @@ extern int optind;
  */
 void usage(const char *binary_name) {
 	std::cerr << binary_name << ": compute, with probability at least 1-delta, a subset of the TrueFIs w.r.t. theta" << std::endl;
-	std::cerr << "USAGE: " << binary_name << " [-hv] delta theta bound_method_1st_phase count_method_2nd_phase bound_method_2nd_phase frequent_itemsets_path dataset_path" << std::endl;
+	std::cerr << "USAGE: " << binary_name << " [-e evc_bound] [-h] [-s size] delta theta bound_method_1st_phase count_method_2nd_phase bound_method_2nd_phase frequent_itemsets_path dataset_path" << std::endl;
+	std::cerr << "\t-e evc_bound: use 'evc_bound' as the first bound to the empirical VC-dimension" << std::endl;
 	std::cerr << "\t-h: print this help message and exit" << std::endl;
+	std::cerr << "\t-m max_supp: use 'max_supp' as the maximum support of an item in the dataset" << std::endl;
+	std::cerr << "\t-s size: specify the size of the dataset" << std::endl;
 	std::cerr << "\t-v: be verbose" << std::endl;
 }
 
@@ -51,11 +56,21 @@ void usage(const char *binary_name) {
  */
 int get_configs(int argc, char **argv, ds_config &ds_conf, mine_config &mine_conf, stats_config &stats_conf_1st, stats_config &stats_conf_2nd) {
 	int opt;
-	while ((opt = getopt(argc, argv, "hv")) != -1) {
+	while ((opt = getopt(argc, argv, "e:hm:s:v")) != -1) {
 		switch (opt) {
+		case 'e':
+			stats_conf_1st.evc_bound = std::stoi(optarg);
+			break;
 		case 'h':
 			usage(argv[0]);
 			return EXIT_SUCCESS;
+			break;
+		case 'm':
+			ds_conf.max_supp = std::stoi(optarg);
+			stats_conf_1st.max_supp = ds_conf.max_supp;
+			break;
+		case 's':
+			ds_conf.size = std::stoi(optarg);
 			break;
 		case 'v':
 			mine_conf.verbose = true;
@@ -118,6 +133,8 @@ int main(int argc, char **argv) {
 	ds_config ds_conf;
 	mine_config mine_conf;
 	stats_config stats_conf1;
+	stats_conf1.evc_bound = -1;
+	stats_conf1.max_supp = -1;
 	stats_config stats_conf2;
 	int opt_ret = get_configs(argc, argv, ds_conf, mine_conf, stats_conf1, stats_conf2);
 	if (opt_ret == EXIT_FAILURE || opt_ret == EXIT_SUCCESS) {
@@ -134,6 +151,7 @@ int main(int argc, char **argv) {
 	Stats stats1(dataset, stats_conf1);
 	if (mine_conf.verbose) {
 		std::cerr << "done (evc_bound=" << stats1.get_evc_bound() << ", max_supp=" << stats1.get_max_supp() << ")" << std::endl;
+		std::cerr << "INFO: dataset size is " << dataset.get_size() << std::endl;
 	}
 	// The following acts as both \delta_1 and \delta_2 in the pseudocode.
 	double lowered_delta = 1.0 - std::sqrt(1 - mine_conf.delta);
@@ -166,13 +184,19 @@ int main(int argc, char **argv) {
 	get_negative_border(maximal_itemsets, neg_border);
 	if (mine_conf.verbose) {
 		std::cerr << "done (" << neg_border.size() << " itemsets in the neg. border)" << std::endl;
-		std::cerr << "INFO : creating collection_F...";
+		std::cerr << "INFO: filtering out negative border...";
 	}
+	// We can actually remove all itemsets in the negative border that never
+	// appear in the dataset.
 	// The following is called \mathcal{F} in the pseudocode
 	std::unordered_set<const std::set<int>*> collection_F;
-	for (std::set<std::set<int> >::iterator it = neg_border.begin(); it != neg_border.end(); ++it) {
-		collection_F.insert(&(*it));
+	filter_negative_border(dataset, neg_border, collection_F);
+	if (mine_conf.verbose) {
+		std::cerr << "done (" << collection_F.size() << " itemset survived)" << std::endl;
+		std::cerr << "INFO: adding relevant CIs to collection_F...";
 	}
+	double max_freq_F = 0;
+	int output_count = 0;
 	// After the loop is completed, the map will only contain the (closed)
 	// itemsets in the set \mathcal{G} in the pseudocode.
 	// In the loop, we also insert (pointers to) these closed itemsets into
@@ -180,25 +204,31 @@ int main(int argc, char **argv) {
 	for (std::map<std::set<int>, const double>::iterator fis_it = frequent_itemsets.begin(); fis_it != frequent_itemsets.end();) {
 		// Print and remove the itemsets with frequency at least theta+epsilon_1.
 		if (fis_it->second >= mine_conf.theta + epsilon_1) {
-			std::cout << itemset2string(fis_it->first) << " " << fis_it->second << std::endl;
+			std::cout << itemset2string(fis_it->first) << " (" << (int) round(fis_it->second * dataset.get_size()) << ")" << std::endl;
 			// Exploit the fact that changes to STL maps do not invalidate iterators
 			std::map<std::set<int>, const double>::iterator tmp(fis_it);
 			++fis_it;
 			frequent_itemsets.erase(tmp->first);
+			++output_count;
 			continue;
 		}
 		// Remove frequent itemsets (with frequency lower than \theta+\epsilon_1) that are not closed
-		if (closed_itemsets.find(&(fis_it->first)) == closed_itemsets.end()) {
+		if (closed_itemsets.find(&((*fis_it).first)) == closed_itemsets.end()) {
+			assert(maximal_itemsets.find(&((*fis_it).first)) == maximal_itemsets.end());
 			// Exploit the fact that changes to STL maps do not invalidate iterators
 			std::map<std::set<int>, const double>::iterator tmp(fis_it);
 			++fis_it;
 			frequent_itemsets.erase(tmp->first);
 			continue;
 		} else { // Insert the pointer into collection_F
-			collection_F.insert(&(fis_it->first));
+			collection_F.insert(&((*fis_it).first));
+			if (fis_it->second > max_freq_F) {
+				max_freq_F = fis_it->second;
+			}
 		}
 		++fis_it;
 	}
+
 	if (mine_conf.verbose) {
 		std::cerr << "done (" << collection_F.size() << " itemsets)" << std::endl;
 		std::cerr << "INFO: computing stats2..." << std::endl;
@@ -206,6 +236,7 @@ int main(int argc, char **argv) {
 	// The following compute the EVC bound called d_2 in the pseudocode, and the
 	// maximum frequency of an itemset from F.
 	Stats stats2(dataset, collection_F, stats_conf2);
+	stats2.set_max_supp((int) round(max_freq_F * dataset.get_size()));
 	if (mine_conf.verbose) {
 		std::cerr << "done (evc_bound=" << stats2.get_evc_bound() << ", max_supp=" << stats2.get_max_supp() << ")" << std::endl;
 	}
@@ -214,7 +245,6 @@ int main(int argc, char **argv) {
 		std::cerr << "INFO: epsilon_2=" << epsilon_2 << std::endl;
 	}
 	// Print the itemsets with frequency at least theta+epsilon_2
-	int output_count = 0;
 	for (std::map<std::set<int>, const double>::iterator fis_it = frequent_itemsets.begin(); fis_it != frequent_itemsets.end(); ++fis_it) {
 		if (fis_it->second >= mine_conf.theta + epsilon_2) {
 			std::cout << itemset2string(fis_it->first) << " " << fis_it->second << std::endl;

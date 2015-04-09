@@ -28,6 +28,8 @@ enum bound_method {
 
 typedef struct {
 	bool use_antichain;
+	int evc_bound;
+	int max_supp;
 	count_method cnt_method;
 	bound_method bnd_method;
 } stats_config;

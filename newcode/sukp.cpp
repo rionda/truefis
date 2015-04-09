@@ -28,6 +28,7 @@
 #include <ilcplex/ilocplex.h>
 
 #include "graph.h"
+#include "itemsets.h"
 #include "sukp.h"
 
 double get_SUKP_profit(IloCplex &cplex) {
@@ -60,7 +61,7 @@ int set_capacity(IloModel &model, const int capacity) {
 	try {
 		for (IloModel::Iterator it(model); it.ok(); ++it) {
 			IloExtractable extr = *it;
-			if (extr.isConstraint() && capacity_constr_name.compare(extr.getName())) {
+			if (extr.isConstraint() && capacity_constr_name.compare(extr.getName()) == 0) {
 				IloRange capacity_range(dynamic_cast<IloRangeI *>(extr.asConstraint().getImpl()));
 				capacity_range.setUB(capacity);
 			}
@@ -79,18 +80,13 @@ int set_capacity(IloModel &model, const int capacity) {
  * Build the CPLEX model and objects to represent a SUKP.
  * If 'use_antichain' is true, the SUKP has the antichain constraints.
  *
- * The value 'gap' is used to specify a tolerance: the solver will stops as soon
- * as it finds a feasible integer solution whose value is provably no more than a
- * fraction 'gap' smaller than the optimal. This is useful to speed up the
- * computation. As discussed in the paper, we do not need the optimal solution.
- *
  * Returns 0 if successful, -1 otherwise.
  */
-int get_CPLEX(
-		IloCplex *cplex, IloModel &model, const IloEnv &env,
+int get_CPLEX_model(
+		IloModel &model, const IloEnv &env,
 		const std::unordered_set<int> &items,
 		const std::unordered_set<const std::set<int>*> &collection,
-		const int capacity, const bool use_antichain, const double gap) {
+		const int capacity, const bool use_antichain) {
 	try {
 		std::unordered_map<int, int> items_to_vars;
 		int var_ind = 0;
@@ -98,9 +94,10 @@ int get_CPLEX(
 		IloRangeArray constraints(env);
 		// Create variables for the items and build the capacity constraint
 		IloExpr capacity_expr(env);
-		for (; var_ind < items.size(); ++var_ind) {
-			vars.add(IloIntVar(env, 0, 1));
+		for (const int item : items) {
+			vars.add(IloIntVar(env, 0, 1, ("item_" + std::to_string(item)).c_str()));
 			capacity_expr += vars[var_ind];
+			++var_ind;
 		}
 		// Add capacity constraint
 		constraints.add(IloRange(env, 0.0, capacity_expr, capacity, "capacity"));
@@ -111,19 +108,21 @@ int get_CPLEX(
 		std::unordered_map<const std::set<int>*, int> itemsets_to_vars;
 		for (std::unordered_set<const std::set<int>*>::const_iterator it =
 				collection.begin(); it != collection.end(); ++it) {
-			vars.add(IloIntVar(env, 0, 1));
+			std::string itemset_name = "itemset_" + itemset2string(**it, '_');
+			vars.add(IloIntVar(env, 0, 1, itemset_name.c_str()));
 			for (int item : *(*it)) {
 				// Knapsack constraint: if the item 'a' is in the itemset 'B',
 				// then 0 \le var_a - var_B \le 1.
-				constraints.add(IloRange(env, 0.0, vars[items_to_vars[item]] - vars[var_ind], 1.0));
+				constraints.add(IloRange(env, 0.0, vars[items_to_vars[item]] - vars[var_ind], 1.0, ("item_" + std::to_string(item) + "+++" + itemset_name).c_str()));
 			}
-			obj_expr += 1.0 * vars[var_ind];
-			itemsets_to_vars[*it] = var_ind++;
+			obj_expr += vars[var_ind];
+			itemsets_to_vars[*it] = var_ind;
+			++var_ind;
 		}
 		// Add objective function
 		model.add(IloMaximize(env, obj_expr));
-
-		if (use_antichain) {
+		//if (use_antichain) {
+		if (false) {
 			// Add the antichain constraints.
 			// We create a graph whose nodes are the itemsets in the collection,
 			// and there is an edge between two nodes if one is a subset of the
@@ -133,12 +132,13 @@ int get_CPLEX(
 			// the straightforward solution (commented out below), but it
 			// creates the minimum number of constraints, which is good for
 			// memory.
-			igraph_t *graph = create_antichain_graph(collection, itemsets_to_vars);
+			igraph_t graph;
+			create_antichain_graph(&graph, collection, itemsets_to_vars);
 			igraph_vector_ptr_t cliques;
 			igraph_vector_ptr_init(&cliques, 0);
 			// Get maximal cliques of size at least 2.
 			// We can ignore single nodes, as the constraint would be irrelevant
-			igraph_maximal_cliques(graph, &cliques, 2, 0);
+			igraph_maximal_cliques(&graph, &cliques, 2, 0);
 			for (int i = 0; i < igraph_vector_ptr_size(&cliques); ++i) {
 				igraph_vector_t *clique = (igraph_vector_t*) VECTOR(cliques)[i];
 				IloExpr clique_expr(env);
@@ -150,7 +150,7 @@ int get_CPLEX(
 				igraph_free(clique);
 			}
 			igraph_vector_ptr_destroy(&cliques);
-			igraph_destroy(graph);
+			igraph_destroy(&graph);
 			// The following is the straightforward solution, but it is
 			// commented out because it creates a huge number of constraints,
 			// which is bad for memory.
@@ -174,23 +174,6 @@ int get_CPLEX(
 			// }
 		}
 		model.add(constraints);
-		IloCplex my_cplex(model);
-		cplex = &my_cplex;
-		// Set the relative gap below which to stop.
-		// The solver stops if it founds a feasible solution whose value is
-		// proved to be within a fraction 'gap' of the optimal. Note that being
-		// a maximization problem, the feasible solution found will be smaller
-		// than the optimal. We can then return the profit of the found feasible
-		// solution divided by the gap (queried below) to obtain an upper bound
-		// to the optimal solution. As long as the gap is below 0.5, this is a
-		// good approximation for our purposes. See also discussion in the paper
-		my_cplex.setParam(IloCplex::EpGap, gap);
-		// Set the absolute gap below which to stop.
-		// As above, but for an absolute gap, instead of relative. Since we are
-		// using the log2 of the solution, being within 2.0 doesn't change much.
-		my_cplex.setParam(IloCplex::EpAGap, 2.0);
-		// Set a maximum time limit, in seconds (600=10mins. no clue.)
-		my_cplex.setParam(IloCplex::TiLim, 600);
 	} catch (IloException& e) {
 		std::cerr << "ConcertException: " << e << std::endl;
 		return -1;
@@ -198,5 +181,27 @@ int get_CPLEX(
 		std::cerr << "UnknownException" << std::endl;
 		return -1;
 	}
+	return 0;
+}
+
+/**
+ * Set the parameters for the CPLEX object
+ */
+int set_CPLEX_params(IloCplex &cplex, const double gap, const double abs_gap, const int timeout) {
+	// Set the relative gap below which to stop.
+	// The solver stops if it founds a feasible solution whose value is
+	// proved to be within a fraction 'gap' of the optimal. Note that being
+	// a maximization problem, the feasible solution found will be smaller
+	// than the optimal. We can then return the profit of the found feasible
+	// solution divided by the gap (queried below) to obtain an upper bound
+	// to the optimal solution. As long as the gap is below 0.5, this is a
+	// good approximation for our purposes. See also discussion in the paper
+	cplex.setParam(IloCplex::EpGap, gap);
+	// Set the absolute gap below which to stop.
+	// As above, but for an absolute gap, instead of relative. Since we are
+	// using the log2 of the solution, being within 2.0 doesn't change much.
+	cplex.setParam(IloCplex::EpAGap, abs_gap);
+	// Set a maximum time limit, in seconds (600=10mins. no clue.)
+	cplex.setParam(IloCplex::TiLim, timeout);
 	return 0;
 }

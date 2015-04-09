@@ -129,46 +129,53 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
 	int size = 0;
 	while (std::getline(dataset_s, line)) {
 		++size;
-		std::set<int> tau = string2itemset(line);
+		const std::set<int> tau = string2itemset(line);
 		std::vector<int> intersection_v(tau.size());
 		std::vector<int>::iterator it;
 		it = std::set_intersection(
 				tau.begin(), tau.end(), items.begin(), items.end(),
 				intersection_v.begin());
-		std::set<int> intersection(intersection_v.begin(), it);
-		std::pair<std::set<std::set<int> >::iterator, bool> insertion_pair;
-		if (! intersection.empty() && ! intersection.size() == items.size()) {
-			insertion_pair = intersections.insert(intersection);
-		}
-		if (insertion_pair.second) { // intersection was not already in intersections
-			std::map<int, int, bool (*)(int,int)>::iterator intersection_it = intersection_sizes_counts.find(intersection.size());
-			if (intersection_it == intersection_sizes_counts.end()) {
-				intersection_it = (intersection_sizes_counts.emplace(intersection.size(), 1)).first;
-			}
-			// Exploit the sorted nature (in decreasing order) of the map
-			for (++intersection_it; intersection_it != intersection_sizes_counts.end(); ++intersection_it) {
-				intersection_sizes_counts[intersection_it->first]++;
+		if (it != intersection_v.begin() && it - intersection_v.begin() != items.size()) {
+			std::set<int> intersection(intersection_v.begin(), it);
+			std::pair<std::set<std::set<int> >::iterator, bool> insertion_pair = intersections.insert(intersection);
+			if (insertion_pair.second) { // intersection was not already in intersections
+				std::map<int, int, bool (*)(int,int)>::iterator intersection_it = intersection_sizes_counts.find(intersection.size());
+				if (intersection_it == intersection_sizes_counts.end()) { // we've never seen an intersection of this size
+					int prev_value = 0; // We add an element with key equal to the intersection size, and value equal to the value of the element with key immediately larger thn this one, or 0 if there is no such element.
+					if (! intersection_sizes_counts.empty()) {
+						auto longer_intersection_it = intersection_sizes_counts.lower_bound(intersection.size());
+						if (longer_intersection_it != intersection_sizes_counts.begin()) {
+							--longer_intersection_it;
+							prev_value = longer_intersection_it->second;
+						}
+					}
+					intersection_it = (intersection_sizes_counts.emplace(intersection.size(), prev_value)).first;
+				}
+				// Exploit the sorted nature (in decreasing order) of the map
+				for (; intersection_it != intersection_sizes_counts.end(); ++intersection_it) {
+					intersection_sizes_counts[intersection_it->first] += 1;
+				}
 			}
 		}
 	}
 	dataset_s.close();
 	dataset.set_size(size); // Set size in the database object
-
 	// We do not need a counter 'i' like in the pseudocode, we can use an
 	// iterator that exploits the sorted nature of the map
 	std::map<int, int, bool (*)(int,int)>::iterator it = intersection_sizes_counts.begin();
-	//ILOSTLBEGIN
 	IloEnv env;
 	IloModel model(env);
-	IloCplex *cplex = NULL;
-	if (get_CPLEX(cplex, model, env, items, collection, it->second, stats_conf.use_antichain) == -1) {
+	if (get_CPLEX_model(model, env, items, collection, it->first, stats_conf.use_antichain) == -1) {
 		std::cerr << "ERROR: something went wrong while building the CPLEX model" << std::endl;
 		env.end();
 		std::exit(EXIT_FAILURE);
-	};
+	}
+	IloCplex cplex(model);
+	set_CPLEX_params(cplex);
+
 	while (true) {
 		// The following is q in the pseudocode
-		double profit = get_SUKP_profit(*cplex);
+		double profit = get_SUKP_profit(cplex);
 		if (profit == -1.0) {
 			std::cerr << "ERROR: something went wrong while solving the SUKP" << std::endl;
 			env.end();
@@ -177,11 +184,20 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
 		// This is b in the pseudocode
 		int bound =  ((int) floor(log2(profit))) + 1;
 		if (bound <= it->second) {
-			return bound;
+			result.first = bound;
+			result.second = -1;
+			env.end();
+			return 1;
 		} else {
 			++it;
 			if (it != intersection_sizes_counts.end()) {
-				set_capacity(model, it->second);
+				if (it->first == 1) { 
+					result.first = 1;
+					result.second = -1;
+					env.end();
+					return 1;
+				}
+				set_capacity(model, it->first);
 			} else {
 				env.end();
 				break;
@@ -189,7 +205,10 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
 		}
 	}
 	--it;
-	return (int) floor(fmin(it->second, log2(collection_size)));
+	result.first = (int) floor(fmin(it->second, log2(collection_size)));
+	result.second = -1;
+	env.end();
+	return 1;
 }
 
 /**
@@ -204,7 +223,10 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
  * bound to the empirical VC-dimension. See stats.h for documentation on
  * Stats_method_bound.
  */
-Stats::Stats(Dataset& dataset, const stats_config &stats_conf) {
+Stats::Stats(Dataset& dataset, const stats_config &stats_conf) : evc_bound(stats_conf.evc_bound), max_supp(stats_conf.max_supp) {
+	if (evc_bound != -1 && max_supp != -1) {
+		return;
+	}
 	std::ifstream dataset_s(dataset.get_path());
 	if(! dataset_s.good()) {
 		std::cerr << "ERROR: cannot open dataset file" << std::endl;
@@ -366,11 +388,15 @@ Stats::Stats(
 	evc_bound = compute_evc_bound(intersections_by_size, stats_conf);
 }
 
-
 int Stats::get_evc_bound() {
 	return evc_bound;
 }
 
 int Stats::get_max_supp() {
 	return max_supp;
+}
+
+int Stats::set_max_supp(const int new_max_supp) {
+	max_supp = new_max_supp;
+	return new_max_supp;
 }

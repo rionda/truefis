@@ -77,14 +77,14 @@ int Dataset::get_frequent_itemsets(const double theta, std::map<std::set<int>, c
 	}
 	std::string line;
 	std::getline(fi_stream, line);
-	assert(std::stoi(line) == size);
+	assert(std::stoi(line.substr(1)) == size);
 	double prev_freq = 2.0;
 	frequent_itemsets.clear();
 	while (getline(fi_stream, line)) {
 		const size_t parenthesis_index = line.find_first_of("(");
 		const std::string itemset_str = line.substr(0, parenthesis_index - 1);
 		const std::set<int> itemset = string2itemset(itemset_str);
-		const double support = std::stoi(line.substr(parenthesis_index +1));
+		const double support = std::stoi(line.substr(parenthesis_index + 1));
 		const double freq = support / size;
 		if (freq > prev_freq) {
 			std::cerr << "ERROR: results must be sorted" << std::endl;

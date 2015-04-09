@@ -19,6 +19,7 @@
 #include <algorithm>
 #include <cassert>
 #include <forward_list>
+#include <iostream>
 #include <set>
 #include <unordered_map>
 #include <vector>
@@ -87,9 +88,9 @@ int get_largest_antichain_size(const std::forward_list<const std::set<int> *> &s
 	return sets_size - matching_size;
 }
 
-igraph_t *create_antichain_graph(const std::unordered_set<const std::set<int>*> &collection, const std::unordered_map<const std::set<int>*, int> &sets_to_ids) {
+void create_antichain_graph(igraph_t *graph, const std::unordered_set<const std::set<int>*> &collection, const std::unordered_map<const std::set<int>*, int> &sets_to_ids) {
 	igraph_vector_t edges;
-	igraph_vector_init(&edges, sets_to_ids.size());
+	igraph_vector_init(&edges, 0);
 	for (std::unordered_set<const std::set<int>*>::const_iterator first_it = collection.begin(); first_it != collection.end(); ++first_it) {
 		std::unordered_set<const std::set<int>*>::const_iterator second_it = first_it;
 		++second_it;
@@ -105,13 +106,11 @@ igraph_t *create_antichain_graph(const std::unordered_set<const std::set<int>*> 
 			// nodes in edges[0] and edges[1], the second between edges[2] and
 			// edges[3] and so on.
 			if (is_subset(*smaller, *larger)) {
-				igraph_vector_push_back(&edges, sets_to_ids.at(&(*smaller)));
-				igraph_vector_push_back(&edges, sets_to_ids.at(&(*larger)));
+				igraph_vector_push_back(&edges, sets_to_ids.at(smaller));
+				igraph_vector_push_back(&edges, sets_to_ids.at(larger));
 			}
 		}
 	}
-	igraph_t *graph = NULL;
-	igraph_empty(graph, sets_to_ids.size(), false); // undirected graph
-	igraph_add_edges(graph, &edges, 0);
-	return graph;
+	igraph_create(graph, &edges, 0, false);
+	igraph_vector_destroy(&edges);
 }
