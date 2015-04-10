@@ -171,8 +171,11 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
 		std::exit(EXIT_FAILURE);
 	}
 	IloCplex cplex(model);
+	// Set parameters, like max runtime and tolerance gaps
 	set_CPLEX_params(cplex);
-
+	// Redirect output to null stream
+	cplex.setOut(env.getNullStream());
+	// Iterate over the possible lengths
 	while (true) {
 		// The following is q in the pseudocode
 		double profit = get_SUKP_profit(cplex);
@@ -191,7 +194,7 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
 		} else {
 			++it;
 			if (it != intersection_sizes_counts.end()) {
-				if (it->first == 1) { 
+				if (it->first == 1) {
 					result.first = 1;
 					result.second = -1;
 					env.end();
@@ -205,6 +208,7 @@ int compute_evc_bound_using_sukp(Dataset &dataset,
 		}
 	}
 	--it;
+	// XXX TODO The following needs to be checked a bit: it may not be the best.
 	result.first = (int) floor(fmin(it->second, log2(collection_size)));
 	result.second = -1;
 	env.end();
