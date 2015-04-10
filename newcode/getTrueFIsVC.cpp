@@ -131,6 +131,8 @@ int get_configs(int argc, char **argv, ds_config &ds_conf, mine_config &mine_con
 int main(int argc, char **argv) {
 	// Get configurations
 	ds_config ds_conf;
+	ds_conf.size = -1;
+	ds_conf.max_supp = -1;
 	mine_config mine_conf;
 	stats_config stats_conf1;
 	stats_conf1.evc_bound = -1;
