@@ -247,11 +247,28 @@ int main(int argc, char **argv) {
 	// Print the itemsets with frequency at least theta+epsilon_2
 	for (std::map<std::set<int>, const double>::iterator fis_it = frequent_itemsets.begin(); fis_it != frequent_itemsets.end(); ++fis_it) {
 		if (fis_it->second >= mine_conf.theta + epsilon_2) {
-			std::cout << itemset2string(fis_it->first) << " " << fis_it->second << std::endl;
+			std::cout << itemset2string(fis_it->first) << " (" << (int) round(fis_it->second * dataset.get_size()) << ")" << std::endl;
 			++output_count;
 		}
 	}
 	if (mine_conf.verbose) {
 		std::cerr << "INFO: output size is " << output_count << " itemsets" << std::endl;
 	}
+
+	std::cerr << "res_file=" << ds_conf.fi_path << ",e1=" << epsilon_1 <<
+		",e2=" << epsilon_2 << ",d=" << mine_conf.delta << ",min_freq=" << mine_conf.theta <<
+		",trueFIs=" << output_count << std::endl;
+	std::cerr << "base_set=" << frequent_itemsets.size() << ",closed_itemsets=" <<
+		closed_itemsets.size() << ",maximal_itemsets=" <<
+		maximal_itemsets.size() << ",neg_border=" << neg_border.size() <<
+		",collection_F=" << collection_F.size() << ",evc_bound_1=" <<
+		stats1.get_evc_bound() << ",evc_bound_2=" << stats2.get_evc_bound() <<
+		std::endl;
+	std::cerr << "res_file,e1,e2,d,min_freq,trueFIs,base_set,closed_itemsets,maximal_itemsets,neg_border,collection_F,evc_bound_1,evc_bound_2" << std::endl;
+	std::cerr << ds_conf.fi_path << "," << epsilon_1 << "," << epsilon_2 << ","
+		<< mine_conf.delta << "," << mine_conf.theta << "," << output_count <<
+		"," << frequent_itemsets.size() << "," << closed_itemsets.size() << ","
+		<< maximal_itemsets.size() << "," << neg_border.size() << "," <<
+		collection_F.size() << "," << stats1.get_evc_bound() << "," <<
+		stats2.get_evc_bound() << std::endl;
 }
