@@ -33,7 +33,7 @@
  * Constructor using configuration.
  *
  */
-Dataset::Dataset(const ds_config &conf, const bool compute) : max_supp(conf.max_supp), size(conf.size), fi_path(conf.fi_path), path(conf.path) {
+Dataset::Dataset(const ds_config &conf, const bool compute) : items(conf.items), max_supp(conf.max_supp), size(conf.size), fi_path(conf.fi_path), path(conf.path) {
 	assert(! path.empty());
 	assert(! fi_path.empty());
 	std::ifstream dataset(path);
@@ -58,7 +58,7 @@ Dataset::Dataset(const ds_config &conf, const bool compute) : max_supp(conf.max_
 /**
  * Constructor using argument. Only the first one is mandatory. 
  */
-Dataset::Dataset(const std::string &_path, const int _max_supp, const int _size, const std::string &_fi_path) : max_supp(_max_supp), size(_size), fi_path(_fi_path), path(_path) {
+Dataset::Dataset(const std::string &_path, const int _items, const int _max_supp, const int _size, const std::string &_fi_path) : items(_items), max_supp(_max_supp), size(_size), fi_path(_fi_path), path(_path) {
 	assert(! path.empty());
 	std::ifstream dataset(path);
 	if(! dataset.good()) {
@@ -77,13 +77,19 @@ int Dataset::get_frequent_itemsets(const double theta, std::map<std::set<int>, c
 	}
 	std::string line;
 	std::getline(fi_stream, line);
-	assert(std::stoi(line.substr(1)) == size);
+	if (size > -1) {
+		assert(std::stoi(line.substr(1)) == size);
+	} else {
+		size = std::stoi(line.substr(1));
+	}
+	std::unordered_set<int> items_set;
 	double prev_freq = 2.0;
 	frequent_itemsets.clear();
 	while (getline(fi_stream, line)) {
 		const size_t parenthesis_index = line.find_first_of("(");
 		const std::string itemset_str = line.substr(0, parenthesis_index - 1);
 		const std::set<int> itemset = string2itemset(itemset_str);
+		items_set.insert(itemset.begin(), itemset.end());
 		const double support = std::stoi(line.substr(parenthesis_index + 1));
 		const double freq = support / size;
 		if (freq > prev_freq) {
@@ -97,6 +103,7 @@ int Dataset::get_frequent_itemsets(const double theta, std::map<std::set<int>, c
 			break;
 		}
 	}
+	items = items_set.size();
 	fi_stream.close();
 	return frequent_itemsets.size();
 }
@@ -106,7 +113,7 @@ int Dataset::get_frequent_itemsets(const double theta, std::map<std::set<int>, c
  *
  * Recompute it if we never computed before or 'recompute' is true
  *
- * As a desired side effect, max_supp is also computed.
+ * As a desired side effect, max_supp and items are also computed.
  */
 int Dataset::get_size(const bool recompute) {
 	if (size == -1 || recompute) {
@@ -134,6 +141,7 @@ int Dataset::get_size(const bool recompute) {
 				}
 			}
 		}
+		items = item_freqs.size();
 		dataset.close();
 	}
 	return size;
@@ -177,4 +185,8 @@ int Dataset::set_size(const int new_size) {
 		return size;
 	}
 	return -1;
+}
+
+int Dataset::get_items_num() {
+	return items;
 }

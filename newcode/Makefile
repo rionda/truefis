@@ -30,7 +30,7 @@ OPT=-Ofast -pipe -m64 -march=native -mtune=native
 endif
 # Instruct CPLEX to compile with the standard headers, and without asserts and
 # debugs
-CPLEX_FLAGS=-fPIC -fexceptions -DIL_STD -DNDEBUG
+CPLEX_FLAGS=-fPIC -fexceptions -DIL_STD -DNDEBUG -DILO_LINUX
 
 OTHER_LIBS=-lm -lpthread
 
@@ -46,17 +46,26 @@ CFLAGS=$(ANSI_FLAGS) $(WARNS) $(OPT)
 
 .PHONY: all clean
 
-all: compute_stats getTrueFIsVC
+all: getTrueFIsBinom getTrueFIsHoldout getTrueFIsVCHoldout getTrueFIsVC
 
 archive: truefis.tar.bz2
 
 clean:
-	-/bin/rm -rf compute_stats *.dSYM
+	-/bin/rm -rf getTrueFIsBinom getTrueFIsHoldout getTrueFIsVCHoldout getTrueFIsVC *.dSYM
 
 compute_stats: compute_stats.cpp dataset.cpp dataset.h graph.cpp graph.h itemsets.cpp itemsets.h stats.cpp stats.h sukp.cpp sukp.h Makefile
 	$(CPP) dataset.cpp graph.cpp itemsets.cpp stats.cpp sukp.cpp $@.cpp $(CFLAGS) $(CPLEX_FLAGS) $(CPLEX) $(CONCERT) $(IGRAPH) $(OTHER_LIBS) -o $@
 
+getTrueFIsBinom: getTrueFIsBinom.cpp config.h dataset.cpp dataset.h itemsets.cpp itemsets.h pvalue.cpp pvalue.h Makefile
+	$(CPP) dataset.cpp itemsets.cpp pvalue.cpp $@.cpp $(CFLAGS) -lm -o $@
+
+getTrueFIsHoldout: getTrueFIsHoldout.cpp config.h dataset.cpp dataset.h itemsets.cpp itemsets.h pvalue.cpp pvalue.h Makefile
+	$(CPP) dataset.cpp itemsets.cpp pvalue.cpp $@.cpp $(CFLAGS) -lm -o $@
+
 getTrueFIsVC: getTrueFIsVC.cpp config.h dataset.cpp dataset.h epsilon.cpp epsilon.h graph.cpp graph.h itemsets.cpp itemsets.h stats.cpp stats.h sukp.cpp sukp.h Makefile
+	$(CPP) dataset.cpp epsilon.cpp graph.cpp itemsets.cpp stats.cpp sukp.cpp $@.cpp $(CFLAGS) $(CPLEX_FLAGS) $(CPLEX) $(CONCERT) $(IGRAPH) $(OTHER_LIBS) -o $@
+
+getTrueFIsVCHoldout: getTrueFIsVCHoldout.cpp config.h dataset.cpp dataset.h epsilon.cpp epsilon.h graph.cpp graph.h itemsets.cpp itemsets.h stats.cpp stats.h sukp.cpp sukp.h Makefile
 	$(CPP) dataset.cpp epsilon.cpp graph.cpp itemsets.cpp stats.cpp sukp.cpp $@.cpp $(CFLAGS) $(CPLEX_FLAGS) $(CPLEX) $(CONCERT) $(IGRAPH) $(OTHER_LIBS) -o $@
 
 truefis.tar.bz2: ../README.md ../LICENSE ../NOTICE Makefile *.h *.cpp

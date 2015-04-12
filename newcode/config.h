@@ -3,6 +3,7 @@
 #include <string>
 
 typedef struct {
+	int items;
 	int max_supp;
 	int size;
 	std::string fi_path;
