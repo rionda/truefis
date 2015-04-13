@@ -341,48 +341,47 @@ Stats::Stats(
 		it = std::set_intersection(
 				tau.begin(), tau.end(), items.begin(), items.end(),
 				intersection_v.begin());
-		std::set<int> intersection(intersection_v.begin(), it);
-		std::pair<std::set<std::set<int> >::iterator, bool> insertion_pair;
-		if (! intersection.empty() && ! intersection.size() == items.size()) {
-			insertion_pair = intersections.insert(intersection);
-		}
-		if (insertion_pair.second) { // intersection was not already in intersections
-			int itemsets_in_tau_log = tau.size();
-			std::forward_list<const std::set<int>*> itemsets_in_tau_list;
-			if (stats_conf.cnt_method == COUNT_EXACT) {
-				int itemsets_in_tau = 0;
-				for (std::unordered_set<const std::set<int>*>::const_iterator itemset = collection.begin(); itemset != collection.end(); ++itemset) {
-					if ((*itemset)->size() <= intersection.size() &&
-							std::includes(intersection.begin(),
-								intersection.end(), (*itemset)->begin(),
-								(*itemset)->end())) {
-						++itemsets_in_tau;
-						// If we are interested in antichains, we actually need
-						// to store (iterators to) the itemsets.
-						if (stats_conf.use_antichain) {
-							itemsets_in_tau_list.push_front(*itemset);
-						}
-						if (itemsets_supps.count(*itemset) == 0) {
-							itemsets_supps[*itemset] = 1;
-						} else {
-							itemsets_supps[*itemset]++;
-							if (itemsets_supps[*itemset] > max_supp) {
-								++max_supp;
+		if (it != intersection_v.begin() && it - intersection_v.begin() != items.size()) {
+			std::set<int> intersection(intersection_v.begin(), it);
+			std::pair<std::set<std::set<int> >::iterator, bool> insertion_pair = insertion_pair = intersections.insert(intersection);
+			if (insertion_pair.second) { // intersection was not already in intersections
+				int itemsets_in_tau_log = tau.size();
+				std::forward_list<const std::set<int>*> itemsets_in_tau_list;
+				if (stats_conf.cnt_method == COUNT_EXACT) {
+					int itemsets_in_tau = 0;
+					for (std::unordered_set<const std::set<int>*>::const_iterator itemset = collection.begin(); itemset != collection.end(); ++itemset) {
+						if ((*itemset)->size() <= intersection.size() &&
+								std::includes(intersection.begin(),
+									intersection.end(), (*itemset)->begin(),
+									(*itemset)->end())) {
+							++itemsets_in_tau;
+							// If we are interested in antichains, we actually need
+							// to store (iterators to) the itemsets.
+							if (stats_conf.use_antichain) {
+								itemsets_in_tau_list.push_front(*itemset);
+							}
+							if (itemsets_supps.count(*itemset) == 0) {
+								itemsets_supps[*itemset] = 1;
+							} else {
+								itemsets_supps[*itemset]++;
+								if (itemsets_supps[*itemset] > max_supp) {
+									++max_supp;
+								}
 							}
 						}
 					}
+					if (stats_conf.use_antichain) {
+						itemsets_in_tau =
+							get_largest_antichain_size(itemsets_in_tau_list);
+					}
+					itemsets_in_tau_log = ((int) floor(log2(itemsets_in_tau))) + 1;
 				}
-				if (stats_conf.use_antichain) {
-					itemsets_in_tau =
-						get_largest_antichain_size(itemsets_in_tau_list);
+				if (intersections_by_size.find(itemsets_in_tau_log) == intersections_by_size.end()) {
+					std::forward_list<const std::set<int> *> v(1, &(*insertion_pair.first));
+					intersections_by_size[itemsets_in_tau_log] = v;
+				} else {
+					intersections_by_size[itemsets_in_tau_log].push_front(&(*insertion_pair.first));
 				}
-				itemsets_in_tau_log = ((int) floor(log2(itemsets_in_tau))) + 1;
-			}
-			if (intersections_by_size.find(itemsets_in_tau_log) == intersections_by_size.end()) {
-				std::forward_list<const std::set<int> *> v(1, &(*insertion_pair.first));
-				intersections_by_size[itemsets_in_tau_log] = v;
-			} else {
-				intersections_by_size[itemsets_in_tau_log].push_front(&(*insertion_pair.first));
 			}
 		}
 	}

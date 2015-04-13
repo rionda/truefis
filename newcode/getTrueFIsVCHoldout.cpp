@@ -201,7 +201,9 @@ int main(int argc, char **argv) {
 			++fis_it;
 			exp_frequent_itemsets.erase(tmp->first);
 			++output_count;
+			continue;
 		}
+		++fis_it;
 	}
 	if (mine_conf.verbose) {
 		std::cerr << "done (" <<  output_count << " FIs sent to output, " <<
@@ -217,7 +219,9 @@ int main(int argc, char **argv) {
 			std::map<std::set<int>, const double>::iterator tmp(fis_it);
 			++fis_it;
 			eval_frequent_itemsets.erase(tmp->first);
+			continue;
 		}
+		++fis_it;
 	}
 	if (mine_conf.verbose) {
 		std::cerr << "done (" <<  eval_frequent_itemsets.size() << " FIs , " <<
@@ -263,7 +267,7 @@ int main(int argc, char **argv) {
 	std::cerr << "exp_size=" << exp_dataset.get_size() << ",eval_size=" <<
 		eval_dataset.get_size() << std::endl;
 	std::cerr << "exp_res_filtered=" << exp_frequent_itemsets.size() <<
-		"holdout_intersect=" << eval_frequent_itemsets.size() << std::endl;
+		",holdout_intersect=" << eval_frequent_itemsets.size() << std::endl;
 	std::cerr << "exp_evc_bound=" << exp_stats.get_evc_bound() <<
 		",eval_evc_bound=" << eval_stats.get_evc_bound() << std::endl;
 	std::cerr << "exp_res_file,eval_res_file,exp_epsilon,eval_epsilon,d,min_freq,trueFIs,exp_size,eval_size,exp_res_filtered,holdout_intersect,exp_evc_bound,eval_evc_bound" << std::endl;

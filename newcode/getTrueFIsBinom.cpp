@@ -19,14 +19,12 @@
  *
  */
 
-#include <cassert>
-#include <cmath> // for sqrt, round
+#include <cmath> // for round
 #include <cstdlib> // for EXIT_FAILURE, SUCCESS
 #include <iostream>
 #include <map>
 #include <set>
 #include <string>
-#include <unordered_set>
 
 #include <unistd.h> // for getopt
 extern char *optarg;
@@ -119,7 +117,7 @@ int main(int argc, char **argv) {
 	double non_accepted_freq = mine_conf.theta - 1.0 / dataset.get_size();
 	const double supposed_freq = non_accepted_freq;
 	const double min_diff = 1.0 / dataset.get_size();
-	const double critical_value_log = log(mine_conf.delta) - log(dataset.get_items_num());
+	const double critical_value_log = log(mine_conf.delta) - (dataset.get_items_num() * M_LN2);
 	while (accepted_freq - non_accepted_freq > min_diff) {
 		double mid_point = (accepted_freq + non_accepted_freq) / 2.0;
 		double p_value_log = get_pvalue_log_chernoff(mid_point, dataset.get_size(), supposed_freq);
@@ -135,7 +133,7 @@ int main(int argc, char **argv) {
 		std::cerr << "INFO: computing trueFIs..." << std::endl;
 	}
 	int output_count = 0;
-	for (std::map<std::set<int>, const double>::iterator fis_it = frequent_itemsets.begin(); fis_it != frequent_itemsets.end();) {
+	for (std::map<std::set<int>, const double>::iterator fis_it = frequent_itemsets.begin(); fis_it != frequent_itemsets.end(); ++fis_it) {
 		if (fis_it->second >= accepted_freq) {
 			std::cout << itemset2string(fis_it->first) << " (" << (int)
 				round(fis_it->second * dataset.get_size()) << ")"  <<

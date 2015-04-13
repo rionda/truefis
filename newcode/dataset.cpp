@@ -82,14 +82,12 @@ int Dataset::get_frequent_itemsets(const double theta, std::map<std::set<int>, c
 	} else {
 		size = std::stoi(line.substr(1));
 	}
-	std::unordered_set<int> items_set;
 	double prev_freq = 2.0;
 	frequent_itemsets.clear();
 	while (getline(fi_stream, line)) {
 		const size_t parenthesis_index = line.find_first_of("(");
 		const std::string itemset_str = line.substr(0, parenthesis_index - 1);
 		const std::set<int> itemset = string2itemset(itemset_str);
-		items_set.insert(itemset.begin(), itemset.end());
 		const double support = std::stoi(line.substr(parenthesis_index + 1));
 		const double freq = support / size;
 		if (freq > prev_freq) {
@@ -103,7 +101,6 @@ int Dataset::get_frequent_itemsets(const double theta, std::map<std::set<int>, c
 			break;
 		}
 	}
-	items = items_set.size();
 	fi_stream.close();
 	return frequent_itemsets.size();
 }
@@ -187,6 +184,9 @@ int Dataset::set_size(const int new_size) {
 	return -1;
 }
 
-int Dataset::get_items_num() {
+int Dataset::get_items_num(const bool recompute) {
+	if (items == -1 || recompute) {
+		get_size(true);
+	}
 	return items;
 }

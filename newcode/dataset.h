@@ -37,7 +37,7 @@ class Dataset {
 		std::string get_fi_path() const { return fi_path; }
 		std::string get_path() const { return path; }
 		int get_frequent_itemsets(const double, std::map<std::set<int>, const double> &);
-		int get_items_num();
+		int get_items_num(const bool = false);
 		int get_max_supp(const bool = false);
 		int get_size(const bool = false);
 		int set_max_supp(const int);
