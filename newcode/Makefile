@@ -46,7 +46,7 @@ CFLAGS=$(ANSI_FLAGS) $(WARNS) $(OPT)
 
 .PHONY: all clean
 
-all: compareAbsFIs getTrueFIsBinom getTrueFIsHoldout getTrueFIsVCHoldout getTrueFIsVC
+all: compareAbsFIs getTrueFIsBinom getTrueFIsHoldout getTrueFIsVCHoldout getTrueFIsVC sortFIs
 
 archive: truefis.tar.bz2
 
@@ -70,6 +70,9 @@ getTrueFIsVC: getTrueFIsVC.cpp config.h dataset.cpp dataset.h epsilon.cpp epsilo
 
 getTrueFIsVCHoldout: getTrueFIsVCHoldout.cpp config.h dataset.cpp dataset.h epsilon.cpp epsilon.h graph.cpp graph.h itemsets.cpp itemsets.h stats.cpp stats.h sukp.cpp sukp.h Makefile
 	$(CPP) dataset.cpp epsilon.cpp graph.cpp itemsets.cpp stats.cpp sukp.cpp $@.cpp $(CFLAGS) $(CPLEX_FLAGS) $(CPLEX) $(CONCERT) $(IGRAPH) $(OTHER_LIBS) -o $@
+
+sortFIs: sortFIs.cpp Makefile
+	$(CPP) $@.cpp $(CFLAGS) -lm -o $@
 
 truefis.tar.bz2: ../README.md ../LICENSE ../NOTICE Makefile *.h *.cpp
 	-/bin/rm -rf truefis
