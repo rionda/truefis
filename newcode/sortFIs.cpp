@@ -26,8 +26,6 @@
 #include <map>
 #include <vector>
 
-#include "util.h"
-
 using namespace std;
 
 // Allowing for very long transactions, just in case
