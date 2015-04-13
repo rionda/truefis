@@ -146,6 +146,7 @@ int main(int argc, char **argv) {
 		std::cerr << "done, epsilon=" << epsilon << std::endl;
 		std::cerr << "INFO: computing trueFIs..." << std::endl;
 	}
+	std::cout << "(" << eval_dataset.get_size() << ")" << std::endl;
 	int output_count = 0;
 	for (std::map<std::set<int>, const double>::iterator fis_it = eval_frequent_itemsets.begin(); fis_it != eval_frequent_itemsets.end(); ++fis_it) {
 		if (fis_it->second >= accepted_freq && exp_frequent_itemsets.find(fis_it->first) != exp_frequent_itemsets.end()) {

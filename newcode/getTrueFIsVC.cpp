@@ -198,12 +198,13 @@ int main(int argc, char **argv) {
 		std::cerr << "done (" << collection_F.size() << " itemset survived)" << std::endl;
 		std::cerr << "INFO: adding relevant CIs to collection_F...";
 	}
-	double max_freq_F = 0;
-	int output_count = 0;
 	// After the loop is completed, the map will only contain the (closed)
 	// itemsets in the set \mathcal{G} in the pseudocode.
 	// In the loop, we also insert (pointers to) these closed itemsets into
 	// collection_F
+	std::cout << "(" << dataset.get_size() << ")" << std::endl;
+	double max_freq_F = 0;
+	int output_count = 0;
 	for (std::map<std::set<int>, const double>::iterator fis_it = frequent_itemsets.begin(); fis_it != frequent_itemsets.end();) {
 		// Print and remove the itemsets with frequency at least theta+epsilon_1.
 		if (fis_it->second >= mine_conf.theta + epsilon_1) {

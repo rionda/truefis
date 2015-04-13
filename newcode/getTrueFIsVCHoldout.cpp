@@ -189,6 +189,7 @@ int main(int argc, char **argv) {
 	// We now scan the frequent_itemsets map, and send to output (and removing
 	// from the map) those with frequencies at least theta+epsilon. The leftover
 	// is what is called \mathcal{G} in the pseudocode.
+	std::cout << "(" << eval_dataset.get_size() << ")" << std::endl;
 	int output_count = 0;
 	for (std::map<std::set<int>, const double>::iterator fis_it = exp_frequent_itemsets.begin(); fis_it != exp_frequent_itemsets.end();) {
 		// Print and remove the itemsets with frequency at least theta+epsilon_1.
