@@ -46,12 +46,15 @@ CFLAGS=$(ANSI_FLAGS) $(WARNS) $(OPT)
 
 .PHONY: all clean
 
-all: getTrueFIsBinom getTrueFIsHoldout getTrueFIsVCHoldout getTrueFIsVC
+all: compareAbsFIs getTrueFIsBinom getTrueFIsHoldout getTrueFIsVCHoldout getTrueFIsVC
 
 archive: truefis.tar.bz2
 
 clean:
-	-/bin/rm -rf getTrueFIsBinom getTrueFIsHoldout getTrueFIsVCHoldout getTrueFIsVC *.dSYM
+	-/bin/rm -rf compareAbsFIs getTrueFIsBinom getTrueFIsHoldout getTrueFIsVCHoldout getTrueFIsVC *.dSYM
+
+compareAbsFIs: compareAbsFIs.cpp Makefile
+	$(CPP) $@.cpp $(CFLAGS) -lm -o $@
 
 compute_stats: compute_stats.cpp dataset.cpp dataset.h graph.cpp graph.h itemsets.cpp itemsets.h stats.cpp stats.h sukp.cpp sukp.h Makefile
 	$(CPP) dataset.cpp graph.cpp itemsets.cpp stats.cpp sukp.cpp $@.cpp $(CFLAGS) $(CPLEX_FLAGS) $(CPLEX) $(CONCERT) $(IGRAPH) $(OTHER_LIBS) -o $@
