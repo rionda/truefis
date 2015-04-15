@@ -18,7 +18,6 @@
  *
  */
 
-#include <algorithm>
 #include <cassert>
 #include <forward_list>
 #include <fstream>
@@ -40,13 +39,16 @@
 bool is_subset(const std::set<int> &first, const std::set<int> &second) {
 	if (first.size() > second.size()) {
 		return false;
+	} else if (first.size() == second.size()) {
+		return first == second;
+	} else {
+		for (const int item : first) {
+			if (second.find(item) == second.end()) {
+				return false;
+			}
+		}
 	}
-	std::vector<int>::iterator it;
-	std::vector<int> difference(first.size());
-	it = std::set_difference(
-			first.begin(), first.end(), second.begin(), second.end(),
-			difference.begin());
-	return it == difference.begin();
+	return true;
 }
 
 /**
