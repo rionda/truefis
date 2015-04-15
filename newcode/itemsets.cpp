@@ -138,6 +138,14 @@ bool check_closed_itemsets(const std::map<std::set<int>, const double> &collecti
 	return true;
 }
 
+/**
+ * Compute the Closed Itemsets among those in the passed collection, which is a
+ * map from itemsets to frequencies. The collection of CIs is stored (as
+ * pointers) in the passed set 'closed_itemsets', which is emptied before
+ * storing the CIs.
+ *
+ * Returns the number of CIs.
+ */
 int get_closed_itemsets(const std::map<std::set<int>, const double> &collection,
 		std::unordered_set<const std::set<int> *> &closed_itemsets) {
 	std::unordered_map<double, std::set<const std::set<int> *, bool(*)(const std::set<int>*, const std::set<int>*)>> freq_to_itemsets;
@@ -187,14 +195,6 @@ int get_closed_itemsets(const std::map<std::set<int>, const double> &collection,
 	return closed_itemsets.size();
 }
 
-/**
- * Compute the Closed Itemsets among those in the passed collection, which is a
- * map from itemsets to frequencies. The collection of CIs is stored (as
- * pointers) in the passed set 'closed_itemsets', which is emptied before
- * storing the CIs.
- *
- * Returns the number of CIs.
- */
 int old_get_closed_itemsets(const std::map<std::set<int>, const double> &collection,
 		std::unordered_set<const std::set<int> *> &closed_itemsets) {
 	// Sorting the collection by size simplifies the computation
@@ -260,10 +260,21 @@ bool check_maximal_itemsets(const std::unordered_set<const std::set<int>*> &coll
  */
 int get_maximal_itemsets(const std::unordered_set<const std::set<int>*> &collection, std::unordered_set<const std::set<int>*> &maximal_itemsets) {
 	std::set<const std::set<int>*, bool (*)(const std::set<int>*, const std::set<int>*)> collection_sorted_by_decreasing_size(decreasing_size_comp);
+	std::set<const std::set<int>*, bool (*)(const std::set<int>*, const std::set<int>*)> rejected(size_comp);
 	collection_sorted_by_decreasing_size.insert(collection.begin(), collection.end());
 	maximal_itemsets.clear();
 	for (const std::set<int> *itemset : collection_sorted_by_decreasing_size) {
 		bool to_add = true;
+		for (const std::set<int> *rej : rejected) {
+			if (is_subset(*itemset, *rej)) {
+				to_add = false;
+				break;
+			}
+		}
+		if (! to_add) {
+			rejected.insert(itemset);
+			continue;
+		}
 		for (const std::set<int> *maximal : maximal_itemsets) {
 			if (is_subset(*itemset, *maximal)) {
 				to_add = false;
@@ -272,6 +283,9 @@ int get_maximal_itemsets(const std::unordered_set<const std::set<int>*> &collect
 		}
 		if (to_add) {
 			maximal_itemsets.insert(itemset);
+		} else {
+			rejected.insert(itemset);
+			continue;
 		}
 	}
 	//assert(check_maximal_itemsets(collection, maximal_itemsets));
