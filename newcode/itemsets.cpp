@@ -18,6 +18,7 @@
  *
  */
 
+#include <algorithm>
 #include <cassert>
 #include <forward_list>
 #include <fstream>
@@ -41,13 +42,8 @@ bool is_subset(const std::set<int> &first, const std::set<int> &second) {
 	} else if (first.size() == second.size()) {
 		return first == second;
 	} else {
-		for (const int item : first) {
-			if (second.find(item) == second.end()) {
-				return false;
-			}
-		}
+		return includes(second.begin(), second.end(), first.begin(), first.end());
 	}
-	return true;
 }
 
 /**
@@ -260,21 +256,10 @@ bool check_maximal_itemsets(const std::unordered_set<const std::set<int>*> &coll
  */
 int get_maximal_itemsets(const std::unordered_set<const std::set<int>*> &collection, std::unordered_set<const std::set<int>*> &maximal_itemsets) {
 	std::set<const std::set<int>*, bool (*)(const std::set<int>*, const std::set<int>*)> collection_sorted_by_decreasing_size(decreasing_size_comp);
-	std::set<const std::set<int>*, bool (*)(const std::set<int>*, const std::set<int>*)> rejected(size_comp);
 	collection_sorted_by_decreasing_size.insert(collection.begin(), collection.end());
 	maximal_itemsets.clear();
 	for (const std::set<int> *itemset : collection_sorted_by_decreasing_size) {
 		bool to_add = true;
-		for (const std::set<int> *rej : rejected) {
-			if (is_subset(*itemset, *rej)) {
-				to_add = false;
-				break;
-			}
-		}
-		if (! to_add) {
-			rejected.insert(itemset);
-			continue;
-		}
 		for (const std::set<int> *maximal : maximal_itemsets) {
 			if (is_subset(*itemset, *maximal)) {
 				to_add = false;
@@ -283,9 +268,6 @@ int get_maximal_itemsets(const std::unordered_set<const std::set<int>*> &collect
 		}
 		if (to_add) {
 			maximal_itemsets.insert(itemset);
-		} else {
-			rejected.insert(itemset);
-			continue;
 		}
 	}
 	//assert(check_maximal_itemsets(collection, maximal_itemsets));
