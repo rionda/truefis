@@ -24,14 +24,6 @@
 /**
  * Compute the bound to the maximum deviation
  */
-double get_epsilon(const double evc_bound, const double size, const double max_supp, const double delta, const double c) {
-	return 2.0 * c * sqrt(2.0 * evc_bound * ( max_supp  / size) / size) +
-		std::sqrt(4.0 * M_LN2 - 2.0 * log(delta) / size);
-}
-
-/**
- * Compute the bound to the maximum deviation
- */
 double get_epsilon(Stats &stats, Dataset &dataset, const double delta, const double c) {
 	return 2.0 * c * sqrt(2.0 * stats.get_evc_bound() * (
 				stats.get_max_supp()  / dataset.get_size()) /
