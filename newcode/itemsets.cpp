@@ -144,6 +144,7 @@ int get_closed_itemsets(const std::map<std::set<int>, const double> &collection,
 	for (std::map<std::set<int>, const double>::const_iterator it = collection.begin(); it != collection.end(); ++it) {
 		if (freq_to_itemsets.find(it->second) == freq_to_itemsets.end()) {
 			std::set<const std::set<int>*, bool (*)(const std::set<int>*, const std::set<int>*)> itemsets(size_comp);
+			freq_to_itemsets[it->second] = itemsets;
 		}
 		freq_to_itemsets[it->second].insert(&(*it).first);
 	}
@@ -182,9 +183,6 @@ int get_closed_itemsets(const std::map<std::set<int>, const double> &collection,
 				closed_itemsets.insert(itemset);
 			}
 		}
-	}
-	if (! check_closed_itemsets(collection, closed_itemsets)) {
-		std::cerr << "ERROR IN COMPUTING CIS" << std::endl;
 	}
 	return closed_itemsets.size();
 }
