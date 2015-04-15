@@ -138,6 +138,57 @@ bool check_closed_itemsets(const std::map<std::set<int>, const double> &collecti
 	return true;
 }
 
+int get_closed_itemsets(const std::map<std::set<int>, const double> &collection,
+		std::unordered_set<const std::set<int> *> &closed_itemsets) {
+	std::unordered_map<double, std::set<const std::set<int> *, bool(*)(const std::set<int>*, const std::set<int>*)>> freq_to_itemsets;
+	for (std::map<std::set<int>, const double>::const_iterator it = collection.begin(); it != collection.end(); ++it) {
+		if (freq_to_itemsets.find(it->second) == freq_to_itemsets.end()) {
+			std::set<const std::set<int>*, bool (*)(const std::set<int>*, const std::set<int>*)> itemsets(size_comp);
+		}
+		freq_to_itemsets[it->second].insert(&(*it).first);
+	}
+	// Return early if we can easily check that all itemsets are closed
+	if (freq_to_itemsets.size() == collection.size()) {
+		for (std::map<std::set<int>, const double>::const_iterator it = collection.begin(); it != collection.end(); ++it) {
+			closed_itemsets.insert(&((*it).first));
+		}
+		return freq_to_itemsets.size();
+	}
+	for (auto it = freq_to_itemsets.begin(); it != freq_to_itemsets.end(); ++it) {
+		if ((it->second).size() == 1) {
+			closed_itemsets.insert(*((it->second).begin()));
+		} else {
+			std::unordered_set<const std::set<int> *> local_closed_itemsets;
+			std::unordered_set<const std::set<int> *> border;
+			for (const std::set<int> *itemset : it->second) {
+				std::unordered_set<const std::set<int>*> to_remove;
+				std::unordered_set<const std::set<int>*> to_remove_border;
+				for (const std::set<int> *closed : border) {
+					if (is_subset(*closed, *itemset)) {
+						to_remove.insert(closed);
+						to_remove_border.insert(closed);
+					}
+				}
+				for (const std::set<int> *removing : to_remove_border) {
+					border.erase(removing);
+				}
+				border.insert(itemset);
+				for (const std::set<int> *removing : to_remove) {
+					local_closed_itemsets.erase(removing);
+				}
+				local_closed_itemsets.insert(itemset);
+			}
+			for (const std::set<int> *itemset : local_closed_itemsets) {
+				closed_itemsets.insert(itemset);
+			}
+		}
+	}
+	if (! check_closed_itemsets(collection, closed_itemsets)) {
+		std::cerr << "ERROR IN COMPUTING CIS" << std::endl;
+	}
+	return closed_itemsets.size();
+}
+
 /**
  * Compute the Closed Itemsets among those in the passed collection, which is a
  * map from itemsets to frequencies. The collection of CIs is stored (as
@@ -146,7 +197,7 @@ bool check_closed_itemsets(const std::map<std::set<int>, const double> &collecti
  *
  * Returns the number of CIs.
  */
-int get_closed_itemsets(const std::map<std::set<int>, const double> &collection,
+int old_get_closed_itemsets(const std::map<std::set<int>, const double> &collection,
 		std::unordered_set<const std::set<int> *> &closed_itemsets) {
 	// Sorting the collection by size simplifies the computation
 	std::set<const std::set<int>*, bool (*)(const std::set<int>*, const std::set<int>*)> collection_sorted_by_size(size_comp);
