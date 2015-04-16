@@ -43,7 +43,7 @@ extern int optind;
  */
 void usage(const char *binary_name) {
 	std::cerr << binary_name << ": compute, with probability at least 1-delta, a subset of the TrueFIs w.r.t. theta" << std::endl;
-	std::cerr << "USAGE: " << binary_name << " [-e evc_bound] [-h] [-s size] delta theta expl_count_method expl_bound_method eval_count_method eval_bound_method exp_frequent_itemsets_path exp_dataset_path eval_frequent_itemsets_path eval_dataset_path" << std::endl;
+	std::cerr << "USAGE: " << binary_name << " [-e evc_bound] [-h] [-s size] delta theta expl_bound_method eval_count_method eval_bound_method exp_frequent_itemsets_path exp_dataset_path eval_frequent_itemsets_path eval_dataset_path" << std::endl;
 	std::cerr << "\t-e evc_bound: use 'evc_bound' as the bound to the empirical VC-dimension for the exploratory dataset" << std::endl;
 	std::cerr << "\t-h: print this help message and exit" << std::endl;
 	std::cerr << "\t-m max_supp: use 'max_supp' as the maximum support of an item in the exploratory dataset" << std::endl;
@@ -78,33 +78,23 @@ int get_configs(int argc, char **argv, ds_config &exp_ds_conf, ds_config &eval_d
 			break;
 		}
 	}
-	if (optind != argc - 10) {
+	if (optind != argc - 9) {
 		std::cerr << "ERROR: wrong number of arguments" << std::endl;
 		return EXIT_FAILURE;
 	}
-	mine_conf.delta = std::stod(argv[argc - 10]);
+	mine_conf.delta = std::stod(argv[argc - 9]);
 	if (mine_conf.delta <= 0.0 || mine_conf.delta >= 1.0) {
 		std::cerr <<  "ERROR: delta must be a number greater than 0 and smaller than 1" << std::endl;
 		return EXIT_FAILURE;
 	}
-	mine_conf.theta = std::stod(argv[argc - 9]);
+	mine_conf.theta = std::stod(argv[argc - 8]);
 	if (mine_conf.theta <= 0.0 || mine_conf.theta >= 1.0) {
 		std::cerr << "ERROR: theta must be a number greater than 0 and smaller than 1" << std::endl;
 		return EXIT_FAILURE;
 	}
 	exp_stats_conf.use_antichain = false;
-	std::string method(argv[argc - 8]);
-	if (method == "exact") {
-		exp_stats_conf.cnt_method = COUNT_EXACT;
-	} else if (method == "fast") {
-		exp_stats_conf.cnt_method = COUNT_FAST;
-	} else if (method == "sukp") {
-		exp_stats_conf.cnt_method = COUNT_SUKP;
-	} else {
-		std::cerr << "ERROR: count method for exploratory phase must be 'exact', 'fast', or 'sukp'" << std::endl;
-		return EXIT_FAILURE;
-	}
-	method.assign(argv[argc - 7]);
+	exp_stats_conf.cnt_method = COUNT_EXACT; // UNUSED
+	std::string method(argv[argc -7]);
 	if (method == "exact") {
 		exp_stats_conf.bnd_method = BOUND_EXACT;
 	} else if (method == "scan") {
