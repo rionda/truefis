@@ -300,7 +300,6 @@ int get_negative_border(std::unordered_set<const std::set<int> *> &collection, s
 	for (const std::set<int> *maximal : collection) {
 		items.insert(maximal->begin(), maximal->end());
 	}
-	negative_border.clear();
 	std::set<std::set<int>, bool (*)(const std::set<int> &, const std::set<int> &)> local_negative_border(size_cmp_nopointers);
 	for (std::unordered_set<int>::iterator first = items.begin(); first != items.end(); ++first) {
 		std::unordered_set<int>::iterator second = first;
@@ -381,12 +380,14 @@ int get_negative_border(std::unordered_set<const std::set<int> *> &collection, s
 						}
 					}
 					if (to_add) {
-						negative_border.insert(child);
+						local_negative_border.insert(child);
 					}
 				}
 			}
 		}
 	}
+	negative_border.clear();
+	negative_border.insert(local_negative_border.begin(), local_negative_border.end());
 	return negative_border.size();
 }
 
