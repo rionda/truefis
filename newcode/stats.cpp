@@ -328,10 +328,6 @@ Stats::Stats(
 	std::set<std::set<int> > intersections;
 	std::string line;
 	int size = 0;
-	// The following will contain the supports of all itemsets in the
-	// collection.
-	std::unordered_map<const std::set<int> *, int> itemsets_supps;
-	max_supp = 1;
 	// This is the first loop in the pseudocode, to populate T and L
 	while (std::getline(dataset_s, line)) {
 		++size;
@@ -360,14 +356,6 @@ Stats::Stats(
 							if (stats_conf.use_antichain) {
 								itemsets_in_tau_list.push_front(*itemset);
 							}
-							if (itemsets_supps.find(*itemset) == itemsets_supps.end()) {
-								itemsets_supps[*itemset] = 1;
-							} else {
-								itemsets_supps[*itemset]++;
-								if (itemsets_supps[*itemset] > max_supp) {
-									++max_supp;
-								}
-							}
 						}
 					}
 					if (stats_conf.use_antichain) {
@@ -389,6 +377,7 @@ Stats::Stats(
 	dataset.set_size(size); // Set size in the database object
 	//itemsets_supps.clear(); XXX I never know if this is a good idea
 	evc_bound = compute_evc_bound(intersections_by_size, stats_conf);
+	max_supp = -1;
 }
 
 int Stats::get_evc_bound() {

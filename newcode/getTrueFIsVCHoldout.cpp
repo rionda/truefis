@@ -204,7 +204,11 @@ int main(int argc, char **argv) {
 	std::map<std::set<int>, const double> eval_frequent_itemsets;
 	eval_dataset.get_frequent_itemsets(mine_conf.theta, eval_frequent_itemsets);
 	// Remove itemsets not in \mathcal{G} from the evaluation results
+	double max_freq_G = 0.0;
 	for (std::map<std::set<int>, const double>::iterator fis_it = eval_frequent_itemsets.begin(); fis_it != eval_frequent_itemsets.end();) {
+		if (fis_it->second > max_freq_G) {
+				max_freq_G = fis_it->second;
+		}
 		if (exp_frequent_itemsets.find(fis_it->first) == exp_frequent_itemsets.end()) {
 			// Exploit the fact that changes to STL maps do not invalidate iterators
 			std::map<std::set<int>, const double>::iterator tmp(fis_it);
@@ -229,6 +233,7 @@ int main(int argc, char **argv) {
 	// The following compute the EVC bound called d_2 in the pseudocode, and the
 	// maximum frequency of an itemset from F.
 	Stats eval_stats(eval_dataset, closed_itemsets, eval_stats_conf);
+	eval_stats.set_max_supp((int) round(max_freq_G * eval_dataset.get_size()));
 	if (mine_conf.verbose) {
 		std::cerr << "done (evc_bound=" << eval_stats.get_evc_bound() <<
 			", max_supp=" << eval_stats.get_max_supp() << ")" << std::endl;
