@@ -57,14 +57,23 @@ int filter_negative_border(const Dataset &dataset, const std::set<std::set<int> 
 		std::cerr << "ERROR: cannot open dataset file" << std::endl;
 		std::exit(EXIT_FAILURE);
 	}
+	std::set<const std::set<int>*> local_negative_border;
+	for (std::set<std::set<int>>::const_iterator it = negative_border.begin(); it != negative_border.end(); ++it) {
+		local_negative_border.insert(&(*it));
+	}
 	filtered.clear();
 	std::string line;
 	while (filtered.size() < negative_border.size() && getline(dataset_str, line)) {
 		std::set<int> trans = string2itemset(line);
-		for (std::set<std::set<int> >::const_iterator it = negative_border.begin(); it != negative_border.end(); ++it) {
-			if (filtered.find(&(*it)) == filtered.end() && is_subset(*it, trans)) {
-				filtered.insert(&(*it));
+		for (std::set<const std::set<int>*>::iterator it = local_negative_border.begin(); it != local_negative_border.end();) {
+			if (is_subset(**it, trans)) {
+				filtered.insert(*it);
+				std::set<const std::set<int>*>::iterator tmp(it);
+				++it;
+				local_negative_border.erase(tmp);
+				continue;
 			}
+			++it;
 		}
 	}
 	dataset_str.close();
