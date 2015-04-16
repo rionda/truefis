@@ -58,7 +58,7 @@ for FREQ in `echo ${FREQS}`; do
         EPSILON=`grep "e2=" ${LOGS_BASE}/${RES_BASE}_mine.log | tail -1 | cut -d "," -f 3 |cut -d "=" -f 2`
 	elif [ ${ALGO} = "vcholdout" ]; then
 		RES_BASE="${RES_BASE}_${BOUND_METHOD_FIRST}_${COUNT_METHOD_SECOND}_${BOUND_METHOD_SECOND}"
-        ${SCRIPTS_BASE}/getTrueFIsHoldoutVC -v -s ${HOLDOUT_SIZE} 0.${DELTA} 0.${FREQ} ${BOUND_METHOD_FIRST} ${COUNT_METHOD_SECOND} ${BOUND_METHOD_SECOND} ${RESULTS_BASE}/${DATASET_BASE}_expl_t${MIN_FREQ}.res ${SAMPLES_BASE}/${DATASET_BASE}_expl.dat ${RESULTS_BASE}/${DATASET_BASE}_eval_t${MIN_FREQ}.res ${SAMPLES_BASE}/${DATASET_BASE}_eval.dat > ${TFIS_BASE}/${RES_BASE}.res 2> ${LOGS_BASE}/${RES_BASE}_mine.log
+        ${SCRIPTS_BASE}/getTrueFIsVCHoldout -v -s ${HOLDOUT_SIZE} 0.${DELTA} 0.${FREQ} ${BOUND_METHOD_FIRST} ${COUNT_METHOD_SECOND} ${BOUND_METHOD_SECOND} ${RESULTS_BASE}/${DATASET_BASE}_expl_t${MIN_FREQ}.res ${SAMPLES_BASE}/${DATASET_BASE}_expl.dat ${RESULTS_BASE}/${DATASET_BASE}_eval_t${MIN_FREQ}.res ${SAMPLES_BASE}/${DATASET_BASE}_eval.dat > ${TFIS_BASE}/${RES_BASE}.res 2> ${LOGS_BASE}/${RES_BASE}_mine.log
         EPSILON=`grep "eval_epsilon=" ${LOGS_BASE}/${RES_BASE}_mine.log | tail -1 | cut -d "," -f 4 |cut -d "=" -f 2`
     else # unreached
         echo "You should not be here!" >&2
