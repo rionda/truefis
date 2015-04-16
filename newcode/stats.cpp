@@ -343,7 +343,7 @@ Stats::Stats(
 				intersection_v.begin());
 		if (it != intersection_v.begin() && it - intersection_v.begin() != items.size()) {
 			std::set<int> intersection(intersection_v.begin(), it);
-			std::pair<std::set<std::set<int> >::iterator, bool> insertion_pair = insertion_pair = intersections.insert(intersection);
+			std::pair<std::set<std::set<int> >::iterator, bool> insertion_pair = intersections.insert(intersection);
 			if (insertion_pair.second) { // intersection was not already in intersections
 				int itemsets_in_tau_log = tau.size();
 				std::forward_list<const std::set<int>*> itemsets_in_tau_list;
