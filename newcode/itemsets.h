@@ -29,7 +29,7 @@
 int filter_negative_border(const Dataset &, const std::set<std::set<int> > &, std::unordered_set<const std::set<int>*> &);
 int get_closed_itemsets(const std::map<std::set<int>, const double> &, std::unordered_set<const std::set<int>*> &);
 int get_maximal_itemsets(const std::unordered_set<const std::set<int>*> &, std::unordered_set<const std::set<int>*> &);
-int get_negative_border(std::unordered_set<const std::set<int>*> &, std::set<std::set<int> > &);
+int get_negative_border(const std::map<std::set<int>, const double> &, const std::unordered_set<const std::set<int>*> &, std::set<std::set<int> > &);
 bool is_subset(const std::set<int> &, const std::set<int> &);
 std::string itemset2string(const std::set<int> &, const char=' ');
 std::set<int> string2itemset(const std::string &);

@@ -184,7 +184,7 @@ int main(int argc, char **argv) {
 	}
 	// The following is called \mathcal{W} in the pseudocode
 	std::set<std::set<int> > neg_border;
-	get_negative_border(maximal_itemsets, neg_border);
+	get_negative_border(frequent_itemsets, maximal_itemsets, neg_border);
 	if (mine_conf.verbose) {
 		std::cerr << "done (" << neg_border.size() << " itemsets in the neg. border)" << std::endl;
 		std::cerr << "INFO: filtering out negative border...";
