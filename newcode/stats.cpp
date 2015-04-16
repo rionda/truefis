@@ -360,7 +360,7 @@ Stats::Stats(
 							if (stats_conf.use_antichain) {
 								itemsets_in_tau_list.push_front(*itemset);
 							}
-							if (itemsets_supps.count(*itemset) == 0) {
+							if (itemsets_supps.find(*itemset) == itemsets_supps.end()) {
 								itemsets_supps[*itemset] = 1;
 							} else {
 								itemsets_supps[*itemset]++;
