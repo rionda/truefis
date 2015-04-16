@@ -99,6 +99,20 @@ bool size_comp(const std::set<int> *first, const std::set<int> *second) {
 	return true;
 }
 
+bool size_cmp_nopointers(const std::set<int> &first, const std::set<int> &second) {
+	if (first.size() != second.size()) {
+		return first.size() < second.size();
+	} else {
+		for (std::set<int>::const_iterator f_it = first.begin(), s_it = second.begin(); f_it != first.end(); ++f_it, ++s_it) {
+			if (*f_it != *s_it) {
+				return *f_it < *s_it;
+			}
+		}
+	}
+	return true;
+}
+
+
 /**
  * Utility function to sort a container of sets in decreasing order by size.
  */
@@ -287,6 +301,19 @@ int get_negative_border(std::unordered_set<const std::set<int> *> &collection, s
 		items.insert(maximal->begin(), maximal->end());
 	}
 	negative_border.clear();
+	std::set<std::set<int>, bool (*)(const std::set<int> &, const std::set<int> &)> local_negative_border(size_cmp_nopointers);
+	for (std::unordered_set<int>::iterator first = items.begin(); first != items.end(); ++first) {
+		std::unordered_set<int>::iterator second = first;
+		++second;
+		for (; second != items.end(); ++second) {
+			std::set<int> candidate;
+			candidate.insert(*first);
+			candidate.insert(*second);
+			if (! find_superset(collection, candidate)) {
+				local_negative_border.insert(candidate);
+			}
+		}
+	}
 	for (const std::set<int> *maximal : collection) {
 		for (const int item_to_remove_from_maximal : *maximal) {
 			std::set<int> reduced_maximal(*maximal);
@@ -300,10 +327,22 @@ int get_negative_border(std::unordered_set<const std::set<int> *> &collection, s
 				// least one common ancestor.
 				std::set<int> sibling(reduced_maximal);
 				sibling.insert(item);
-				if (negative_border.find(sibling) != negative_border.end() || find_superset(collection, sibling)) {
+				if (local_negative_border.find(sibling) != local_negative_border.end()) {
 					continue;
 				}
 				bool to_add = true;
+				for (const std::set<int> neg_border_itemset : local_negative_border) {
+					if (is_subset(neg_border_itemset, sibling)) {
+						to_add = false;
+						break;
+					}
+				}
+				if (! to_add) {
+					continue;
+				}
+				if (find_superset(collection, sibling)) {
+					continue;
+				}
 				for (const int item_to_remove : sibling) {
 					std::set<int> subset(sibling);
 					subset.erase(item_to_remove);
@@ -313,17 +352,26 @@ int get_negative_border(std::unordered_set<const std::set<int> *> &collection, s
 					}
 				}
 				if (to_add) {
-					negative_border.insert(sibling);
+					local_negative_border.insert(sibling);
 				} else {
 					// if we added the sibling, there's no way we can also add
 					// the child (as this child would have the sibling as
 					// parent....incest going on here...)
 					std::set<int> child(*maximal);
 					child.insert(item);
-					if (negative_border.find(child) != negative_border.end()) {
+					if (local_negative_border.find(child) != local_negative_border.end()) {
 						continue;
 					}
 					to_add = true;
+					for (const std::set<int> neg_border_itemset : local_negative_border) {
+						if (is_subset(neg_border_itemset, child)) {
+							to_add = false;
+							break;
+						}
+					}
+					if (! to_add) {
+						continue;
+					}
 					for (const int item_to_remove : child) {
 						std::set<int> subset(child);
 						subset.erase(item_to_remove);
@@ -336,18 +384,6 @@ int get_negative_border(std::unordered_set<const std::set<int> *> &collection, s
 						negative_border.insert(child);
 					}
 				}
-			}
-		}
-	}
-	for (std::unordered_set<int>::iterator first = items.begin(); first != items.end(); ++first) {
-		std::unordered_set<int>::iterator second = first;
-		++second;
-		for (; second != items.end(); ++second) {
-			std::set<int> candidate;
-			candidate.insert(*first);
-			candidate.insert(*second);
-			if (! find_superset(collection, candidate)) {
-				negative_border.insert(candidate);
 			}
 		}
 	}
