@@ -346,13 +346,10 @@ Stats::Stats(
 				if (stats_conf.cnt_method == COUNT_EXACT) {
 					int itemsets_in_tau = 0;
 					for (std::unordered_set<const std::set<int>*>::const_iterator itemset = collection.begin(); itemset != collection.end(); ++itemset) {
-						if ((*itemset)->size() <= intersection.size() &&
-								std::includes(intersection.begin(),
-									intersection.end(), (*itemset)->begin(),
-									(*itemset)->end())) {
+						if (is_subset(*itemset, intersection)) {
 							++itemsets_in_tau;
 							// If we are interested in antichains, we actually need
-							// to store (iterators to) the itemsets.
+							// to store pointers to the itemsets.
 							if (stats_conf.use_antichain) {
 								itemsets_in_tau_list.push_front(*itemset);
 							}
