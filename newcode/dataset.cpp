@@ -1,5 +1,5 @@
 /**
- * A class to represent a dataset. Definition in dataset.h .
+ * A class to represent a dataset. Definition in itemsets.h .
  *
  *  Copyright 2015 Matteo Riondato <matteo@cs.brown.edu>
  *
@@ -26,7 +26,6 @@
 #include <unordered_map>
 
 #include "config.h"
-#include "dataset.h"
 #include "itemsets.h"
 
 /**
@@ -56,7 +55,7 @@ Dataset::Dataset(const ds_config &conf, const bool compute) : items(conf.items),
 }
 
 /**
- * Constructor using argument. Only the first one is mandatory. 
+ * Constructor using argument. Only the first one is mandatory.
  */
 Dataset::Dataset(const std::string &_path, const int _items, const int _max_supp, const int _size, const std::string &_fi_path) : items(_items), max_supp(_max_supp), size(_size), fi_path(_fi_path), path(_path) {
 	assert(! path.empty());
@@ -68,7 +67,7 @@ Dataset::Dataset(const std::string &_path, const int _items, const int _max_supp
 	}
 }
 
-int Dataset::get_frequent_itemsets(const double theta, std::map<std::set<int>, const double> &frequent_itemsets) {
+int Dataset::get_frequent_itemsets(const double theta, std::map<std::set<int>, const double> &frequent_itemsets, Itemset *root) {
 	std::fstream fi_stream(fi_path);
 	if (! fi_stream.good()) {
 		fi_stream.close();
@@ -95,7 +94,11 @@ int Dataset::get_frequent_itemsets(const double theta, std::map<std::set<int>, c
 			std::exit(EXIT_FAILURE);
 		}
 		if (freq >= theta) {
-			frequent_itemsets.emplace(itemset, freq);
+			std::map<std::set<int>, const double>::iterator it = (frequent_itemsets.emplace(itemset, freq)).first;
+			if (root != NULL) {
+				Itemset *node = new Itemset(&(it->first));
+				set_parents(node, root);
+			}
 			prev_freq = freq;
 		} else {
 			break;

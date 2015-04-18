@@ -26,7 +26,7 @@
 #include <unordered_set>
 
 #include "config.h"
-#include "dataset.h"
+#include "itemsets.h"
 
 class Stats {
 	int evc_bound;
@@ -35,7 +35,7 @@ class Stats {
 		Stats(): evc_bound(0), max_supp(0.0) {};
 		Stats(int _evc_bound, double _max_supp): evc_bound(_evc_bound), max_supp(_max_supp) {};
 		Stats(Dataset &, const stats_config &);
-		Stats(Dataset &, const std::unordered_set<const std::set<int>*> &, const stats_config &);
+		Stats(Dataset &, const std::unordered_set<const std::set<int>*> &, const stats_config &, Itemset * = NULL);
 		int get_evc_bound();
 		int get_max_supp();
 		int set_max_supp(const int);

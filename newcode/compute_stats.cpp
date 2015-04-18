@@ -19,7 +19,7 @@
 #include <string>
 
 #include "config.h"
-#include "dataset.h"
+#include "itemsets.h"
 #include "stats.h"
 
 int main (int argc, char **argv) {

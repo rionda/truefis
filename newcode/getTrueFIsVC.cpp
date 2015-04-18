@@ -33,7 +33,6 @@ extern char *optarg;
 extern int optind;
 
 #include "config.h"
-#include "dataset.h"
 #include "epsilon.h"
 #include "itemsets.h"
 #include "stats.h"
@@ -165,7 +164,8 @@ int main(int argc, char **argv) {
 	}
 	// The following is called \mathcal{C}_1 in the pseudocode.
 	std::map<std::set<int>, const double> frequent_itemsets;
-	dataset.get_frequent_itemsets(mine_conf.theta - epsilon_1, frequent_itemsets);
+	Itemset *root = new Itemset({});
+	dataset.get_frequent_itemsets(mine_conf.theta - epsilon_1, frequent_itemsets, root);
 	if (mine_conf.verbose) {
 		std::cerr << "done (" << frequent_itemsets.size() << " FIs)" << std::endl;
 		std::cerr << "INFO: computing closed itemsets...";
@@ -177,7 +177,7 @@ int main(int argc, char **argv) {
 		std::cerr << "INFO: computing maximal itemsets...";
 	}
 	std::unordered_set<const std::set<int>*> maximal_itemsets;
-	get_maximal_itemsets(closed_itemsets, maximal_itemsets);
+	get_maximal_itemsets(root, maximal_itemsets);
 	if (mine_conf.verbose) {
 		std::cerr << "done (" << maximal_itemsets.size() << " MIs)" << std::endl;
 		std::cerr << "INFO: computing negative border...";
@@ -239,7 +239,7 @@ int main(int argc, char **argv) {
 	}
 	// The following compute the EVC bound called d_2 in the pseudocode, and the
 	// maximum frequency of an itemset from F.
-	Stats stats2(dataset, collection_F, stats_conf2);
+	Stats stats2(dataset, collection_F, stats_conf2, root);
 	stats2.set_max_supp((int) round(max_freq_F * dataset.get_size()));
 	if (mine_conf.verbose) {
 		std::cerr << "done (evc_bound=" << stats2.get_evc_bound() << ", max_supp=" << stats2.get_max_supp() << ")" << std::endl;

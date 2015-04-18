@@ -35,7 +35,6 @@
 #include <ilcplex/ilocplex.h>
 
 #include "config.h"
-#include "dataset.h"
 #include "graph.h"
 #include "itemsets.h"
 #include "stats.h"
@@ -88,7 +87,7 @@ int compute_evc_bound(
 			break;
 		} else if (conf.bnd_method == BOUND_EXACT) {
 			// Run the exact method, computing antichains
-			max_antichain_size = get_largest_antichain_size(curr_T);
+			max_antichain_size = get_largest_antichain_size_list(curr_T);
 			if (max_antichain_size >= evc_bound) {
 				break;
 			}
@@ -293,7 +292,7 @@ Stats::Stats(Dataset& dataset, const stats_config &stats_conf) : evc_bound(stats
 
 Stats::Stats(
 		Dataset &dataset,
-		const std::unordered_set<const std::set<int> *> &collection, const stats_config &stats_conf) {
+		const std::unordered_set<const std::set<int> *> &collection, const stats_config &stats_conf, Itemset *root) {
 	std::ifstream dataset_s(dataset.get_path());
 	if (stats_conf.cnt_method == COUNT_SUKP) {
 		std::pair<int, int> result;
@@ -341,23 +340,13 @@ Stats::Stats(
 			std::set<int> intersection(intersection_v.begin(), it);
 			std::pair<std::set<std::set<int> >::iterator, bool> insertion_pair = intersections.insert(intersection);
 			if (insertion_pair.second) { // intersection was not already in intersections
-				int itemsets_in_tau_log = tau.size();
-				std::forward_list<const std::set<int>*> itemsets_in_tau_list;
+				int itemsets_in_tau_log = intersection.size();
 				if (stats_conf.cnt_method == COUNT_EXACT) {
 					int itemsets_in_tau = 0;
-					for (std::unordered_set<const std::set<int>*>::const_iterator itemset = collection.begin(); itemset != collection.end(); ++itemset) {
-						if (is_subset(*itemset, intersection)) {
-							++itemsets_in_tau;
-							// If we are interested in antichains, we actually need
-							// to store pointers to the itemsets.
-							if (stats_conf.use_antichain) {
-								itemsets_in_tau_list.push_front(*itemset);
-							}
-						}
-					}
 					if (stats_conf.use_antichain) {
-						itemsets_in_tau =
-							get_largest_antichain_size(itemsets_in_tau_list);
+						itemsets_in_tau = get_largest_antichain_size(intersection, collection, root);
+					} else {
+						itemsets_in_tau = find_itemsets_in_transaction(intersection, collection, root);
 					}
 					itemsets_in_tau_log = ((int) floor(log2(itemsets_in_tau))) + 1;
 				}

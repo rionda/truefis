@@ -28,7 +28,7 @@ extern char *optarg;
 extern int optind;
 
 #include "config.h"
-#include "dataset.h"
+#include "itemsets.h"
 
 /**
  * Print usage on stderr.

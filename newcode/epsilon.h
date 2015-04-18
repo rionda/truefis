@@ -17,7 +17,7 @@
  *
  */
 
-#include "dataset.h"
+#include "itemsets.h"
 #include "stats.h"
 
 double get_epsilon(const double, const double, const double, const double, const double=0.5);

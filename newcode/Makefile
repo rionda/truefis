@@ -54,22 +54,22 @@ archive: truefis.tar.bz2
 clean:
 	-/bin/rm -rf compareFIs getTrueFIsBinom getTrueFIsHoldout getTrueFIsVCHoldout getTrueFIsVC *.dSYM
 
-compareFIs: compareFIs.cpp config.h dataset.cpp dataset.h itemsets.cpp itemsets.h Makefile
+compareFIs: compareFIs.cpp config.h dataset.cpp itemsets.cpp itemsets.h Makefile
 	$(CPP) dataset.cpp itemsets.cpp $@.cpp $(CFLAGS) -lm -o $@
 
-compute_stats: compute_stats.cpp dataset.cpp dataset.h graph.cpp graph.h itemsets.cpp itemsets.h stats.cpp stats.h sukp.cpp sukp.h Makefile
+compute_stats: compute_stats.cpp dataset.cpp graph.cpp graph.h itemsets.cpp itemsets.h stats.cpp stats.h sukp.cpp sukp.h Makefile
 	$(CPP) dataset.cpp graph.cpp itemsets.cpp stats.cpp sukp.cpp $@.cpp $(CFLAGS) $(CPLEX_FLAGS) $(CPLEX) $(CONCERT) $(IGRAPH) $(OTHER_LIBS) -o $@
 
-getTrueFIsBinom: getTrueFIsBinom.cpp config.h dataset.cpp dataset.h itemsets.cpp itemsets.h pvalue.cpp pvalue.h Makefile
+getTrueFIsBinom: getTrueFIsBinom.cpp config.h dataset.cpp  itemsets.cpp itemsets.h pvalue.cpp pvalue.h Makefile
 	$(CPP) dataset.cpp itemsets.cpp pvalue.cpp $@.cpp $(CFLAGS) -lm -o $@
 
-getTrueFIsHoldout: getTrueFIsHoldout.cpp config.h dataset.cpp dataset.h itemsets.cpp itemsets.h pvalue.cpp pvalue.h Makefile
+getTrueFIsHoldout: getTrueFIsHoldout.cpp config.h dataset.cpp  itemsets.cpp itemsets.h pvalue.cpp pvalue.h Makefile
 	$(CPP) dataset.cpp itemsets.cpp pvalue.cpp $@.cpp $(CFLAGS) -lm -o $@
 
-getTrueFIsVC: getTrueFIsVC.cpp config.h dataset.cpp dataset.h epsilon.cpp epsilon.h graph.cpp graph.h itemsets.cpp itemsets.h stats.cpp stats.h sukp.cpp sukp.h Makefile
+getTrueFIsVC: getTrueFIsVC.cpp config.h dataset.cpp epsilon.cpp epsilon.h graph.cpp graph.h itemsets.cpp itemsets.h stats.cpp stats.h sukp.cpp sukp.h Makefile
 	$(CPP) dataset.cpp epsilon.cpp graph.cpp itemsets.cpp stats.cpp sukp.cpp $@.cpp $(CFLAGS) $(CPLEX_FLAGS) $(CPLEX) $(CONCERT) $(IGRAPH) $(OTHER_LIBS) -o $@
 
-getTrueFIsVCHoldout: getTrueFIsVCHoldout.cpp config.h dataset.cpp dataset.h epsilon.cpp epsilon.h graph.cpp graph.h itemsets.cpp itemsets.h stats.cpp stats.h sukp.cpp sukp.h Makefile
+getTrueFIsVCHoldout: getTrueFIsVCHoldout.cpp config.h dataset.cpp epsilon.cpp epsilon.h graph.cpp graph.h itemsets.cpp itemsets.h stats.cpp stats.h sukp.cpp sukp.h Makefile
 	$(CPP) dataset.cpp epsilon.cpp graph.cpp itemsets.cpp stats.cpp sukp.cpp $@.cpp $(CFLAGS) $(CPLEX_FLAGS) $(CPLEX) $(CONCERT) $(IGRAPH) $(OTHER_LIBS) -o $@
 
 sortFIs: sortFIs.cpp Makefile

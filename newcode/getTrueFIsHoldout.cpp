@@ -33,7 +33,6 @@ extern char *optarg;
 extern int optind;
 
 #include "config.h"
-#include "dataset.h"
 #include "epsilon.h"
 #include "itemsets.h"
 #include "pvalue.h"

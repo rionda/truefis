@@ -18,8 +18,8 @@
  */
 #include <cmath>
 
-#include "dataset.h"
 #include "epsilon.h"
+#include "itemsets.h"
 #include "stats.h"
 /**
  * Compute the bound to the maximum deviation
