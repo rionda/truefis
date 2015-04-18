@@ -34,7 +34,7 @@
 
 #include "itemsets.h"
 
-Itemset::Itemset(const std::set<int> *_itemset) : visited(0), itemset(_itemset),  parents {}, children {} {}
+Itemset::Itemset(const std::set<int> *_itemset) : visited(0), itemset(_itemset),  parents(), children() {}
 
 std::forward_list<Itemset *>::iterator Itemset::add_parent(Itemset *parent) {
 	parents.push_front(parent);
@@ -78,7 +78,14 @@ bool size_comp_Itemset(Itemset *first, Itemset *second) {
 void set_parents(Itemset *itemset, Itemset *root) {
 	int visit_id = get_visit_id();
 	std::set<Itemset *, bool (*)(Itemset *, Itemset *)> to_visit(size_comp_Itemset);
-	to_visit.insert(root);
+	for (Itemset *child: root->children) {
+		to_visit.insert(child);
+	}
+	if (to_visit.empty()) {
+		itemset->add_parent(root);
+		root->add_child(itemset);
+		return;
+	}
 	for (std::set<Itemset *, bool(*)(Itemset *, Itemset *)>::iterator it = to_visit.begin(); it != to_visit.end();) {
 		Itemset *head = *it;
 		if (head->visited != visit_id) {

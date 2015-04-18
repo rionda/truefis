@@ -164,7 +164,8 @@ int main(int argc, char **argv) {
 	}
 	// The following is called \mathcal{C}_1 in the pseudocode.
 	std::map<std::set<int>, const double> frequent_itemsets;
-	Itemset *root = new Itemset({});
+	std::set<int> empty;
+	Itemset *root = new Itemset(&empty);
 	dataset.get_frequent_itemsets(mine_conf.theta - epsilon_1, frequent_itemsets, root);
 	if (mine_conf.verbose) {
 		std::cerr << "done (" << frequent_itemsets.size() << " FIs)" << std::endl;
