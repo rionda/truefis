@@ -78,16 +78,9 @@ bool size_comp_Itemset(Itemset *first, Itemset *second) {
 void set_parents(Itemset *itemset, Itemset *root) {
 	int visit_id = get_visit_id();
 	std::set<Itemset *, bool (*)(Itemset *, Itemset *)> to_visit(size_comp_Itemset);
-	for (Itemset *child: root->children) {
-		to_visit.insert(child);
-	}
-	if (to_visit.empty()) {
-		itemset->add_parent(root);
-		root->add_child(itemset);
-		return;
-	}
-	for (std::set<Itemset *, bool(*)(Itemset *, Itemset *)>::iterator it = to_visit.begin(); it != to_visit.end();) {
-		Itemset *head = *it;
+	to_visit.insert(root);
+	while(! to_visit.empty()) {
+		Itemset *head = *(to_visit.begin());
 		if (head->visited != visit_id) {
 			head->visited = visit_id;
 			if (includes(itemset->itemset->begin(), itemset->itemset->end(),
@@ -106,9 +99,7 @@ void set_parents(Itemset *itemset, Itemset *root) {
 				}
 			}
 		}
-		std::set<Itemset *, bool(*)(Itemset *, Itemset *)>::iterator tmp(it);
-		++it;
-		to_visit.erase(tmp);
+		to_visit.erase(head);
 	}
 }
 
@@ -117,8 +108,8 @@ int find_itemsets_in_transaction(std::set<int> &intersection, const std::unorder
 	int visit_id = get_visit_id();
 	std::set<Itemset *, bool (*)(Itemset *, Itemset *)> to_visit(size_comp_Itemset);
 	to_visit.insert(root);
-	for (std::set<Itemset *, bool(*)(Itemset *, Itemset *)>::iterator it = to_visit.begin(); it != to_visit.end();) {
-		Itemset *head = *it;
+	while (! to_visit.empty()) {
+		Itemset *head = *(to_visit.begin());
 		if (head->visited != visit_id) {
 			head->visited = visit_id;
 			if (includes(intersection.begin(), intersection.end(),
@@ -135,9 +126,7 @@ int find_itemsets_in_transaction(std::set<int> &intersection, const std::unorder
 				}
 			}
 		}
-		std::set<Itemset *, bool(*)(Itemset *, Itemset *)>::iterator tmp(it);
-		++it;
-		to_visit.erase(tmp);
+		to_visit.erase(head);
 	}
 	return count;
 }
@@ -374,8 +363,8 @@ int get_maximal_itemsets(Itemset *root, std::unordered_set<const std::set<int>*>
 	int visit_id = get_visit_id();
 	std::set<Itemset *, bool (*)(Itemset *, Itemset*)> to_visit(size_comp_Itemset);
 	to_visit.insert(root);
-	for (std::set<Itemset *, bool (*)(Itemset *, Itemset*)>::iterator it = to_visit.begin(); it != to_visit.end();) {
-		Itemset *head = *it;
+	while (! to_visit.empty()) {
+		Itemset *head = *(to_visit.begin());
 		if (head->visited != visit_id) {
 			head->visited = visit_id;
 			if (head->children.empty()) {
@@ -386,9 +375,7 @@ int get_maximal_itemsets(Itemset *root, std::unordered_set<const std::set<int>*>
 				}
 			}
 		}
-		std::set<Itemset *, bool (*)(Itemset *, Itemset*)>::iterator tmp(it);
-		++it;
-		to_visit.erase(tmp);
+		to_visit.erase(head);
 	}
 	return maximal_itemsets.size();
 }

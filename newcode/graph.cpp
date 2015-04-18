@@ -46,8 +46,8 @@ int get_largest_antichain_size(std::set<int> &intersection, const std::unordered
 	int visit_id = get_visit_id();
 	std::set<Itemset *, bool (*)(Itemset *, Itemset *)> to_visit(size_comp_Itemset);
 	to_visit.insert(root);
-	for (std::set<Itemset *, bool(*)(Itemset *, Itemset *)>::iterator it = to_visit.begin(); it != to_visit.end();) {
-		Itemset *head = *it;
+	while (! to_visit.empty()) {
+		Itemset *head = *(to_visit.begin());
 		if (head->visited != visit_id) {
 			head->visited = visit_id;
 			if (includes(intersection.begin(), intersection.end(),
@@ -79,9 +79,7 @@ int get_largest_antichain_size(std::set<int> &intersection, const std::unordered
 				}
 			}
 		}
-		std::set<Itemset *, bool(*)(Itemset *, Itemset *)>::iterator tmp(it);
-		++it;
-		to_visit.erase(tmp);
+		to_visit.erase(head);
 	}
 	for (std::pair<Itemset *, int> p : sets_to_ids) {
 		for (int ancestor_id : *(ancestors[p.first])) {
