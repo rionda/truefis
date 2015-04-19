@@ -67,7 +67,7 @@ Dataset::Dataset(const std::string &_path, const int _items, const int _max_supp
 	}
 }
 
-int Dataset::get_frequent_itemsets(const double theta, std::map<std::set<int>, const double> &frequent_itemsets, Itemset *root) {
+int Dataset::get_frequent_itemsets(const double theta, std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> &frequent_itemsets, Itemset * const root) {
 	std::fstream fi_stream(fi_path);
 	if (! fi_stream.good()) {
 		fi_stream.close();
@@ -82,7 +82,7 @@ int Dataset::get_frequent_itemsets(const double theta, std::map<std::set<int>, c
 		size = std::stoi(line.substr(1));
 	}
 	double prev_freq = 2.0;
-	std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> local_frequent_itemsets(size_comp_nopointers);
+	frequent_itemsets.clear();
 	while (getline(fi_stream, line)) {
 		const size_t parenthesis_index = line.find_first_of("(");
 		const std::string itemset_str = line.substr(0, parenthesis_index - 1);
@@ -94,7 +94,7 @@ int Dataset::get_frequent_itemsets(const double theta, std::map<std::set<int>, c
 			std::exit(EXIT_FAILURE);
 		}
 		if (freq >= theta) {
-			local_frequent_itemsets.emplace(itemset, freq);
+			frequent_itemsets.emplace(itemset, freq);
 			prev_freq = freq;
 		} else {
 			break;
@@ -102,10 +102,8 @@ int Dataset::get_frequent_itemsets(const double theta, std::map<std::set<int>, c
 	}
 	fi_stream.close();
 	if (root != NULL) {
-		create_frequent_itemsets_tree(local_frequent_itemsets, root);
+		create_frequent_itemsets_tree(frequent_itemsets, root);
 	}
-	frequent_itemsets.clear();
-	frequent_itemsets.insert(local_frequent_itemsets.begin(), local_frequent_itemsets.end());
 	return frequent_itemsets.size();
 }
 

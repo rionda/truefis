@@ -36,13 +36,13 @@
 
 Itemset::Itemset(const std::set<int> *_itemset) : visited(0), itemset(_itemset),  parents(), children() {}
 
-std::list<Itemset *>::iterator Itemset::add_parent(Itemset *parent) {
-	parents.push_front(parent);
+std::list<Itemset *>::iterator Itemset::add_parent(Itemset * const parent) {
+	parents.push_back(parent);
 	return parents.begin();
 }
 
-std::list<Itemset *>::iterator Itemset::add_child(Itemset *child) {
-	children.push_front(child);
+std::list<Itemset *>::iterator Itemset::add_child(Itemset * const child) {
+	children.push_back(child);
 	return children.begin();
 }
 
@@ -63,6 +63,7 @@ bool size_comp_nopointers(const std::set<int> &first, const std::set<int> &secon
 				return *f_it < *s_it;
 			}
 		}
+		return false;
 	}
 	return true;
 }
@@ -79,33 +80,27 @@ void create_frequent_itemsets_tree(const std::map<std::set<int>, const double, b
 	std::set<Itemset *, bool (*)(Itemset *, Itemset *)> prev(size_comp_Itemset);
 	prev.insert(root);
 	std::map<std::set<int>, const double, bool (*)(std::set<int>, std::set<int>)>::const_iterator it = collection.begin();
+	int size = 1;
 	while (it != collection.end()) {
-		int size = it->first.size();
-		Itemset *first = new Itemset(&(it->first));
 		std::set<Itemset *, bool (*)(Itemset *, Itemset *)> curr(size_comp_Itemset);
-		curr.insert(first);
-		++it;
 		while (it != collection.end() && it->first.size() == size) {
-			Itemset *itemset = new Itemset(&(it->first));
+			Itemset *itemset = new Itemset(&((*it).first));
 			curr.insert(itemset);
 			++it;
 		}
-		for (Itemset *itemset : curr) {
-			std::set<int> first_parent_set(itemset->itemset->begin(), --(itemset->itemset->end()));
-			Itemset *first_parent = new Itemset(&first_parent_set);
-
-			for (std::set<Itemset *, bool(*)(Itemset *, Itemset *)>::iterator parent = prev.lower_bound(first_parent); parent != prev.end(); ++parent) {
-				if (includes(itemset->itemset->begin(), itemset->itemset->end(), (*parent)->itemset->begin(), (*parent)->itemset->end())) {
-					itemset->add_parent(*parent);
-					(*parent)->add_child(itemset);
-				}
-				if (itemset->parents.size() == itemset->itemset->size()) {
-					break;
-				}
+		for (std::set<Itemset *, bool (*)(Itemset *, Itemset *)>::iterator itemset = curr.begin(); itemset != curr.end(); ++itemset) {
+			for (int item : *((*itemset)->itemset)) {
+				std::set<int> parent_set(*((*itemset)->itemset));
+				parent_set.erase(item);
+				Itemset *parent = new Itemset(&parent_set);
+				std::set<Itemset *, bool(*)(Itemset *, Itemset *)>::iterator parent_it = prev.lower_bound(parent);
+				(**itemset).add_parent(*parent_it);
+				(**parent_it).add_child(*itemset);
+				delete parent;
 			}
-			assert(itemset->parents.size() == itemset->itemset->size());
 		}
 		prev = curr;
+		++size;
 	}
 }
 
@@ -183,20 +178,6 @@ int filter_negative_border(const Dataset &dataset, const std::set<std::set<int> 
 	return filtered.size();
 }
 
-/**
- * Find a superset of a set in a container of pointers to sets. Time is linear in the size of
- * the container.
- */
-bool find_superset(std::unordered_set<const std::set<int>*> &collection, std::set<int> &key) {
-	for (const std::set<int> *itemset : collection) {
-		if (is_subset(key, *itemset)) {
-			return true;
-		}
-	}
-	return false;
-}
-
-
 struct SetHash
 {
     std::size_t operator () (const std::set<int> &my_set) const
@@ -216,7 +197,7 @@ bool decreasing_size_comp(const std::set<int> *first, const std::set<int> *secon
 	return !size_comp(first, second);
 }
 
-bool check_closed_itemsets(const std::map<std::set<int>, const double> &collection,
+bool check_closed_itemsets(const std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> &collection,
 		std::unordered_set<const std::set<int> *> &closed_itemsets) {
 	for (std::map<std::set<int>, const double>::const_iterator it = collection.begin(); it != collection.end(); ++it) {
 		const std::set<int> itemset = it->first;
@@ -252,7 +233,7 @@ bool check_closed_itemsets(const std::map<std::set<int>, const double> &collecti
  *
  * Returns the number of CIs.
  */
-int get_closed_itemsets(const std::map<std::set<int>, const double> &collection,
+int get_closed_itemsets(const std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> &collection,
 		std::unordered_set<const std::set<int> *> &closed_itemsets) {
 	std::unordered_map<double, std::set<const std::set<int> *, bool(*)(const std::set<int>*, const std::set<int>*)>> freq_to_itemsets;
 	for (std::map<std::set<int>, const double>::const_iterator it = collection.begin(); it != collection.end(); ++it) {
@@ -393,7 +374,7 @@ int get_maximal_itemsets(Itemset *root, std::unordered_set<const std::set<int>*>
  * Returns the size of the NB.
  *
  */
-int get_negative_border(const std::map<std::set<int>, const double> &collection, const std::unordered_set<const std::set<int> *> &maximal_itemsets, std::set<std::set<int> > &negative_border) {
+int get_negative_border(const std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> &collection, const std::unordered_set<const std::set<int> *> &maximal_itemsets, std::set<std::set<int> > &negative_border) {
 	std::unordered_set<int> items;
 	for (const std::set<int> *maximal : maximal_itemsets) {
 		items.insert(maximal->begin(), maximal->end());

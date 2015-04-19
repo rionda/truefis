@@ -23,6 +23,7 @@
 #include <cmath> // for sqrt, round
 #include <cstdlib> // for EXIT_FAILURE, SUCCESS
 #include <iostream>
+#include <list>
 #include <map>
 #include <set>
 #include <string>
@@ -163,7 +164,7 @@ int main(int argc, char **argv) {
 		std::cerr << "INFO: computing frequent itemsets...";
 	}
 	// The following is called \mathcal{C}_1 in the pseudocode.
-	std::map<std::set<int>, const double> frequent_itemsets;
+	std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> frequent_itemsets(size_comp_nopointers);
 	std::set<int> empty;
 	Itemset *root = new Itemset(&empty);
 	dataset.get_frequent_itemsets(mine_conf.theta - epsilon_1, frequent_itemsets, root);

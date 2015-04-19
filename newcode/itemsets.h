@@ -37,8 +37,8 @@ class Itemset {
 		std::list<Itemset *> parents;
 		std::list<Itemset *> children;
 		explicit Itemset(const std::set<int>*);
-		std::list<Itemset *>::iterator add_parent(Itemset *);
-		std::list<Itemset *>::iterator add_child(Itemset *);
+		std::list<Itemset *>::iterator add_parent(Itemset * const);
+		std::list<Itemset *>::iterator add_child(Itemset * const);
 };
 
 class Dataset {
@@ -52,7 +52,7 @@ class Dataset {
 		Dataset(const std::string &, const int=-1, const int=-1, const int=-1, const std::string & = std::string());
 		std::string get_fi_path() const { return fi_path; }
 		std::string get_path() const { return path; }
-		int get_frequent_itemsets(const double, std::map<std::set<int>, const double> &, Itemset * = NULL);
+		int get_frequent_itemsets(const double , std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> &, Itemset * const = NULL);
 		int get_items_num(const bool = false);
 		int get_max_supp(const bool = false);
 		int get_size(const bool = false);
@@ -62,9 +62,9 @@ class Dataset {
 
 int filter_negative_border(const Dataset &, const std::set<std::set<int> > &, std::unordered_set<const std::set<int>*> &);
 int find_itemsets_in_transaction(std::set<int> &, const std::unordered_set<const std::set<int>*> &, Itemset *);
-int get_closed_itemsets(const std::map<std::set<int>, const double> &, std::unordered_set<const std::set<int>*> &);
+int get_closed_itemsets(const std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> &, std::unordered_set<const std::set<int>*> &);
 int get_maximal_itemsets(Itemset *, std::unordered_set<const std::set<int>*> &);
-int get_negative_border(const std::map<std::set<int>, const double> &, const std::unordered_set<const std::set<int>*> &, std::set<std::set<int> > &);
+int get_negative_border(const std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> &, const std::unordered_set<const std::set<int>*> &, std::set<std::set<int> > &);
 int get_visit_id();
 bool is_subset(const std::set<int> &, const std::set<int> &);
 std::string itemset2string(const std::set<int> &, const char=' ');
