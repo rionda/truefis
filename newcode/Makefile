@@ -31,8 +31,7 @@ OPT=-Ofast -pipe -m64 -flto -funroll-loops -mtune=generic -march=x86-64
 endif
 # Instruct CPLEX to compile with the standard headers, and without asserts and
 # debugs
-CPLEX_FLAGS=-fPIC -fexceptions -DIL_STD -DNDEBUG -DILO_LINUX
-
+CPLEX_FLAGS=-fPIC -fexceptions -DIL_STD -DILO_LINUX -DNDEBUG 
 OTHER_LIBS=-lm -lpthread
 
 #DEBUG=-DDEBUG
