@@ -79,7 +79,7 @@ int get_largest_antichain_size(std::set<int> &intersection, const std::unordered
 				}
 			}
 		}
-		to_visit.erase(head);
+		to_visit.erase(to_visit.begin());
 	}
 	for (std::pair<Itemset *, int> p : sets_to_ids) {
 		for (int ancestor_id : *(ancestors[p.first])) {

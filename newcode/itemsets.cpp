@@ -99,7 +99,7 @@ void set_parents(Itemset *itemset, Itemset *root) {
 				}
 			}
 		}
-		to_visit.erase(head);
+		to_visit.erase(to_visit.begin());
 	}
 }
 
@@ -126,7 +126,7 @@ int find_itemsets_in_transaction(std::set<int> &intersection, const std::unorder
 				}
 			}
 		}
-		to_visit.erase(head);
+		to_visit.erase(to_visit.begin());
 	}
 	return count;
 }
@@ -375,7 +375,7 @@ int get_maximal_itemsets(Itemset *root, std::unordered_set<const std::set<int>*>
 				}
 			}
 		}
-		to_visit.erase(head);
+		to_visit.erase(to_visit.begin());
 	}
 	return maximal_itemsets.size();
 }
