@@ -21,7 +21,7 @@
 #ifndef _ITEMSETS_H
 #define _ITEMSETS_H
 
-#include <forward_list>
+#include <list>
 #include <map>
 #include <set>
 #include <string>
@@ -34,11 +34,11 @@ class Itemset {
 	public:
 		int visited;
 		const std::set<int> *itemset;
-		std::forward_list<Itemset *> parents;
-		std::forward_list<Itemset *> children;
+		std::list<Itemset *> parents;
+		std::list<Itemset *> children;
 		explicit Itemset(const std::set<int>*);
-		std::forward_list<Itemset *>::iterator add_parent(Itemset *);
-		std::forward_list<Itemset *>::iterator add_child(Itemset *);
+		std::list<Itemset *>::iterator add_parent(Itemset *);
+		std::list<Itemset *>::iterator add_child(Itemset *);
 };
 
 class Dataset {
@@ -71,4 +71,6 @@ std::string itemset2string(const std::set<int> &, const char=' ');
 void set_parents(Itemset *, Itemset *);
 std::set<int> string2itemset(const std::string &);
 bool size_comp_Itemset(Itemset *, Itemset *);
+bool size_comp_nopointers(const std::set<int> &, const std::set<int> &);
+void create_frequent_itemsets_tree(const std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> &, Itemset* const);
 #endif

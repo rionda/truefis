@@ -20,10 +20,10 @@
 
 #include <algorithm>
 #include <cassert>
-#include <forward_list>
 #include <fstream>
 #include <functional>
 #include <iostream>
+#include <list>
 #include <map>
 #include <set>
 #include <sstream>
@@ -36,12 +36,12 @@
 
 Itemset::Itemset(const std::set<int> *_itemset) : visited(0), itemset(_itemset),  parents(), children() {}
 
-std::forward_list<Itemset *>::iterator Itemset::add_parent(Itemset *parent) {
+std::list<Itemset *>::iterator Itemset::add_parent(Itemset *parent) {
 	parents.push_front(parent);
 	return parents.begin();
 }
 
-std::forward_list<Itemset *>::iterator Itemset::add_child(Itemset *child) {
+std::list<Itemset *>::iterator Itemset::add_child(Itemset *child) {
 	children.push_front(child);
 	return children.begin();
 }
@@ -75,31 +75,37 @@ bool size_comp_Itemset(Itemset *first, Itemset *second) {
 	return size_comp(first->itemset, second->itemset);
 }
 
-void set_parents(Itemset *itemset, Itemset *root) {
-	int visit_id = get_visit_id();
-	std::set<Itemset *, bool (*)(Itemset *, Itemset *)> to_visit(size_comp_Itemset);
-	to_visit.insert(root);
-	while(! to_visit.empty()) {
-		Itemset *head = *(to_visit.begin());
-		if (head->visited != visit_id) {
-			head->visited = visit_id;
-			if (includes(itemset->itemset->begin(), itemset->itemset->end(),
-						head->itemset->begin(), head->itemset->end())) {
-				if (head->itemset->size() == itemset->itemset->size() -1) {
-					itemset->add_parent(head);
-					head->add_child(itemset);
-				} else {
-					for (Itemset *child : head->children) {
-						to_visit.insert(child);
-					}
+void create_frequent_itemsets_tree(const std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> &collection, Itemset * root) {
+	std::set<Itemset *, bool (*)(Itemset *, Itemset *)> prev(size_comp_Itemset);
+	prev.insert(root);
+	std::map<std::set<int>, const double, bool (*)(std::set<int>, std::set<int>)>::const_iterator it = collection.begin();
+	while (it != collection.end()) {
+		int size = it->first.size();
+		Itemset *first = new Itemset(&(it->first));
+		std::set<Itemset *, bool (*)(Itemset *, Itemset *)> curr(size_comp_Itemset);
+		curr.insert(first);
+		++it;
+		while (it != collection.end() && it->first.size() == size) {
+			Itemset *itemset = new Itemset(&(it->first));
+			curr.insert(itemset);
+			++it;
+		}
+		for (Itemset *itemset : curr) {
+			std::set<int> first_parent_set(itemset->itemset->begin(), --(itemset->itemset->end()));
+			Itemset *first_parent = new Itemset(&first_parent_set);
+
+			for (std::set<Itemset *, bool(*)(Itemset *, Itemset *)>::iterator parent = prev.lower_bound(first_parent); parent != prev.end(); ++parent) {
+				if (includes(itemset->itemset->begin(), itemset->itemset->end(), (*parent)->itemset->begin(), (*parent)->itemset->end())) {
+					itemset->add_parent(*parent);
+					(*parent)->add_child(itemset);
 				}
-			} else { // Remove from the list of nodes to explore all the children of this node, as they can't be parents.
-				for (Itemset *child : head->children) {
-						to_visit.erase(child);
+				if (itemset->parents.size() == itemset->itemset->size()) {
+					break;
 				}
 			}
+			assert(itemset->parents.size() == itemset->itemset->size());
 		}
-		to_visit.erase(to_visit.begin());
+		prev = curr;
 	}
 }
 
