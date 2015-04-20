@@ -1,2 +1,26 @@
 \subsection{Mining the Top-$k$ True Frequent Itemsets}\label{sect:topk}
-{\bf TODO: } talk about topk.
+
+Given a positive integer $k$, let $\tfreq^{(k)}$ be maximum value in $[0,1]$ such
+that $\TFI(\prob,\Itm,\tfreq^{(k)})$ contains \emph{at least} $k$ itemsets. The set
+of the \emph{top-$k$ True Frequent Itemsets} is defined as
+\[
+	\TOPK(\prob,\Itm,k)=\TFI(\prob,\Itm,\tfreq^{(k)})\enspace.
+\]
+The algorithms presented in the previous sections can be used, with minor
+modifications, also to compute a collection of itemsets that, with probability
+at least $1-\delta$, only contains a subset of the top-$k$ TFIs.
+
+Let $f^{(k)}$ be the maximum frequency $\theta$ such that $\FI(\Ds,\Itm,\theta)$
+contains at least $k$ itemsets. It is easy to see that if $\Ds$ is an
+$\varepsilon$-approximation to $(\range(2^\Itm),\prob)$, then
+$|f^{(k)}-\tfreq^{(k)}|\le\varepsilon$. We can use this fact to create a superset
+$\mathcal{G}$ of the negative border of $\TOPK(\prob,\Itm,k)$, compute an upper
+bound to its empirical VC-dimension on $\Ds$, and compute a $\varepsilon_2$ such
+that $\Ds$ is a $\varepsilon_2$-approximation to $(\range{\mathcal{G}},\prob)$
+and return all itemsets in $\Ds$ with frequency at least $f^{(k)}+\varepsilon_2$.
+The details and analysis of this algorithm follow closely the description in
+Sect.~\ref{sec:main}.
+
+The adaptation of the holdout method is even more straightforward, as the only
+difference is that we work on the collection $\FI(\Ds,\Itm,f^{(k)})$ instead of
+$\FI(\Ds,\Itm,\theta)$ for a fixed $\theta$.
