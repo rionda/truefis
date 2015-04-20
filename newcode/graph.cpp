@@ -54,7 +54,7 @@ int get_largest_antichain_size(std::set<int> &intersection, const std::unordered
 		Itemset *head = *(to_visit.begin());
 		if (head->visited != visit_id) {
 			head->visited = visit_id;
-			if (is_subset(intersection, *(head->itemset))) {
+			if (is_subset(*(head->itemset), intersection)) {
 				// Compute ancestors if needed
 				if (ancestors.find(head->itemset) == ancestors.end()) {
 					std::set<int> local_ancestors;
@@ -122,7 +122,7 @@ int get_largest_antichain_size(std::set<int> &intersection, const std::unordered
 	igraph_vector_bool_destroy(&types);
 	igraph_vector_destroy(&edges);
 	igraph_destroy(&graph);
-	return max_id - matching_size;
+	return present.size() - matching_size;
 }
 
 /**
@@ -134,11 +134,9 @@ int get_largest_antichain_size(std::set<int> &intersection, const std::unordered
  */
 int get_largest_antichain_size_list(const std::forward_list<const std::set<int> *> &sets) {
 	int max_id = 0;
-	int sets_size = 0;
 	std::unordered_map<const std::set<int> *, int> sets_to_ids;
 	for (const std::set<int> *s : sets) {
 		sets_to_ids[s] = max_id++;
-		++sets_size;
 	}
 	igraph_vector_t edges;
 	igraph_vector_init(&edges, 0);
@@ -158,15 +156,15 @@ int get_largest_antichain_size_list(const std::forward_list<const std::set<int> 
 			// edges[3] and so on.
 			if (is_subset(*smaller,*larger)) {
 				igraph_vector_push_back(&edges, sets_to_ids[smaller]);
-				igraph_vector_push_back(&edges, sets_size + sets_to_ids[larger]);
+				igraph_vector_push_back(&edges, max_id + sets_to_ids[larger]);
 			}
 		}
 	}
 	igraph_vector_bool_t types;
-	igraph_vector_bool_init(&types, 2 * sets_size);
-	for (int i = 0; i < sets_size; ++i) {
+	igraph_vector_bool_init(&types, 2 * max_id);
+	for (int i = 0; i < max_id; ++i) {
 		VECTOR(types)[i] = 0;
-		VECTOR(types)[sets_size + i] = 1;
+		VECTOR(types)[max_id + i] = 1;
 	}
 
 	igraph_t graph;
@@ -181,7 +179,7 @@ int get_largest_antichain_size_list(const std::forward_list<const std::set<int> 
 	igraph_vector_bool_destroy(&types);
 	igraph_vector_destroy(&edges);
 	igraph_destroy(&graph);
-	return sets_size - matching_size;
+	return max_id - matching_size;
 }
 
 void create_antichain_graph(igraph_t *graph, const std::unordered_set<const std::set<int>*> &collection, const std::unordered_map<const std::set<int>*, int> &sets_to_ids) {
