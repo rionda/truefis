@@ -324,7 +324,7 @@ Stats::Stats(
 	std::map<int, std::forward_list<const std::set<int> *>, bool (*)(int,int)>
 		intersections_by_size(reverse_int_comp);
 	// The following is called L in the pseudocode
-	std::set<std::set<int> > intersections;
+	std::set<std::set<int>> intersections;
 	std::string line;
 	int size = 0;
 	// This is the first loop in the pseudocode, to populate T and L

@@ -1,7 +1,6 @@
 /**
  * Compute a collection of itemsets that is, with probability at least 1-\delta,
- * a subset of TFI(\pi,\Itm,\theta), using the 'VCholdout' algorithm.
- * XXX Update the name of the algorithm if needed.
+ * a subset of TFI(\pi,\Itm,\theta), using the Binomial test.
  *
  * Copyright 2015 Matteo Riondato <matteo@cs.brown.edu>
  *
@@ -106,7 +105,7 @@ int main(int argc, char **argv) {
 		std::cerr << "done" << std::endl;
 		std::cerr << "INFO: computing frequent itemsets...";
 	}
-	std::map<std::set<int>, const double> frequent_itemsets;
+	std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> frequent_itemsets(size_comp_nopointers);
 	dataset.get_frequent_itemsets(mine_conf.theta, frequent_itemsets);
 	if (mine_conf.verbose) {
 		std::cerr << "done (" << frequent_itemsets.size() << " FIs)" << std::endl;

@@ -29,8 +29,7 @@
 #include "itemsets.h"
 
 void create_antichain_graph(igraph_t *, const std::unordered_set<const std::set<int>*> &, const std::unordered_map<const std::set<int>*, int> &);
-
 int get_largest_antichain_size_list(const std::forward_list<const std::set<int> *> &);
-int get_largest_antichain_size(std::set<int> &intersection, const std::unordered_set<const std::set<int>*> &collection, Itemset *root);
+int get_largest_antichain_size(std::set<int> &, const std::unordered_set<const std::set<int>*> &, Itemset * const);
 
 #endif

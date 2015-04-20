@@ -1,7 +1,6 @@
 /**
  * Compute a collection of itemsets that is, with probability at least 1-\delta,
- * a subset of TFI(\pi,\Itm,\theta), using the 'VCholdout' algorithm.
- * XXX Update the name of the algorithm if needed.
+ * a subset of TFI(\pi,\Itm,\theta), using the 'Holdout' algorithm.
  *
  * Copyright 2015 Matteo Riondato <matteo@cs.brown.edu>
  *
@@ -114,13 +113,13 @@ int main(int argc, char **argv) {
 		std::cerr << "done" << std::endl;
 		std::cerr << "INFO: computing frequent itemsets of the exploratory dataset...";
 	}
-	std::map<std::set<int>, const double> exp_frequent_itemsets;
+	std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> exp_frequent_itemsets(size_comp_nopointers);
 	exp_dataset.get_frequent_itemsets(mine_conf.theta, exp_frequent_itemsets);
 	if (mine_conf.verbose) {
 		std::cerr << "done (" << exp_frequent_itemsets.size() << " FIs)" << std::endl;
 		std::cerr << "INFO: computing frequent itemsets of the evaluation dataset...";
 	}
-	std::map<std::set<int>, const double> eval_frequent_itemsets;
+	std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> eval_frequent_itemsets(size_comp_nopointers);
 	eval_dataset.get_frequent_itemsets(mine_conf.theta, eval_frequent_itemsets);
 	if (mine_conf.verbose) {
 		std::cerr << "done (" << eval_frequent_itemsets.size() << " FIs)" << std::endl;

@@ -96,13 +96,13 @@ int main(int argc, char **argv) {
 		std::cerr << "done" << std::endl;
 		std::cerr << "INFO: computing frequent itemsets...";
 	}
-	std::map<std::set<int>, const double> orig_fis;
+	std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> orig_fis(size_comp_nopointers);
 	orig_dataset.get_frequent_itemsets(mine_conf.theta, orig_fis);
 	if (mine_conf.verbose) {
 		std::cerr << "done (" << orig_fis.size() << " FIs in the original collection)" << std::endl;
 		std::cerr << "INFO: computing frequent itemsets...";
 	}
-	std::map<std::set<int>, const double> sample_fis;
+	std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> sample_fis(size_comp_nopointers);
 	sample_dataset.get_frequent_itemsets(mine_conf.theta, sample_fis);
 	if (mine_conf.verbose) {
 		std::cerr << "done (" << sample_fis.size() << " FIs in the sample collection)" << std::endl;

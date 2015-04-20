@@ -156,22 +156,28 @@ int filter_negative_border(const Dataset &dataset, const std::set<std::set<int> 
 		std::exit(EXIT_FAILURE);
 	}
 	std::set<const std::set<int>*> local_negative_border;
+	std::unordered_set<int> items;
 	for (std::set<std::set<int>>::const_iterator it = negative_border.begin(); it != negative_border.end(); ++it) {
 		local_negative_border.insert(&(*it));
+		items.insert(it->begin(), it->end());
 	}
 	filtered.clear();
 	std::string line;
+	std::set<std::set<int>> transactions;
 	while (filtered.size() < negative_border.size() && getline(dataset_str, line)) {
 		std::set<int> trans = string2itemset(line);
-		for (std::set<const std::set<int>*>::iterator it = local_negative_border.begin(); it != local_negative_border.end();) {
-			if (is_subset(**it, trans)) {
-				filtered.insert(*it);
-				std::set<const std::set<int>*>::iterator tmp(it);
+		if (transactions.find(trans) == transactions.end()) {
+			transactions.insert(trans);
+			for (std::set<const std::set<int>*>::iterator it = local_negative_border.begin(); it != local_negative_border.end();) {
+				if (is_subset(**it, trans)) {
+					filtered.insert(*it);
+					std::set<const std::set<int>*>::iterator tmp(it);
+					++it;
+					local_negative_border.erase(tmp);
+					continue;
+				}
 				++it;
-				local_negative_border.erase(tmp);
-				continue;
 			}
-			++it;
 		}
 	}
 	dataset_str.close();
@@ -484,6 +490,35 @@ int get_negative_border(const std::map<std::set<int>, const double, bool (*)(con
 	negative_border.clear();
 	negative_border.insert(local_negative_border.begin(), local_negative_border.end());
 	return negative_border.size();
+}
+
+void add_nodes_to_tree(Itemset * const root, const std::unordered_set<const std::set<int>*> &collection) {
+	for (const std::set<int>* itemset : collection) {
+		Itemset *neg = new Itemset(itemset);
+		std::set<Itemset*, bool (*)(Itemset *, Itemset *)> to_visit(size_comp_Itemset);
+		to_visit.insert(root);
+		int visit_id = get_visit_id();
+		while (neg->parents.size() != neg->itemset->size()) {
+			Itemset *head = *(to_visit.begin());
+			if (head->visited != visit_id) {
+				head->visited = visit_id;
+				if (includes(itemset->begin(), itemset->end(), head->itemset->begin(), head->itemset->end())) {
+					if (head->itemset->size() == itemset->size() - 1) {
+						head->add_child(neg);
+						neg->add_parent(head);
+					}
+					for (Itemset * const child : head->children) {
+						to_visit.insert(child);
+					}
+				} else {
+					for (Itemset * const child : head->children) {
+						to_visit.erase(child);
+					}
+				}
+			}
+			to_visit.erase(to_visit.begin());
+		}
+	}
 }
 
 /**

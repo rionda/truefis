@@ -60,6 +60,7 @@ class Dataset {
 		int set_size(const int);
 };
 
+void add_nodes_to_tree(Itemset * const, const std::unordered_set<const std::set<int>*> &);
 int filter_negative_border(const Dataset &, const std::set<std::set<int> > &, std::unordered_set<const std::set<int>*> &);
 int find_itemsets_in_transaction(std::set<int> &, const std::unordered_set<const std::set<int>*> &, Itemset *);
 int get_closed_itemsets(const std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> &, std::unordered_set<const std::set<int>*> &);

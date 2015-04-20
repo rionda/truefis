@@ -196,45 +196,23 @@ int main(int argc, char **argv) {
 	// The following is called \mathcal{F} in the pseudocode
 	std::unordered_set<const std::set<int>*> collection_F;
 	filter_negative_border(dataset, neg_border, collection_F);
+	add_nodes_to_tree(root, collection_F);
 	if (mine_conf.verbose) {
 		std::cerr << "done (" << collection_F.size() << " itemset survived)" << std::endl;
 		std::cerr << "INFO: adding relevant CIs to collection_F...";
 	}
-	// After the loop is completed, the map will only contain the (closed)
-	// itemsets in the set \mathcal{G} in the pseudocode.
-	// In the loop, we also insert (pointers to) these closed itemsets into
-	// collection_F
-	std::cout << "(" << dataset.get_size() << ")" << std::endl;
+	// Fill F with the itemsets of G.
 	double max_freq_F = 0;
 	int output_count = 0;
-	for (std::map<std::set<int>, const double>::iterator fis_it = frequent_itemsets.begin(); fis_it != frequent_itemsets.end();) {
-		// Print and remove the itemsets with frequency at least theta+epsilon_1.
-		if (fis_it->second >= mine_conf.theta + epsilon_1) {
-			std::cout << itemset2string(fis_it->first) << " (" << (int) round(fis_it->second * dataset.get_size()) << ")" << std::endl;
-			// Exploit the fact that changes to STL maps do not invalidate iterators
-			std::map<std::set<int>, const double>::iterator tmp(fis_it);
-			++fis_it;
-			frequent_itemsets.erase(tmp->first);
-			++output_count;
-			continue;
-		}
-		// Remove frequent itemsets (with frequency lower than \theta+\epsilon_1) that are not closed
-		if (closed_itemsets.find(&((*fis_it).first)) == closed_itemsets.end()) {
-			assert(maximal_itemsets.find(&((*fis_it).first)) == maximal_itemsets.end());
-			// Exploit the fact that changes to STL maps do not invalidate iterators
-			std::map<std::set<int>, const double>::iterator tmp(fis_it);
-			++fis_it;
-			frequent_itemsets.erase(tmp->first);
-			continue;
-		} else { // Insert the pointer into collection_F
+	for (std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)>::iterator fis_it = frequent_itemsets.begin(); fis_it != frequent_itemsets.end(); ++fis_it) {
+		if (fis_it->second < mine_conf.theta + epsilon_1 && closed_itemsets.find(&((*fis_it).first)) != closed_itemsets.end()) {
+			// Insert the pointer into collection_F
 			collection_F.insert(&((*fis_it).first));
 			if (fis_it->second > max_freq_F) {
 				max_freq_F = fis_it->second;
 			}
 		}
-		++fis_it;
 	}
-
 	if (mine_conf.verbose) {
 		std::cerr << "done (" << collection_F.size() << " itemsets)" << std::endl;
 		std::cerr << "INFO: computing stats2..." << std::endl;
@@ -251,6 +229,7 @@ int main(int argc, char **argv) {
 		std::cerr << "INFO: epsilon_2=" << epsilon_2 << std::endl;
 	}
 	// Print the itemsets with frequency at least theta+epsilon_2
+	std::cout << "(" << dataset.get_size() << ")" << std::endl;
 	for (std::map<std::set<int>, const double>::iterator fis_it = frequent_itemsets.begin(); fis_it != frequent_itemsets.end(); ++fis_it) {
 		if (fis_it->second >= mine_conf.theta + epsilon_2) {
 			std::cout << itemset2string(fis_it->first) << " (" << (int) round(fis_it->second * dataset.get_size()) << ")" << std::endl;

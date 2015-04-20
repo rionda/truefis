@@ -36,13 +36,14 @@
  * problem.
  *
  */
-int get_largest_antichain_size(std::set<int> &intersection, const std::unordered_set<const std::set<int>*> &collection, Itemset *root) {
+int get_largest_antichain_size(std::set<int> &intersection, const std::unordered_set<const std::set<int>*> &collection, Itemset * const root) {
 	int max_id = 0;
 	std::unordered_map<Itemset *, int> sets_to_ids;
 	std::unordered_map<Itemset *, const std::set<int>*> ancestors;
+	std::set<int> empty;
 	std::set<std::set<int>> ancestors_sets;
-	igraph_vector_t edges;
-	igraph_vector_init(&edges, 0);
+	ancestors_sets.insert(empty);
+	ancestors.emplace(root, &(*(ancestors_sets.begin())));
 	int visit_id = get_visit_id();
 	std::set<Itemset *, bool (*)(Itemset *, Itemset *)> to_visit(size_comp_Itemset);
 	to_visit.insert(root);
@@ -63,10 +64,10 @@ int get_largest_antichain_size(std::set<int> &intersection, const std::unordered
 				std::set<std::set<int>>::iterator pointer = ancestors_sets.find(local_ancestors);
 				if (pointer == ancestors_sets.end()) {
 					std::pair<std::set<std::set<int>>::iterator, bool> my_pair = ancestors_sets.insert(local_ancestors);
-					ancestors[head] = &(*(my_pair.first));
+					ancestors.emplace(head, &(*(my_pair.first)));
 				} else {
-					ancestors[head] = &(*pointer);
-				}
+					ancestors.emplace(head, &(*pointer));
+				} 
 				if (collection.find(head->itemset) != collection.end()) {
 					sets_to_ids[head] = max_id++;
 				}
@@ -81,12 +82,15 @@ int get_largest_antichain_size(std::set<int> &intersection, const std::unordered
 		}
 		to_visit.erase(to_visit.begin());
 	}
+	igraph_vector_t edges;
+	igraph_vector_init(&edges, 0);
 	for (std::pair<Itemset *, int> p : sets_to_ids) {
 		for (int ancestor_id : *(ancestors[p.first])) {
 			igraph_vector_push_back(&edges, ancestor_id);
 			igraph_vector_push_back(&edges, max_id + p.second);
 		}
 	}
+
 	igraph_vector_bool_t types;
 	igraph_vector_bool_init(&types, 2 * max_id);
 	for (int i = 0; i < max_id; ++i) {
@@ -95,7 +99,9 @@ int get_largest_antichain_size(std::set<int> &intersection, const std::unordered
 	}
 
 	igraph_t graph;
-	igraph_create_bipartite(&graph, &types, &edges, 0);
+	igraph_empty(&graph, 2 * max_id, IGRAPH_UNDIRECTED);
+	igraph_add_edges(&graph, &edges, 0);
+	//igraph_create_bipartite(&graph, &types, &edges, 0);
 
 	igraph_integer_t matching_size;
 	igraph_vector_long_t matching;

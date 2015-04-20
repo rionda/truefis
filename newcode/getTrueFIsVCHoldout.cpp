@@ -169,7 +169,7 @@ int main(int argc, char **argv) {
 		std::cerr << "INFO: exp_epsilon=" << exp_epsilon << std::endl;
 		std::cerr << "INFO: computing frequent itemsets of the exploratory dataset...";
 	}
-	std::map<std::set<int>, const double> exp_frequent_itemsets;
+	std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> exp_frequent_itemsets(size_comp_nopointers);
 	exp_dataset.get_frequent_itemsets(mine_conf.theta, exp_frequent_itemsets);
 	if (mine_conf.verbose) {
 		std::cerr << "done (" << exp_frequent_itemsets.size() << " FIs)" << std::endl;
@@ -200,7 +200,7 @@ int main(int argc, char **argv) {
 			exp_frequent_itemsets.size() << " survived)" << std::endl;
 		std::cerr << "INFO: computing (filtered) frequent itemsets of the evaluation dataset...";
 	}
-	std::map<std::set<int>, const double> eval_frequent_itemsets;
+	std::map<std::set<int>, const double, bool (*)(const std::set<int> &, const std::set<int> &)> eval_frequent_itemsets(size_comp_nopointers);
 	eval_dataset.get_frequent_itemsets(mine_conf.theta, eval_frequent_itemsets);
 	// Remove itemsets not in \mathcal{G} from the evaluation results
 	double max_freq_G = 0.0;
