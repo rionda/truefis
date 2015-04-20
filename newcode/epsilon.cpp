@@ -26,6 +26,6 @@
  */
 double get_epsilon(Stats &stats, Dataset &dataset, const double delta, const double c) {
 	return 2.0 * c * sqrt(2.0 * stats.get_evc_bound() * (
-				stats.get_max_supp()  / dataset.get_size()) /
+				((double) stats.get_max_supp())  / dataset.get_size()) /
 			dataset.get_size()) + std::sqrt(2.0 * log(4.0 / delta) / dataset.get_size());
 }
