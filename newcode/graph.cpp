@@ -37,39 +37,48 @@
  *
  */
 int get_largest_antichain_size(std::set<int> &intersection, const std::unordered_set<const std::set<int>*> &collection, Itemset * const root) {
-	int max_id = 0;
-	std::unordered_map<Itemset *, int> sets_to_ids;
-	std::unordered_map<Itemset *, const std::set<int>*> ancestors;
-	std::set<int> empty;
-	std::set<std::set<int>> ancestors_sets;
-	ancestors_sets.insert(empty);
-	ancestors.emplace(root, &(*(ancestors_sets.begin())));
+	static int max_id = 0;
 	int visit_id = get_visit_id();
+	static std::unordered_map<const std::set<int>*, const std::set<int>*> ancestors;
+	static std::set<std::set<int>> ancestors_sets;
+	static std::unordered_map<const std::set<int>*, int> sets_to_ids;
+	if (ancestors_sets.empty()) {
+		std::set<int> empty;
+		ancestors_sets.insert(empty);
+		ancestors.emplace(root->itemset, &(*(ancestors_sets.begin())));
+	}
+	std::unordered_set<const std::set<int> *> present;
 	std::set<Itemset *, bool (*)(Itemset *, Itemset *)> to_visit(size_comp_Itemset);
 	to_visit.insert(root);
 	while (! to_visit.empty()) {
 		Itemset *head = *(to_visit.begin());
 		if (head->visited != visit_id) {
 			head->visited = visit_id;
-			if (includes(intersection.begin(), intersection.end(),
-						head->itemset->begin(), head->itemset->end())) {
-				std::set<int> local_ancestors;
-				for (Itemset *parent : head->parents) {
-					local_ancestors.insert(ancestors[parent]->begin(), ancestors[parent]->end());
-					std::unordered_map<Itemset *, int>::iterator index = sets_to_ids.find(parent);
-					if (index != sets_to_ids.end()) {
-						local_ancestors.insert(index->second);
+			if (is_subset(intersection, *(head->itemset))) {
+				// Compute ancestors if needed
+				if (ancestors.find(head->itemset) == ancestors.end()) {
+					std::set<int> local_ancestors;
+					// Propagate the list of ancestors from the parents
+					for (Itemset *parent : head->parents) {
+						local_ancestors.insert(ancestors[parent->itemset]->begin(), ancestors[parent->itemset]->end());
+						// Add the parent if in collection
+						if (collection.find(parent->itemset) != collection.end()) {
+							local_ancestors.insert(sets_to_ids[parent->itemset]);
+						}
+					}
+					std::set<std::set<int>>::iterator pointer = ancestors_sets.find(local_ancestors);
+					if (pointer == ancestors_sets.end()) {
+						std::pair<std::set<std::set<int>>::iterator, bool> my_pair = ancestors_sets.insert(local_ancestors);
+						ancestors.emplace(head->itemset, &(*(my_pair.first)));
+					} else {
+						ancestors.emplace(head->itemset, &(*pointer));
 					}
 				}
-				std::set<std::set<int>>::iterator pointer = ancestors_sets.find(local_ancestors);
-				if (pointer == ancestors_sets.end()) {
-					std::pair<std::set<std::set<int>>::iterator, bool> my_pair = ancestors_sets.insert(local_ancestors);
-					ancestors.emplace(head, &(*(my_pair.first)));
-				} else {
-					ancestors.emplace(head, &(*pointer));
-				} 
 				if (collection.find(head->itemset) != collection.end()) {
-					sets_to_ids[head] = max_id++;
+					if (sets_to_ids.find(head->itemset) == sets_to_ids.end()) {
+						sets_to_ids[head->itemset] = max_id++;
+					}
+					present.insert(head->itemset);
 				}
 				for (Itemset *child : head->children) {
 					to_visit.insert(child);
@@ -84,10 +93,11 @@ int get_largest_antichain_size(std::set<int> &intersection, const std::unordered
 	}
 	igraph_vector_t edges;
 	igraph_vector_init(&edges, 0);
-	for (std::pair<Itemset *, int> p : sets_to_ids) {
-		for (int ancestor_id : *(ancestors[p.first])) {
+	for (const std::set<int> *itemset : present) {
+		int id = sets_to_ids[itemset];
+		for (int ancestor_id : *(ancestors[itemset])) {
 			igraph_vector_push_back(&edges, ancestor_id);
-			igraph_vector_push_back(&edges, max_id + p.second);
+			igraph_vector_push_back(&edges, max_id + id);
 		}
 	}
 
