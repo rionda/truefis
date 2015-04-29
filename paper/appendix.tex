@@ -1,6 +1,6 @@
 \appendix
 \section{Appendix}
-We now present the proof of Thm.~\ref{thm:eapproxempir}. Before we start, we
+We now present a sketch of the proof of Thm.~\ref{thm:eapproxempir}. Before we start, we
 need to introduce some additional settings and terminology.
 
 As in Sect.~\ref{sec:prelvcdim}, let $D$ be a domain and $\range$ be a
@@ -24,13 +24,13 @@ The following result, which is at the core of statistical learning theory, gives
 a bound to the maximum deviation between the empirical average of a range and
 its true probability.
 
-\begin{theorem}[Thm.~3.3~\citep{BoucheronBL05}]\label{thm:fundthmlearn}
+\begin{theorem}[Thm.~3.3~\citep{BoucheronBL05} \fabio{[Matteo: Shouldn't it be Thm.~3.2? Also, please check if we in the numerator of the argument of $\ln$ there should be a 2 or a 4. Theorem 1 and Fact 2 are to be adjusted in case is a 2.]}]\label{thm:fundthmlearn}
 	Let $S$ be a bag of $\ell$ elements from $D$, sampled independently
 	according to the distribution $\nu$.  Then, with probability at least
 	$1-\delta$,
 	\[
 		\sup_{r\in\range}|\nu(r)-\nu_S(r)|\le 2 \mathsf{R}_S
-		+\sqrt{\frac{2\ln\frac{2}{\delta}}{\ell}}\enspace.
+		+\sqrt{\frac{2\ln\frac{4}{\delta}}{\ell}}\enspace.
 	\]
 \end{theorem}
 

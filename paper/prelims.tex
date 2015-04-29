@@ -6,9 +6,7 @@ throughout the work, providing the details that are needed in later sections.
 Given a ground set $\Itm$ of \emph{items}, let $\prob$ be a probability
 distribution on $2^{\Itm}$. A \emph{transaction} $\tau\subseteq\Itm$ is a single
 sample drawn from $\prob$. The \emph{length} $|\tau|$ of a transaction $\tau$ is
-the number of items in $\tau$.  A \emph{dataset} $\Ds$ is a bag of $n$
-transactions $\Ds=\{\tau_1,\dots,\tau_n ~:~ \tau_i\subseteq\Itm\}$, i.e., of $n$
-\emph{independent identically distributed} (i.i.d.) samples from $\prob$. We
+the number of items in $\tau$.   We
 call a subset of $\Itm$ an \emph{itemset}. For any itemset $A$, let
 $T(A)=\{\tau\subseteq\Itm ~:~ A\subseteq \tau\}$ be the \emph{support set} of
 $A$. The members of the set $T(A)$ are all the transactions built on $\Itm$
@@ -19,8 +17,12 @@ $\prob$ contains $A$:
 \tfreq(A) = \sum_{\tau\in T(A)}\prob(\tau)\enspace.
 \]
 
-Analogously, given a (observed) dataset $\Ds$, let $T_\Ds(A)$ denote the set of
-transactions in $\Ds$ containing $A$. The \emph{frequency} of $A$ in $\Ds$ is
+\fabio{
+A \emph{dataset} $\Ds$ is a bag of $n$
+transactions $\Ds=\{\tau_1,\dots,\tau_n ~:~ \tau_i\subseteq\Itm\}$, i.e., of $n$
+\emph{independent identically distributed} (i.i.d.) samples from $\prob$.
+Given a (observed) dataset $\Ds$, let $T_\Ds(A)$ denote the set of
+transactions in $\Ds$ containing $A$. }The \emph{frequency} of $A$ in $\Ds$ is
 the fraction of transactions in $\Ds$ that contain $A$: $f_\Ds(A)=
 |T_\Ds(A)|/|\Ds|$. It is easy to see that $f_\Ds(A)$ is the \emph{empirical
 average} (and an \emph{unbiased estimator}) for $\tfreq(A)$: ${\mathbf
@@ -43,12 +45,12 @@ itemsets the \emph{True Frequent Itemsets} (TFIs) and denote their set as
 \TFI(\prob,\Itm,\theta)=\{A\subseteq\Itm ~:~ \tfreq(A)\ge\theta\}\enspace.\]
 
 If one is only given a \emph{finite} number of random samples (the dataset
-$\Ds$) from $\prob$ as it is usually the case, one can not aim at finding the
+$\Ds$) from $\prob$, as it is usually the case, one can not aim at finding the
 exact set $\TFI(\prob,\Itm,\theta)$: no assumption can be made on the
 set-inclusion relationship between $\TFI(\prob,\Itm,\theta)$ and
 $\FI(\Ds,\Itm,\theta)$, because an itemset $A\in\TFI(\prob,\Itm,\theta)$ may not
 appear in $\FI(\Ds,\Itm,\theta)$, and vice versa. One can instead try to
-\emph{approximate} the set of TFIs. This is what we are interested in this work.
+\emph{approximate} the set of TFIs. This is \fabio{the focus of this work.}
 
 \paragraph{Goal.} Given an user-specified
 parameter $\delta\in(0,1)$, we aim at providing a threshold
@@ -64,7 +66,7 @@ $\hat{\theta}\ge\theta$ such that $\mathcal{C}=\FI(\Ds,\Itm,\hat{\theta})$
   \end{enumerate*}
 The method we present does not make \emph{any} assumption about $\prob$. It uses
 information from $\Ds$, and guarantees a small probability of
-false positives while achieving a high success rate.
+false positives while \fabio{\st{achieving a high success rate} retrieving a large fraction of the TFIs.}
 
 \subsection{Vapnik-Chervonenkis dimension}\label{sec:prelvcdim}
 Let $D$ be a domain and $\range$ be a collection of subsets from $D$. We call $\range$ a
@@ -83,7 +85,7 @@ $P_\range(B)=\{ B\cap A ~:~ A\in\range\}$. We say that the set $B$ is
 
 \begin{definition}\label{def:empvcdim}
   Given a set $B\subseteq D$, the \emph{empirical Vapnik-Chervonenkis
-  (VC) dimension of $\mathcal{A}$ on $B$}, denoted as $\EVC(\range,B)$ is
+  (VC) dimension of \fabio{$\range$} on $B$}, denoted as $\EVC(\range,B)$ is
   the cardinality of the largest subset of $B$ that is shattered by
   $\range$. The \emph{VC-dimension of $\range$} is defined as $\VC(\range)=\EVC(\range,D)$.
 \end{definition}
@@ -107,7 +109,9 @@ Fig.~\ref{fig:rectangles}.
   for any choice of the five points, there will always be one (the red point in
   the figure) that is internal to the convex hull of the other four, so it would
   be impossible to find an axis-aligned rectangle containing the four points
-  but not the internal one. Hence $\VC(\range)=4$.}
+  but not the internal one. Hence $\VC(\range)=4$.
+  \fabio{[Need to change figure and/or caption?]}
+  }
   \label{fig:rectangles}
 \end{figure}
 
@@ -137,7 +141,7 @@ Given a sample $S$ of $\ell$ points of $D$ sampled according to the distribution
 $\nu$, and a parameter $\delta\in(0,1)$, an upper bound to the empirical
 VC-dimension of $\range$ on $S$ allows to compute an $\varepsilon$ such that $S$
 is an $\varepsilon$-approximation to $(\range,\nu)$ with probability at least
-$1-\delta$.
+$1-\delta$\fabio{, according to the following result.}
 
 \begin{theorem}\label{thm:eapproxempir}
 	Let $\range$ be a range set on a domain $D$ and let $\nu$ be a distribution
@@ -199,7 +203,7 @@ In our algorithm we make a heavy use of \emph{antichains}.
 \begin{definition}\label{def:antichain}
 	Let $D$ be a domain and $\mathcal{S}$ be a collection of subsets of $D$:
 	$\mathcal{S}\subseteq 2^D$. An \emph{antichain} on $\mathcal{S}$ is a subset
-	$\mathcal{A}$ of $\mathcal{S}$ such that for any two elements $A'$, $A''$ of
+	$\mathcal{A}$ of $\mathcal{S}$ such that for any two elements $A' \fabio{\neq} A''$ of
 	$\mathcal{A}$ we have neither $A'\subseteq A''$ nor $A''\subseteq A'$.
 
 	A \emph{maximal antichain} is an antichain that is not a proper subset of

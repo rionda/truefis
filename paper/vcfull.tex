@@ -15,9 +15,9 @@ show how to compute $\varepsilon$.
 algorithm, which we call \ALG{}, is to compute a superset of $\mathcal{B}$, the
 negative border of $\TFI(\prob,\Itm,\theta)$. Let $\delta_1$ and $\delta_2$ be
 such that $(1-\delta_1)(1-\delta_2)\ge 1-\delta$. Let $\range(2^\Itm)$ be the
-range space of all itemsets. Let $d$ be the upper bound to the empirical
-VC-dimension of $\range(2^\Itm)$ on $\Ds$, computed as discussed in
-Sect.~\ref{sec:computvcexact}. We can then use~\eqref{eq:evceapproxitemsets}
+range space of all itemsets. \fabio{Let $d$ be the upper bound to the empirical
+VC-dimension of $\range(2^\Itm)$ on $\Ds$ (the computation of $d$ is discussed in
+Sect.~\ref{sec:computvc}).} We can then use~\eqref{eq:evceapproxitemsets}
 with $\delta_1$, the bound $d$, and the maximum frequency of an item in $\Ds$ to
 compute an $\varepsilon_1$ such that $\Ds$ is, with probability at least
 $1-\delta_1$, an $\varepsilon_1$-approximation to $(\range(2^\Itm),\prob)$. Let
@@ -31,74 +31,26 @@ f_\Ds(A)<\theta+\varepsilon_1\}$, and $\mathcal{F}=\mathcal{G}\cup\mathcal{W}$.
 	then $\mathcal{B}\subseteq\mathcal{F}$.
 \end{fact}
 
-\paragraph{Computing an upper bound to $\EVC(\mathcal{B},\Ds)$.} Now that we
+Now that we
 have a superset $\mathcal{F}$ of $\mathcal{B}$, we want to compute an upper
-bound to the empirical VC-dimension of $\mathcal{B}$ on $\Ds$. Na\"ively, we
-could use any of the algorithms presented in Sect.~\ref{sec:computvc} to compute
-an upper bound to $\EVC(\mathcal{F},\Ds)$ and this would be a valid upper bound
-to $\EVC(\mathcal{B},\Ds)$ (provided Fact~\ref{fact:supersetborder} holds). The
-downside of this line of action is that $\mathcal{F}$ may be much larger than
-$\mathcal{B}$ and, even more importantly, that we are choosing to ignore
-available information on the structure of $\mathcal{B}$. In particular, we are
-choosing to ignore the following.
-
-\begin{fact}
-	The negative border of a collection of itemsets is a \emph{maximal
-	antichain} on $2^\Itm$.
-\end{fact}
-
-The collection $\mathcal{F}$ is in general not an antichain, except for
-degenerate and unrealistic cases. An upper bound to $\EVC(\mathcal{F},\Ds)$
-would be a gross overestimation of $\EVC(\mathcal{B},\Ds)$, hence we would like
-to incorporate the fact that $\mathcal{B}$ is a maximal antichain in our
-computation of the bound to its empirical VC-dimension.
-
-We can modify \texttt{EVCBoundExact} by including, after having computed the
-set $\mathcal{C}_\tau$ (line~\ref{algline:intersectionloopend} in
-Alg.~\ref{alg:evcboundexact}), the size $\ell_\tau$ of the largest antichain in
-$\mathcal{C}_\tau$, which can be done in time polynomial in $\mathcal{C}_\tau$.
-We can then use $\ell_\tau$ as the value for $L[I_\tau]$
-(line~\ref{algline:assignmentintersection}). Since $\ell_\tau$ is the size of
-the largest antichain in $\mathcal{C}_\tau$, then $\ell_\tau$ is an upper bound
-to the number of itemsets from $\mathcal{B}$ that appear in $\tau$. Provided
-that $\Ds$ is a $\varepsilon_1$-approximation to $(\range(2^\Itm),\prob)$ (so
-that Fact~\ref{fact:supersetborder} holds) the so-modified algorithm, which we
-call \texttt{EVCBoundAntichain}, clearly gives an upper-bound to the d-index of
-$\mathcal{B}$ on $\Ds$, and therefore to $\EVC(\mathcal{B},\Ds)$. Due to the
-additional computation of $\ell_\tau$, this algorithm is slower than
-$\texttt{EVCBoundExact}$. It is possible to modify the second part of
-\texttt{EVCBoundAntiChain} in the same way as \texttt{EVCBoundExact} was
-modified to obtain \texttt{EVCBoundScan}, and obtain a slightly faster
-algorithm. Nevertheless, we believe that the need to compute potentially for
-each transaction $\tau$ both the set of itemsets of $\mathcal{C}$ in $\tau$ and
-additionally the size of the largest antichain on this set, make using
-\texttt{EVCBoundAntichain} a bit unpractical, despite being a polynomial time
-algorithm.
-
-It is actually for this reason that we developed \texttt{EVCBoundSUKP}, which we
-can modify \texttt{EVCBoundSUKP} to solve a slightly modified SUKPs associated
-to $\mathcal{F}$ with the \emph{additional constraint} that the optimal solution
-(a collection of itemsets) \emph{must be a maximal antichain}. The correctness
-follows from the fact that the optimal profit of the so-modified SUKP with
-capacity $\ell$ is the maximum number of itemsets forming an antichain in
-$\mathcal{F}$ that can be built using a subset of $\ell$ of $U$, so it is an
-upper bound to the number of itemsets in $\mathcal{B}$ that can be built on
-$\ell$ items of $U$, provided that $\Ds$ is a $\varepsilon_1$-approximation to
-$(\range(2^\Itm),\prob)$ (so that Fact~\ref{fact:supersetborder} holds). Hence
-Lemma~\ref{lem:sukpevc} carries over and this new algorithm, called
-\texttt{EVCBoundSUKPAntiChain} is correct. This algorithm is more practical than
-\texttt{EVCBoundAntichain}, striking a more balanced trade-off between
-exploiting information about $\mathcal{B}$ and obtaining an upper bound to its
-empirical VC-dimension in a reasonable amount of time.
-
-In any case, after having computed an upper bound $d_2$ to
-$\EVC(\range(\mathcal{B},\Ds)$, we can use $d_2$ in~\eqref{eq:evceapproxitemsets}
+bound to the empirical VC-dimension of $\mathcal{B}$ on $\Ds$. 
+\fabio{ This can be done by computing the empirical VC-dimension of $\mathcal{F}$ on $\Ds$,
+or an upper bound to it.
+Algorithms computing upper bounds for $\EVC(\range(\mathcal{C}),\Ds)$
+ where $C$ is a collection of itemsets, are presented in Section~\ref{sec:computvc}.
+However, a better bound can be obtained by taking into account the structure
+of $\mathcal{B}$. Algorithms that compute upper bounds for $\EVC(\range(\mathcal{B}),\Ds)$ (i.e., specific for 
+the negative border $\mathcal{B}$ of $\TFI(\prob,\Itm,\theta)$) are presented in
+Section~\ref{sec:vcbupper} In the remaining of this section, we only
+assume that we have computed an upper bound $d_2$ to $\EVC(\range(\mathcal{B}),\Ds)$.
+We can use $d_2$ in~\eqref{eq:evceapproxitemsets}
 together with $\delta_2$ and the maximum frequency in $\Ds$ of an itemset of
 $\mathcal{F}$, to obtain an $\varepsilon_2$ such that, with probability
 at least $1-\delta_2$, $\Ds$ is an $\varepsilon_2$-approximation to
 $(\range(\mathcal{B}),\prob)$. Let $\hat{\theta}=\theta+\varepsilon_2$. The
 following Theorem shows that $\hat{\theta}$ has the desired properties.
 Algorithm~\ref{alg:vcfull} presents the pseudocode of our algorithm.
+}
 
 \begin{theorem}\label{lem:vcfull}
 With probability at least $1-\delta$, $\FI(\Ds,\Itm,\hat\theta)$ contains no
@@ -187,3 +139,449 @@ f_\Ds(A)<\theta+\varepsilon_1\}$\;
 %TFIs in the output collection. In the experimental evaluation, we show the
 %positive impact of including additional information may on the performances of
 %our algorithm.
+
+\subsection{\fabio{Computing upper bounds to the empirical VC-Dimension}}\label{sec:computvc}
+\fabio{We now present different methods to compute upper bounds to the empirical
+VC-dimension $\EVC(\range(\mathcal{C},\Ds)$ of an
+itemset collection $\mathcal{C}$ in a dataset $\Ds$. Our algorithms are based
+on the to the computation of the d-index of $\mathcal{C}$ on $\Ds$.
+We start from an exact algorithm which may be too expensive in practice
+and then discuss a number of variants that trade off accuracy for speed.}
+
+\subsubsection{Exact algorithm and faster variants}\label{sec:computvcexact}
+The exact algorithm (which we call \texttt{EVCBoundExact}) \fabio{to compute} the d-index of
+$\mathcal{C}$ on $\Ds$ starts by scanning $\Ds$ and computing, for each
+transaction $\tau\in\Ds$, the set $I_\tau=\tau\cap U$. If $I_\tau\neq U$ and
+$I_\tau\neq\emptyset$, then we add $I_\tau$ to a set $L$. Let now
+$\mathcal{C}_\tau$ be the sets of itemsets of $\mathcal{C}$ that appear in
+$\tau$. Now, for any $d\in\mathbb{N}$ let
+\[
+	T_d=\{I_\tau\in L ~:~ \tau\in\Ds \wedge \lfloor\log_2|\mathcal{C}_\tau|\rfloor+1= d\},\mbox{ and } \mathsf{T}_d=\bigcup_{i\ge d} T_d
+\]
+Once the scan is complete, let $d_1$  be the maximum integer for which
+$|\mathsf{T}_d|\ge d$, i.e., $\fabio{d_1}=\max\{d ~:~ |\mathsf{T}_d|\ge d\}$. Let now
+$b_1$ be the size of the largest antichain on $\mathsf{T}_{d_1}$, obtained by
+solving the corresponding maximum bipartite matching problem. If $b_1\ge d_1$,
+then the algorithm can return \fabio{$d_1$}. Otherwise, for $i>1$, let $d_i$ be the
+maximum $d<d_{i-1}$ such that \fabio{$|\mathsf{T}_d\setminus\mathsf{T}_{d_{i-1}}|\ge d-b_{i-1}$}, where $b_{i-1}$ is the size
+of the largest antichain on $\mathsf{T}_{d_{i-1}}$:
+\[
+	d_i=\max\{d<d_{i-1} ~:~ |\mathsf{T}_d\setminus\mathsf{T}_{d_{i-1}}|\ge d-b_{i-1}\}\enspace.
+\]
+We then compute the size $b_i$ of the largest antichain on $\mathsf{T}_{d_i}$
+and return $b_i$ if $b_i\ge d_i$. Note that if $d_i\le b_{i-1}$, we can actually
+avoid computing $b_i$ and return $d_i$ immediately. \fabio{The intuition behind this is
+that since $\mathsf{T}_{d_{i-1}} \subset \mathsf{T}_{d_{i}}$, we already know that $\mathsf{T}_{d_{i-1}}$
+contains an antichain of cardinality $b_{i-1}$.
+[Matteo: please check, and add a couple of sentences 
+to give the idea of what is going on, if needed.]}
+
+The pseudocode of \texttt{EVCBoundExact} is presented in
+Alg.~\ref{alg:evcboundexact}. The algorithm obviously terminates because in the
+worst case there will be an index $i$ such that $d_i=1$, and any set containing
+a single transaction is an antichain of size 1, so $b_i=d_1=1$, and the
+algorithm terminates.
+
+\begin{algorithm}[htbp]
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \SetKwComment{Comment}{\quad// }{}
+  \SetKw{MyAnd}{and}
+  \SetKw{MyTo}{to}
+  \DontPrintSemicolon
+  \Input{Dataset $\Ds$, collection $\mathcal{C}$ of itemsets.}
+  \Output{d-index of $\mathcal{C}$ in $\Ds$.}
+  $U\leftarrow\{a\in A, A\in\mathcal{C}\}$\;
+  $L\leftarrow\emptyset$\;
+  $T\leftarrow$ empty hash table\;
+  \For{$\tau\in\Ds$}{\label{algline:forbegin}
+		$I_\tau\leftarrow \tau\cap U$\;
+		\If{$I_\tau\neq U$ \MyAnd $I_\tau\neq\emptyset$ \MyAnd $I_\tau\not\in L$} {
+			$\mathcal{C}_\tau\leftarrow \emptyset$\;
+			\For{$A\in\mathcal{C}$}{\label{algline:intersectionloopbegin}
+				\If{$A\subseteq I_\tau$}{
+					$\mathcal{C}_\tau\leftarrow \mathcal{C}_\tau\cup\{A\}$\;
+				}
+			}\label{algline:intersectionloopend}
+			$L\leftarrow L\cup\{I_\tau\}$\;
+			$\ell_\tau=|\mathcal{C}_\tau|$\;\label{algline:assignmentintersection}
+			\eIf{$T$ does not contain any element with key
+				$\lfloor\log_2\ell_\tau\rfloor + 1$}{
+					$T[\lfloor\log_2\ell_\tau\rfloor + 1]\leftarrow \{I_\tau\}$\;
+			}{
+				$T[\lfloor\log_2\ell_\tau\rfloor + 1]\leftarrow
+				T[\lfloor\log_2\ell_\tau\rfloor + 1]\cup\{I_\tau\}$\;
+			}
+		}
+  }\label{algline:forend}
+  $b_0\leftarrow 0$\;\label{algline:beginreplace}
+  $d_0\leftarrow +\infty$\;
+  $T[d_0]\leftarrow\emptyset$\;
+  $i\leftarrow 1$\;
+  \While{True} {\label{algline:secondloopbegin}
+  \fabio{$d_i=\max\{ d < d_{i-1} ~:~ T[d] - T[ d-1]\ge d-b_{i-1}\}$}\;
+	\If{$d_i\le b_{i-1}$}{
+		\Return{$d_i$}\;
+	}
+	\fabio{$b_i\leftarrow$ size of largest antichain on
+	$T[d_i]$} \;\label{algline:antichain}
+	\If{$b_i \ge d_i$}{
+		\Return{$d_i$}
+	}
+	\fabio{$i \leftarrow i+1$}\;
+  }\label{algline:secondloopend}
+  \caption{\texttt{EVCBoundExact}: compute the d-index of $\mathcal{C}$ in
+  $\Ds$.}
+  \label{alg:evcboundexact}
+\end{algorithm}
+
+\begin{lemma}\label{lem:evcboundexactcorrect}
+	\texttt{EVCBoundExact} computes the d-index of $\mathcal{C}$ in $\Ds$.
+\end{lemma}
+\begin{proof}
+	The algorithms stops in two cases: either there is an index $i$ such that
+	$b_i\ge d_i$, or there is an index $i$ such that $d_i\le b_{i-1}$. We now
+	consider the two cases separately.
+
+	\begin{description}
+		\item{Case 1.} Let $i$ be the index such that $b_i\ge d_i$. Then, there
+			is an antichain of size at least $d_i$ on $\mathsf{T}_{d_i}$.
+			$\mathsf{T}_{d_i}$ contains all and only the sets of the form
+			$I_\tau=\tau\cap U$, where $\tau$ is a transaction in $\Ds$, such
+			that $I_\tau$ (and therefore $\tau$) contains \emph{at least}
+			$2^{d_i-1}$ itemsets from $\mathcal{C}$. From the definition of the
+			sequence $d_j$, we have that $d_i$ is the maximum value for which we
+			can find a collection of $d_i$ transactions
+			$\{\tau_1,\dotsc,\tau_{d_i}\}\subseteq\Ds$ for which the sets
+			$\tau_j\cap U$ form an antichain and such that each of these sets
+			contains at least $2^{d_i-1}$ itemsets of $\mathcal{C}$. This is
+			exactly the definition of the d-index of $\mathcal{C}$ on $\Ds$,
+			hence the algorithm returns the correct value in this case.
+		\item{Case 2.} Let $i$ be the index such that $d_i\le b_{i-1}$. From the
+			definition of $b_{i-1}$, we know that there is an antichain of size
+			$b_{i-1}$ on $\mathsf{T}_{d_{i-1}}$. Since
+			$\mathsf{T}_{d_{i-1}}\subseteq \mathsf{T}_{d_i}$, there is an
+			antichain of size $b_{i-1}$ also on $\mathsf{T}_{d_1}$ (the same
+			antichain). So there is an antichain of size at least $d_i$ on
+			$\mathsf{T}_{d_i}$. The proof then follows as in the previous case.
+	\end{description}
+\end{proof}
+
+\paragraph{Trade-off accuracy for speed.} The complexity of
+\texttt{EVCBoundExact} is clearly polynomial in the sizes of $\Ds$,
+$\mathcal{C}$, and $U$, but indeed some steps are quite expensive. \fabio{In
+particular, the following two steps can be modified to obtain a faster algorithm, at the expenses of
+obtaining an \emph{upper bound to the d-index} instead of the exact value:}
+\begin{enumerate}
+	\item each iteration of the loop on
+		lines~\ref{algline:secondloopbegin}--\ref{algline:secondloopend} in
+		Alg.~\ref{alg:evcboundexact} requires to solve a maximum bipartite
+		matching problem which can be done in polynomial time but may still be
+		costly in practice;
+	\item the loop on
+		lines~\ref{algline:intersectionloopbegin}--\ref{algline:intersectionloopend}
+		requires to iterate over each element of $\mathcal{C}$, which can be
+		very large.
+\end{enumerate}
+
+To solve the first issue we can modify the algorithm to simply return $d_1$,
+without having to solve any maximum bipartite matching problem. We call the
+resulting algorithm \texttt{EVCBoundScan}. It is easy to see that the returned
+value is still an upper bound to the empirical VC-dimension of $\mathcal{C}$ on
+$\Ds$, as it is the maximum $d$ for which there are at least $d$ transactions
+each containing at least $2^{d-1}$ itemsets of $\mathcal{C}$. In other words, by
+returning $d_1$ we ignore the antichain constraint. The running time is greatly
+improved. Any other value $d_i$ for which $b_i < d_i$ can also be returned,
+giving the user some flexibility between the number of maximum bipartite
+matching to solve and the optimality of the bound.
+%We can replace lines~\ref{algline:beginreplace}--\ref{algline:secondloopend}
+%with the pseudocode in Algorithm~\ref{alg:replacement}.
+%
+%\begin{algorithm}[hbt]
+%	\DontPrintSemicolon
+%	$d\leftarrow 1$\;
+%	$\kappa\leftarrow$ any key in $L$\;
+%	$\mathcal{T}\leftarrow\{\kappa\}$\;
+%	\ForEach{key $k$ in $L$, except $\kappa$}{
+%		\If{$L[k]\ge 2^{d-1}$}{
+%			$\mathcal{R}\leftarrow\mathcal{T}\cup\{k\}$\;
+%			$d\leftarrow$ maximum integer $q$ such that $\mathcal{R}$ contains
+%			at least $q$ elements $c$ with $L[c]\ge 2^{q-1}$\;
+%			$\mathcal{T}\leftarrow$ set of the $d$ elements of $\mathcal{R}$ with
+%			largest values in $L$ (ties broken arbitrarily)\;
+%		}
+%	}
+%	\Return{$d$}\;
+%	\caption{Replacement for
+%		lines~\ref{algline:beginreplace}--\ref{algline:secondloopend} in
+%		Alg.~\ref{alg:evcboundexact}.}
+%	\label{alg:replacement}
+%\end{algorithm}
+%
+%The correctness of the algorithm with this replacement (we denote the resulting
+%algorithm as \texttt{EVCBoundScan}) follows from the fact that at any iteration
+%of the loop, the set $\mathcal{T}$ always contains $d$ elements of the form
+%$I_\tau=\tau\cap U$ for $\tau\in\Ds$ such that each element in $\mathcal{T}$
+%contains at least $2^{d-1}$ itemsets from $\mathcal{C}$ and $d$ is the maximum
+%integer for which such a set exists, among the keys of $L$ seen up to the
+%current iteration. This means that the value returned by \texttt{EVCBoundScan}
+%is an upper bound to the d-index, as we are relaxing the antichain requirement.
+
+%The running time is greatly improved compared to \texttt{EVCBoundScan} because
+%now this part of the algorithm requires a single scan of the keys in $L$, and
+%the work per key is minimal.
+
+As for the loop on
+lines~\ref{algline:intersectionloopbegin}--\ref{algline:intersectionloopend} of
+Alg.~\ref{alg:evcboundexact}, we can use $2^{|I_\tau|}$ as an upper bound to the
+exact number of itemsets of $\mathcal{C}$ that appear in $\mathcal{C}$, and
+so-modified algorithm will clearly return an upper bound to the d-index. The
+algorithm with both modification, which we call \texttt{EVCBoundScanFast},
+requires time approximately proportional to two scans of the dataset, at the
+price of a obtaining a looser bound to the empirical VC-dimension of
+$\mathcal{C}$ on $\Ds$.
+
+%\paragraph{The case of all itemsets.} The case $\mathcal{C}=2^{\Itm}$ is of
+%special interest for us. In this case, $U=\Itm$, and each transaction $\tau$
+%contains exactly $2^{|\tau|}-1$ itemsets. Hence we can use
+%\texttt{EVCBoundScanFast} or the almost equivalent algorithm
+%by~\citet{RiondatoU14} to compute an upper bound to $\EVC(\range(2^\Itm),\Ds)$
+%with a single linear scan of $\Ds$.
+
+\subsubsection{Integer programming method}
+We now present another algorithm to compute an upper bound to the d-index of an
+itemset collection $\mathcal{C}$ on a dataset $\Ds$, and therefore to the
+empirical VC-dimension of $\mathcal{C}$ on $\Ds$. \fabio{The intuition and the purpose
+of this algorithm is to balance the trade-off between the accuracy of
+\texttt{EVCBoundExact} and the computation time of \texttt{EVCBoundScanFast}.}
+Indeed, \texttt{EVCBoundExact} uses all available information about
+$\mathcal{C}$ to compute the exact set (and number) of itemsets from
+$\mathcal{C}$ contained in each transaction. On the other hand,
+\texttt{EVCBoundScanFast} almost completely ignores any ``structure'' of
+$\mathcal{C}$, except for the set $U$ of items, and use the very loose upper bound
+$2^{|\tau\cap U|}-1$ for the number of itemsets from $\mathcal{C}$ that appear
+in a transaction $\tau$. The algorithm we present in this section tries to find
+a stricter upper bound by exploiting the knowledge about $\mathcal{C}$, but
+without having to compute the explicit set of itemsets of $\mathcal{C}$ in
+$\tau$, and instead asking how many itemsets of $\mathcal{C}$ can appear in a
+transaction $\tau$ for which $|\tau\cap U|=\ell$.
+
+The algorithm, which we call \texttt{EVCBoundSUKP} requires to solve a \emph{Set
+Union Knapsack Problem} (SUKP)~\citep{GoldschmidtNY94} associated to the
+collection $\mathcal{C}$.
+
+\begin{definition}[Set Union Knapsack Problem (SUKP)\citep{GoldschmidtNY94}]\label{def:sukp}
+  Let $U=\{a_1,\dotsc,a_\ell\}$ be a set of elements and let
+  $\mathcal{S}=\{A_1,\dotsc,A_k\}$ be a set of subsets of $U$, i.e.,
+  $A_i\subseteq U$ for $1\le i\le k$. Each subset $A_i$, $1\le i\le k$, has an
+  associated non-negative \emph{profit} $\rho(A_i)\in\mathbb{R}^+$, and each
+  element $a_j$, $1\le j\le\ell$ as an associated non-negative weight
+  $w(a_j)\in\mathbb{R}^+$.  Given a subset $\mathcal{S}'\subseteq\mathcal{S}$,
+  we define the profit of $\mathcal{S}'$ as $P(\mathcal{S}')=\sum_{A_i\in
+  \mathcal{S}'}\rho(A_i)$. Let $U_{\mathcal{S}'}=\cup_{A_i\in\mathcal{S}'}
+  A_i$. We define the weight of $\mathcal{S}'$ as $W(\mathcal{S}')=\sum_{a_j\in
+  U_{\mathcal{S}'}} w(a_j)$. Given a non-negative parameter $c$ that we call
+  \emph{capacity}, the \emph{Set-Union Knapsack Problem} (SUKP) requires to find
+  the set $\mathcal{S}^*\subseteq\mathcal{S}$ which \emph{maximizes}
+  $P(\mathcal{S}')$ over all sets $\mathcal{S}'$ such that $W(\mathcal{S}')\le
+  c$.
+\end{definition}
+
+In our case, $U$ is the set of items that appear in the itemsets of
+$\mathcal{C}$, $\mathcal{S}=\mathcal{C}$, the profits and the weights are all
+unitary, and the capacity constraint is an integer $\ell$. We call this
+optimization problem the \emph{SUKP associated to $\mathcal{C}$ with capacity
+$\ell$}. It is easy to see that the optimal profit $p$ of this SUKP is the
+number of itemsets from $\mathcal{C}$ that can be built using $\ell$
+items from $U$:
+\[
+	p=\max_{\substack{\mathcal{A}\subseteq\mathcal{C}\\ |\cup_{A\in\mathcal{A}}
+A|\le\ell}} |\mathcal{A}|\enspace.
+\]
+
+Consider the set $\Ds_\mathcal{C} = \{ \tau \cap U, \tau\in \Ds\}$ (which is a
+\emph{set}, not a bag, hence it does not contain duplicates, even if $\Ds$
+contains multiple identical transactions). Let $\ell_1,\dotsc,\ell_w$ be the
+sequence of the sizes of the elements of $\Ds_\mathcal{C}$, i.e., for each value
+$\ell$ for which there is at least one element in $\Ds_\mathcal{C}$ of size
+$\ell$, there is one (and only one) index $i$, $1\le i\le w$ such that
+$\ell_i=\ell$. Assume that the $\ell_i$'s are labelled in sorted decreasing
+order: $\ell_1>\ell_2>\dotsb>\ell_w$. Let now $L_i$, $1\le i\le w$ be the number
+of elements of $\Ds_\mathcal{C}$ that have size at least $\ell_i$. %and such that
+%for no two $\tau'$, $\tau''$ of them we have either $\tau'\subseteq\tau''$ or
+%$\tau''\subseteq\tau'$.
+Let now $q_i$ be the optimal profit of the SUKP associated to $\mathcal{C}$ with
+capacity $L_i$, and let $b_i=\lfloor \log_2q_i\rfloor +1$. %The sequences
+%$(\ell_i)_1^w$ and a sequence $(L_i^*)^w$ of upper bounds to $(L_i)_1^w$ can be
+%computed efficiently with a scan of $\Ds_\mathcal{C}$.
+The following lemma shows how to use these sequences to obtain an upper bound
+to the empirical VC-dimension of $\mathcal{C}$ on $\Ds$. We call the resulting
+method \texttt{EVCBoundSUKP}, and present its pseudocode in
+Alg.~\ref{alg:evcboundsukp}.
+
+\begin{lemma}\label{lem:sukpevc}
+  Let $j$ be the minimum integer for which $b_i\le L_i$. Then
+  $\EVC(\mathcal{C},\Ds)\le b_j$.
+\end{lemma}
+\begin{proof}
+  If $b_j\le L_j$, then there are at least $b_j$ elements of $\Ds_\mathcal{C}$
+  which can contain $2^{b_j-1}$ itemsets from $\mathcal{C}$ and this is the
+  maximum $b_i$ for which it happens, because the sequence $b_1,b_2,\dotsc,b_w$
+  is sorted in decreasing order, given that the sequence $q_1,q_2,\dotsc,q_w$
+  is. Then $b_j$ satisfies the conditions of Lemma~\ref{lem:evcdimupbound}.
+  Hence $\EVC(\mathcal{C},\Ds)\le b_j$.
+\end{proof}
+
+\begin{algorithm}[htbp]
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \SetKwFunction{SolveSUKP}{solveSUKP}
+  \SetKwComment{Comment}{\quad// }{}
+  \SetKw{MyAnd}{and}
+  \DontPrintSemicolon
+  \Input{Dataset $\Ds$, collection $\mathcal{C}$ of itemsets.}
+  \Output{Upper bound to $\EVC(\range(\mathcal{C}),\Ds)$.}
+  $U\leftarrow\{a\in A, A\in\mathcal{C}\}$\;
+  $\Ds_\mathcal{C}\leftarrow\emptyset$\;
+  $L\leftarrow$ empty hash table\;
+  \For{$\tau\in\Ds$}{
+		$I_\tau\leftarrow \tau\cap U$\;
+		\If{$I_\tau\neq U$ \MyAnd $I_\tau\neq\emptyset$ \MyAnd $I_\tau
+			\not\in\Ds_\mathcal{C}$} {
+				$\Ds_\mathcal{C} \leftarrow \Ds_\mathcal{C} \cup \{I_\tau\}$\;
+				\If{$L$ has no element with key $|I_\tau|$} {
+					$L[|I_\tau|]\leftarrow 1$\;
+				}
+				\ForEach{key $k$ in $L$ such that $k<|I_\tau|$}{
+					$L[k]\leftarrow L[k]+1$\;
+			}
+		}
+  }
+  $i\leftarrow 1$\;
+  \While{$i\le$ number of keys in $L$}{
+	$\ell_i\leftarrow $ $i$-th highest key in $L$\;
+	$q_i\leftarrow$\SolveSUKP{$U$, $\mathcal{C}$, $\ell_i$}\;
+	$b_i\leftarrow\lfloor\log_2 q_i\rfloor +1$\;
+	\If{$b_i\le L[\ell_i]$}{
+		\Return{$b_i$}\;
+	}
+	$i\leftarrow i+1$\;
+  }
+  \Return{$\min\{L[\ell_i],\log_2|\mathcal{C}|\}$}\;
+  \caption{\texttt{EVCBoundSUKP}: compute an upper bound to
+  $\EVC(\range(\mathcal{C}),\Ds)$.}
+  \label{alg:evcboundsukp}
+\end{algorithm}
+
+\paragraph{Complexity and runtime considerations.} Solving the SUKP optimally
+is NP-hard in the general case, although there are known restrictions for which
+it can be solved in polynomial time using dynamic
+programming~\citep{GoldschmidtNY94}. Since we have unit weights and unit
+profits, our SUKP is equivalent to the \emph{densest $k$-subhypergraph} problem,
+which can not be approximated within a factor of $2^{O(\log n)^\delta}$ for any
+$\delta>0$ unless \fabio{$3-SAT \in
+DTIME(2^{n^{3/4+\varepsilon}})$~\citep{HajiaghayiJKLMRSV06}.
+[MATTEO: ref. 43 is not correct, the correct title (according to the LNCS
+proceedings for IWBRA 2006) is: ``Minimum Multicolored Subgraph Problem in
+Multiplex PCR Primer Set Selection and
+Population Haplotyping''. Also, the paper in the proceedings does not contain the
+result regarding 3SAT and DTIME. I have seen that in a draft of one of the authors 
+webpage, but since it is not published I do not think we can refer to it.]}
+ A greedy algorithm
+by~\citet{Arulselvan14} allows a constant factor approximation if each item only
+appears in a constant fraction of itemsets of $\mathcal{C}$.
+
+Despite all these negative results, in our case it is actually \emph{not
+necessary to compute the optimal solution} to the SUKP: any profit $p$ for which
+we can prove that there is no power of two between $p$ and the optimal profit
+would result in the same upper bound to the (empirical) VC-dimension, while
+substantially speeding up the computation. This early-termination property can
+be specified in currently available optimization problem solvers (e.g., CPLEX).
+Moreover, \emph{any upper bound to the optimal profit can be used}, resulting in
+a looser bound to the empirical VC-dimension. Optimization problem solvers
+compute such bounds as part of their execution (using cutting-plane methods),
+and can be instructed to terminate after a given amount of time and return the
+best computed upper bound. Alternatively, it is possible to instruct
+optimization problem solvers to return the first feasible solution whose profit
+is proved to be within a certain gap from the optimal. As an example, if we
+instruct CPLEX to return the first feasible solution whose profit $p$ is within
+$50\%$ of the optimal profit $p^*$, then we can use $2p$ as an upper bound to
+$p^*$. Since $p^*\le 2p\le 2p^*$ there is at most one power of two between $p^*$
+and $2p$, so if we denote the value $\lfloor\log_2 2p\rfloor +1$ as $b$ and the
+value $\lfloor\log_2 p^*\rfloor +1$ as $b^*$, we have that $b^*-b\le 1$, hence
+the additional looseness in the bound to the empirical VC-dimension due to the
+early termination of the optimization process is minimal.
+
+These observations and the extreme scalability of modern optimization problem
+solvers make it feasible to use \texttt{EVCBoundSUKP} even when $\mathcal{C}$
+contains tens of thousands of itemsets.
+
+One final comment: at first, it may seems that \texttt{EVCBoundSUKP} brings
+little-to-no advantage compared to \texttt{EVCBoundScan}. We kindly ask the
+reader to hold their judgment until the next section, where we modify the
+algorithms presented here to take into account additional information available
+on $\mathcal{C}$, and the practicality of \texttt{EVCBoundSUKP} will be more
+evident.
+
+\subsection{Computing an upper bound to $\EVC(\range(\mathcal{B}),\Ds)$} 
+\label{sec:vcbupper}
+
+Na\"ively, we
+could use any of the algorithms presented in Sect.~\ref{sec:computvc} to compute
+an upper bound to $\EVC(\range(\mathcal{F}),\Ds)$ and this would be a valid upper bound
+to $\EVC(\range(\mathcal{B}),\Ds)$ (provided Fact~\ref{fact:supersetborder} holds). 
+
+The
+downside of this line of action is that $\mathcal{F}$ may be much larger than
+$\mathcal{B}$ and, even more importantly, that we are choosing to ignore
+available information on the structure of $\mathcal{B}$. In particular, we are
+choosing to ignore the following.
+
+\begin{fact}
+	The negative border of a collection of itemsets is a \emph{maximal
+	antichain} on $2^\Itm$.
+\end{fact}
+
+The collection $\mathcal{F}$ is in general not an antichain, except for
+degenerate and unrealistic cases. An upper bound to $\EVC(\mathcal{F},\Ds)$
+would be a gross overestimation of $\EVC(\mathcal{B},\Ds)$, hence we would like
+to incorporate the fact that $\mathcal{B}$ is a maximal antichain in our
+computation of the bound to its empirical VC-dimension.
+
+We can modify \texttt{EVCBoundExact} by including, after having computed the
+set $\mathcal{C}_\tau$ (line~\ref{algline:intersectionloopend} in
+Alg.~\ref{alg:evcboundexact}), the size $\ell_\tau$ of the largest antichain in
+$\mathcal{C}_\tau$, which can be done in time polynomial in $\mathcal{C}_\tau$.
+We can then use $\ell_\tau$ as the value for $L[I_\tau]$
+(line~\ref{algline:assignmentintersection}). Since $\ell_\tau$ is the size of
+the largest antichain in $\mathcal{C}_\tau$, then $\ell_\tau$ is an upper bound
+to the number of itemsets from $\mathcal{B}$ that appear in $\tau$. Provided
+that $\Ds$ is a $\varepsilon_1$-approximation to $(\range(2^\Itm),\prob)$ (so
+that Fact~\ref{fact:supersetborder} holds) the so-modified algorithm, which we
+call \texttt{EVCBoundAntichain}, clearly gives an upper-bound to the d-index of
+$\mathcal{B}$ on $\Ds$, and therefore to $\EVC(\mathcal{B},\Ds)$. Due to the
+additional computation of $\ell_\tau$, this algorithm is slower than
+$\texttt{EVCBoundExact}$. It is possible to modify the second part of
+\texttt{EVCBoundAntiChain} in the same way as \texttt{EVCBoundExact} was
+modified to obtain \texttt{EVCBoundScan}, and obtain a slightly faster
+algorithm. Nevertheless, we believe that the need to compute potentially for
+each transaction $\tau$ both the set of itemsets of $\mathcal{C}$ in $\tau$ and
+additionally the size of the largest antichain on this set, make using
+\texttt{EVCBoundAntichain} a bit unpractical, despite being a polynomial time
+algorithm.
+
+It is actually for this reason that we developed \texttt{EVCBoundSUKP}, which we
+can modify \texttt{EVCBoundSUKP} to solve a slightly modified SUKPs associated
+to $\mathcal{F}$ with the \emph{additional constraint} that the optimal solution
+(a collection of itemsets) \emph{must be a maximal antichain}. The correctness
+follows from the fact that the optimal profit of the so-modified SUKP with
+capacity $\ell$ is the maximum number of itemsets forming an antichain in
+$\mathcal{F}$ that can be built using a subset of $\ell$ of $U$, so it is an
+upper bound to the number of itemsets in $\mathcal{B}$ that can be built on
+$\ell$ items of $U$, provided that $\Ds$ is a $\varepsilon_1$-approximation to
+$(\range(2^\Itm),\prob)$ (so that Fact~\ref{fact:supersetborder} holds). Hence
+Lemma~\ref{lem:sukpevc} carries over and this new algorithm, called
+\texttt{EVCBoundSUKPAntiChain} is correct. This algorithm is more practical than
+\texttt{EVCBoundAntichain}, striking a more balanced trade-off between
+exploiting information about $\mathcal{B}$ and obtaining an upper bound to its
+empirical VC-dimension in a reasonable amount of time.
