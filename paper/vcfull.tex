@@ -15,9 +15,9 @@ show how to compute $\varepsilon$.
 algorithm, which we call \ALG{}, is to compute a superset of $\mathcal{B}$, the
 negative border of $\TFI(\prob,\Itm,\theta)$. Let $\delta_1$ and $\delta_2$ be
 such that $(1-\delta_1)(1-\delta_2)\ge 1-\delta$. Let $\range(2^\Itm)$ be the
-range space of all itemsets. \fabio{Let $d$ be the upper bound to the empirical
+range space of all itemsets. Let $d$ be an upper bound to the empirical
 VC-dimension of $\range(2^\Itm)$ on $\Ds$ (the computation of $d$ is discussed in
-Sect.~\ref{sec:computvc}).} We can then use~\eqref{eq:evceapproxitemsets}
+Sect.~\ref{sec:computvc}). We can then use~\eqref{eq:evceapproxitemsets}
 with $\delta_1$, the bound $d$, and the maximum frequency of an item in $\Ds$ to
 compute an $\varepsilon_1$ such that $\Ds$ is, with probability at least
 $1-\delta_1$, an $\varepsilon_1$-approximation to $(\range(2^\Itm),\prob)$. Let
@@ -33,15 +33,15 @@ f_\Ds(A)<\theta+\varepsilon_1\}$, and $\mathcal{F}=\mathcal{G}\cup\mathcal{W}$.
 
 Now that we
 have a superset $\mathcal{F}$ of $\mathcal{B}$, we want to compute an upper
-bound to the empirical VC-dimension of $\mathcal{B}$ on $\Ds$. 
-\fabio{ This can be done by computing the empirical VC-dimension of $\mathcal{F}$ on $\Ds$,
+bound to the empirical VC-dimension of $\mathcal{B}$ on $\Ds$.
+This can be done by computing the empirical VC-dimension of $\mathcal{F}$ on $\Ds$,
 or an upper bound to it.
 Algorithms computing upper bounds for $\EVC(\range(\mathcal{C}),\Ds)$
- where $C$ is a collection of itemsets, are presented in Section~\ref{sec:computvc}.
+ where $C$ is a collection of itemsets, are presented in Sect.~\ref{sec:computvc}.
 However, a better bound can be obtained by taking into account the structure
-of $\mathcal{B}$. Algorithms that compute upper bounds for $\EVC(\range(\mathcal{B}),\Ds)$ (i.e., specific for 
+of $\mathcal{B}$. Algorithms that compute upper bounds for $\EVC(\range(\mathcal{B}),\Ds)$ (i.e., specific for
 the negative border $\mathcal{B}$ of $\TFI(\prob,\Itm,\theta)$) are presented in
-Section~\ref{sec:vcbupper} In the remaining of this section, we only
+Sect.~\ref{sec:vcbupper}. In the remaining of this section, we only
 assume that we have computed an upper bound $d_2$ to $\EVC(\range(\mathcal{B}),\Ds)$.
 We can use $d_2$ in~\eqref{eq:evceapproxitemsets}
 together with $\delta_2$ and the maximum frequency in $\Ds$ of an itemset of
@@ -50,7 +50,7 @@ at least $1-\delta_2$, $\Ds$ is an $\varepsilon_2$-approximation to
 $(\range(\mathcal{B}),\prob)$. Let $\hat{\theta}=\theta+\varepsilon_2$. The
 following Theorem shows that $\hat{\theta}$ has the desired properties.
 Algorithm~\ref{alg:vcfull} presents the pseudocode of our algorithm.
-}
+
 
 \begin{theorem}\label{lem:vcfull}
 With probability at least $1-\delta$, $\FI(\Ds,\Itm,\hat\theta)$ contains no
@@ -140,16 +140,16 @@ f_\Ds(A)<\theta+\varepsilon_1\}$\;
 %positive impact of including additional information may on the performances of
 %our algorithm.
 
-\subsection{\fabio{Computing upper bounds to the empirical VC-Dimension}}\label{sec:computvc}
-\fabio{We now present different methods to compute upper bounds to the empirical
+\subsection{Computing upper bounds to the empirical VC-Dimension}\label{sec:computvc}
+We now present different methods to compute upper bounds to the empirical
 VC-dimension $\EVC(\range(\mathcal{C},\Ds)$ of an
 itemset collection $\mathcal{C}$ in a dataset $\Ds$. Our algorithms are based
 on the to the computation of the d-index of $\mathcal{C}$ on $\Ds$.
-We start from an exact algorithm which may be too expensive in practice
-and then discuss a number of variants that trade off accuracy for speed.}
+We start from an exact algorithm and then discuss a number of variants that
+trade off accuracy for speed.
 
 \subsubsection{Exact algorithm and faster variants}\label{sec:computvcexact}
-The exact algorithm (which we call \texttt{EVCBoundExact}) \fabio{to compute} the d-index of
+The exact algorithm (which we call \texttt{EVCBoundExact}) to compute the d-index of
 $\mathcal{C}$ on $\Ds$ starts by scanning $\Ds$ and computing, for each
 transaction $\tau\in\Ds$, the set $I_\tau=\tau\cap U$. If $I_\tau\neq U$ and
 $I_\tau\neq\emptyset$, then we add $I_\tau$ to a set $L$. Let now
@@ -159,22 +159,23 @@ $\tau$. Now, for any $d\in\mathbb{N}$ let
 	T_d=\{I_\tau\in L ~:~ \tau\in\Ds \wedge \lfloor\log_2|\mathcal{C}_\tau|\rfloor+1= d\},\mbox{ and } \mathsf{T}_d=\bigcup_{i\ge d} T_d
 \]
 Once the scan is complete, let $d_1$  be the maximum integer for which
-$|\mathsf{T}_d|\ge d$, i.e., $\fabio{d_1}=\max\{d ~:~ |\mathsf{T}_d|\ge d\}$. Let now
+$|\mathsf{T}_d|\ge d$, i.e., $d_1=\max\{d ~:~ |\mathsf{T}_d|\ge d\}$. Let now
 $b_1$ be the size of the largest antichain on $\mathsf{T}_{d_1}$, obtained by
 solving the corresponding maximum bipartite matching problem. If $b_1\ge d_1$,
-then the algorithm can return \fabio{$d_1$}. Otherwise, for $i>1$, let $d_i$ be the
-maximum $d<d_{i-1}$ such that \fabio{$|\mathsf{T}_d\setminus\mathsf{T}_{d_{i-1}}|\ge d-b_{i-1}$}, where $b_{i-1}$ is the size
-of the largest antichain on $\mathsf{T}_{d_{i-1}}$:
+then the algorithm can return $d_1$. Otherwise, for $i>1$, let $d_i$ be the
+maximum $d<d_{i-1}$ such that $|\mathsf{T}_d\setminus\mathsf{T}_{d_{i-1}}|\ge
+d-b_{i-1}$, where $b_{i-1}$ is the size of the largest antichain on
+$\mathsf{T}_{d_{i-1}}$:
 \[
 	d_i=\max\{d<d_{i-1} ~:~ |\mathsf{T}_d\setminus\mathsf{T}_{d_{i-1}}|\ge d-b_{i-1}\}\enspace.
 \]
 We then compute the size $b_i$ of the largest antichain on $\mathsf{T}_{d_i}$
 and return $b_i$ if $b_i\ge d_i$. Note that if $d_i\le b_{i-1}$, we can actually
-avoid computing $b_i$ and return $d_i$ immediately. \fabio{The intuition behind this is
-that since $\mathsf{T}_{d_{i-1}} \subset \mathsf{T}_{d_{i}}$, we already know that $\mathsf{T}_{d_{i-1}}$
-contains an antichain of cardinality $b_{i-1}$.
-[Matteo: please check, and add a couple of sentences 
-to give the idea of what is going on, if needed.]}
+avoid computing $b_i$ and return $d_i$ immediately. The intuition behind this is
+that since $\mathsf{T}_{d_{i-1}} \subset \mathsf{T}_{d_{i}}$, we already know that $\mathsf{T}_{d_i}$
+contains an antichain of cardinality at least $d_{i}$, as it contains the
+antichain of size $b_{i-1}\ge d_1$ that we computed at the earlier step among
+the elements in $T_{d_{i-1}}$.
 
 The pseudocode of \texttt{EVCBoundExact} is presented in
 Alg.~\ref{alg:evcboundexact}. The algorithm obviously terminates because in the
@@ -219,16 +220,15 @@ algorithm terminates.
   $T[d_0]\leftarrow\emptyset$\;
   $i\leftarrow 1$\;
   \While{True} {\label{algline:secondloopbegin}
-  \fabio{$d_i=\max\{ d < d_{i-1} ~:~ T[d] - T[ d-1]\ge d-b_{i-1}\}$}\;
+  $d_i=\max\{ d < d_{i-1} ~:~ |T[d]\setminus T[d-1]|\ge d-b_{i-1}\}$\;
 	\If{$d_i\le b_{i-1}$}{
 		\Return{$d_i$}\;
 	}
-	\fabio{$b_i\leftarrow$ size of largest antichain on
-	$T[d_i]$} \;\label{algline:antichain}
+	$b_i\leftarrow$ size of largest antichain on $T[d_i]$ \;\label{algline:antichain}
 	\If{$b_i \ge d_i$}{
 		\Return{$d_i$}
 	}
-	\fabio{$i \leftarrow i+1$}\;
+	$i \leftarrow i+1$\;
   }\label{algline:secondloopend}
   \caption{\texttt{EVCBoundExact}: compute the d-index of $\mathcal{C}$ in
   $\Ds$.}
@@ -269,9 +269,9 @@ algorithm terminates.
 
 \paragraph{Trade-off accuracy for speed.} The complexity of
 \texttt{EVCBoundExact} is clearly polynomial in the sizes of $\Ds$,
-$\mathcal{C}$, and $U$, but indeed some steps are quite expensive. \fabio{In
+$\mathcal{C}$, and $U$, but indeed some steps are quite expensive. In
 particular, the following two steps can be modified to obtain a faster algorithm, at the expenses of
-obtaining an \emph{upper bound to the d-index} instead of the exact value:}
+obtaining an \emph{upper bound to the d-index} instead of the exact value:
 \begin{enumerate}
 	\item each iteration of the loop on
 		lines~\ref{algline:secondloopbegin}--\ref{algline:secondloopend} in
@@ -351,9 +351,9 @@ $\mathcal{C}$ on $\Ds$.
 \subsubsection{Integer programming method}
 We now present another algorithm to compute an upper bound to the d-index of an
 itemset collection $\mathcal{C}$ on a dataset $\Ds$, and therefore to the
-empirical VC-dimension of $\mathcal{C}$ on $\Ds$. \fabio{The intuition and the purpose
+empirical VC-dimension of $\mathcal{C}$ on $\Ds$. The intuition and the purpose
 of this algorithm is to balance the trade-off between the accuracy of
-\texttt{EVCBoundExact} and the computation time of \texttt{EVCBoundScanFast}.}
+\texttt{EVCBoundExact} and the computation time of \texttt{EVCBoundScanFast}.
 Indeed, \texttt{EVCBoundExact} uses all available information about
 $\mathcal{C}$ to compute the exact set (and number) of itemsets from
 $\mathcal{C}$ contained in each transaction. On the other hand,
@@ -485,7 +485,7 @@ DTIME(2^{n^{3/4+\varepsilon}})$~\citep{HajiaghayiJKLMRSV06}.
 proceedings for IWBRA 2006) is: ``Minimum Multicolored Subgraph Problem in
 Multiplex PCR Primer Set Selection and
 Population Haplotyping''. Also, the paper in the proceedings does not contain the
-result regarding 3SAT and DTIME. I have seen that in a draft of one of the authors 
+result regarding 3SAT and DTIME. I have seen that in a draft of one of the authors
 webpage, but since it is not published I do not think we can refer to it.]}
  A greedy algorithm
 by~\citet{Arulselvan14} allows a constant factor approximation if each item only
@@ -523,13 +523,13 @@ algorithms presented here to take into account additional information available
 on $\mathcal{C}$, and the practicality of \texttt{EVCBoundSUKP} will be more
 evident.
 
-\subsection{Computing an upper bound to $\EVC(\range(\mathcal{B}),\Ds)$} 
+\subsection{Computing an upper bound to $\EVC(\range(\mathcal{B}),\Ds)$}
 \label{sec:vcbupper}
 
 Na\"ively, we
 could use any of the algorithms presented in Sect.~\ref{sec:computvc} to compute
 an upper bound to $\EVC(\range(\mathcal{F}),\Ds)$ and this would be a valid upper bound
-to $\EVC(\range(\mathcal{B}),\Ds)$ (provided Fact~\ref{fact:supersetborder} holds). 
+to $\EVC(\range(\mathcal{B}),\Ds)$ (provided Fact~\ref{fact:supersetborder} holds).
 
 The
 downside of this line of action is that $\mathcal{F}$ may be much larger than

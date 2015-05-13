@@ -14,7 +14,7 @@ set on $2^\Itm$} containing the support sets of the itemsets in $\mathcal{C}$:
 \end{definition}
 
 \begin{fact}\label{fact:maxfreq}
-	Given \fabio{\st{this definition} a collection $\mathcal{C}$ of itemsets and} a dataset $\Ds$, the maximum
+	Given a collection $\mathcal{C}$ of itemsets and a dataset $\Ds$, the maximum
 	in~\eqref{eq:evceapprox} is attained for the itemset $A\in\mathcal{C}$ with the
 	highest frequency in $\Ds$, and the value of $\sqrt{|r\cap S|}$ is exactly
 	$\sqrt{f_\Ds(A)|\Ds|}$. Hence we can rewrite~\eqref{eq:evceapprox} as
@@ -25,8 +25,9 @@ set on $2^\Itm$} containing the support sets of the itemsets in $\mathcal{C}$:
 		%2\sqrt{\frac{\max_{A\in\mathcal{C}}f_\Ds(A)2\min\left\{\ln|\mathcal{C}|,d\ln\frac{en}{d}\right\}}{|\Ds|}} +
 		%\sqrt{\frac{2\ln\frac{4}{\delta}}{|\Ds|}},
 	\end{equation}
-	where \fabio{$\range(\mathcal{C})$} is as in Def.~\ref{def:rangeset}, and $d$ is an
-	upper bound to $\EVC(\range(\mathcal{C}),\Ds)$.
+	where $d$ is an
+	upper bound to $\EVC(\range(\mathcal{C}),\Ds)$, and $\range(\mathcal{C})$ is
+	as in Def.~\ref{def:rangeset}.
 \end{fact}
 
 The following Theorem presents an upper bound to the empirical VC-dimension of
