@@ -479,20 +479,14 @@ it can be solved in polynomial time using dynamic
 programming~\citep{GoldschmidtNY94}. Since we have unit weights and unit
 profits, our SUKP is equivalent to the \emph{densest $k$-subhypergraph} problem,
 which can not be approximated within a factor of $2^{O(\log n)^\delta}$ for any
-$\delta>0$ unless \fabio{$3-SAT \in
-DTIME(2^{n^{3/4+\varepsilon}})$~\citep{HajiaghayiJKLMRSV06}.
-[MATTEO: ref. 43 is not correct, the correct title (according to the LNCS
-proceedings for IWBRA 2006) is: ``Minimum Multicolored Subgraph Problem in
-Multiplex PCR Primer Set Selection and
-Population Haplotyping''. Also, the paper in the proceedings does not contain the
-result regarding 3SAT and DTIME. I have seen that in a draft of one of the authors
-webpage, but since it is not published I do not think we can refer to
-it.]}\footnote{OK, what about this: we add a footnote saying:``The proof of this
-	result is contained in an unpublished extended version of [43], available
-	from \url{http://www.engr.uconn.edu/\%7eion/FILES/pub/icalp05_submission.pdf}.}
- A greedy algorithm
-by~\citet{Arulselvan14} allows a constant factor approximation if each item only
-appears in a constant fraction of itemsets of $\mathcal{C}$.
+$\delta>0$ unless $3-SAT \in
+DTIME(2^{n^{3/4+\varepsilon}})$.\footnote{The proof of this result can be found
+in an unpublished extended version of a work by~\citet{HajiaghayiJKLMRSV06},
+available from
+\url{http://www.engr.uconn.edu/\%7eion/FILES/pub/icalp05_submission.pdf}.}
+A greedy algorithm by~\citet{Arulselvan14} allows a constant factor
+approximation if each item only appears in a constant fraction of itemsets of
+$\mathcal{C}$.
 
 Despite all these negative results, in our case it is actually \emph{not
 necessary to compute the optimal solution} to the SUKP: any profit $p$ for which
