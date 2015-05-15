@@ -100,9 +100,19 @@ presentation, we will not consider the filtering step in the following
 sections, but the reader should keep in mind that it can be applied whenever the
 frequencies of the itemsets in $\mathcal{C}$ are available.
 
-Mutuating a construction by~\citet{RiondatoU14}, one can show that the bound in
-Thm.~\ref{lem:evcdimupbound} is tight, in the sense that there are datasets
-such that the empirical VC-dimension of $\mathcal{C}$ on them is equal to the
-d-index of $\mathcal{C}$ on them.
-\fabio{[Add a Proposition stating this result?]}
+Mutuating a construction by~\citet[Thm.~4.6]{RiondatoU14}, one can show that the
+bound in Thm.~\ref{lem:evcdimupbound} is tight, as stated in the following
+lemma.
 
+\begin{lemma}
+	For any $d>0$ it is possible to build a collection $\mathcal{C}_d$ and a
+	dataset $\Ds_d$ such that the empirical VC-dimension of $\mathcal{C}_d$ on
+	them is equal to the d-index of $\mathcal{C}$ on them.
+\end{lemma}
+
+\begin{proof}
+	For any $d$, consider w.l.o.g., the set $I_d\{1,\dotsc,d\}$, and let
+	$\mathcal{C}_d=2^{I_d}$. \citet[Thm.~4.6]{RiondatoU14} showed that it is
+	possible to build a dataset $\Ds_d$ for which the empirical VC-dimension of
+	$\mathcal{C}_d$ on them is equal to the d-index of $\mathcal{C}$ on them.
+\end{proof}
